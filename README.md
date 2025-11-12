@@ -1,9 +1,9 @@
 # Python Project Template
 
-[![tests badge](https://github.com/NERC-CEH/python-template/actions/workflows/pipeline.yml/badge.svg)](https://github.com/NERC-CEH/python-template/actions)
-[![docs badge](https://github.com/NERC-CEH/python-template/actions/workflows/deploy-docs.yml/badge.svg)](https://nerc-ceh.github.io/python-template/)
+[![tests badge](https://github.com/NERC-CEH/dri-geospatial-api/actions/workflows/pipeline.yml/badge.svg)](https://github.com/NERC-CEH/dri-geospatial-api/actions)
+[![docs badge](https://github.com/NERC-CEH/dri-geospatial-api/actions/workflows/deploy-docs.yml/badge.svg)](https://nerc-ceh.github.io/dri-geospatial-api/)
 
-[Read the docs!](https://nerc-ceh.github.io/python-template)
+[Read the docs!](https://nerc-ceh.github.io/dri-geospatial-api)
 
 This repository is a template for a basic Python project. Included here is:
 
@@ -47,14 +47,14 @@ remove`.
 
 ### Making it Your Own
 
-This repo has a single package in the `./src/...` path called `mypackage` (creative I know). Change this to the name of your package and update it in:
+This repo has a single package in the `./src/...` path called `dri-geospatial-api` (creative I know). Change this to the name of your package and update it in:
 
 * `docs/conf.py`
 * `src/**/*.py`
 * `tests/**/*.py`
 * `pyproject.toml`
 
-To make thing move a bit faster, use the script `./rename-package.sh` to rename all references of `mypackage` to whatever you like. For example:
+To make thing move a bit faster, use the script `./rename-package.sh` to rename all references of `dri-geospatial-api` to whatever you like. For example:
 
 ```console
 ./rename-package.sh "acoolnewname"
@@ -69,7 +69,7 @@ cd docs
 make apidoc
 ```
 
-To keep your documentation in sync with the package name. You may need to delete a file called `mypackage.rst` from `./docs/sources/...`
+To keep your documentation in sync with the package name. You may need to delete a file called `dri-geospatial-api.rst` from `./docs/sources/...`
 
 ### Deploying Docs to GitHub Pages
 
@@ -88,7 +88,7 @@ make apidoc
 
 This will populate `./docs/sources/...` with `*.rst` files for each Python module, which may be included into the documentation.
 
-Documentation can then be built locally by running `make html`, or found on the [GitHub Deployment](https://nerc-ceh.github.io/python-template).
+Documentation can then be built locally by running `make html`, or found on the [GitHub Deployment](https://nerc-ceh.github.io/dri-geospatial-api).
 
 ### Run the Tests
 

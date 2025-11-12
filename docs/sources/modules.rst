@@ -1,7 +1,7 @@
-mypackage
+dri-geospatial-api
 =========
 
 .. toctree::
    :maxdepth: 4
 
-   mypackage
+   dri-geospatial-api

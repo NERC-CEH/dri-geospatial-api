@@ -1,0 +1,58 @@
+x-common: &api-common
+  container_name: "geospatial_api"
+  image: "dri-geospatial-api"
+  volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+  ports:
+    - "8000:8000"  # No need for "0.0.0.0:" (default behavior)
+  networks:
+    - app-network  # Ensure all services are on the same network
+
+services:
+
+  app-aws:
+    <<: *api-common
+    profiles:
+      - aws
+    env_file: bin/staging.env
+  
+  app-localstack:
+    <<: *api-common
+    profiles:
+      - api-localstack
+    depends_on:
+      localstack:
+        condition: service_healthy  # Wait for LocalStack to be healthy
+    networks:
+      - app-network  # Ensure communication within the same network
+
+  localstack:
+    container_name: "geospatial_api_localstack"
+    image: localstack/localstack:3.4
+    ports:
+      - "4566:4566"            # Make sure LocalStack is accessible to the app
+      - "4510-4559:4510-4559"  # External services port range
+      - "6379:6379"  # Redis
+    expose:
+      - "4566"  # Make sure the container exposes the correct port
+    environment:
+      - SERVICES=s3
+      - DEBUG=${DEBUG:-0}
+    profiles:
+      - localstack
+      - api-localstack
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./bin/localstack-setup.sh:/etc/localstack/init/ready.d/init-aws.sh"
+      - "./data/:/var/lib/localstack/data"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+    networks:
+      - app-network  # Ensure communication within the same network
+
+networks:
+  app-network:
+    driver: bridge  # Ensures all services can communicate

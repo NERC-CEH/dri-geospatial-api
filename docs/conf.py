@@ -6,13 +6,13 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import mypackage
+import geospatial_api
 
-project = "My Project"
+project = "Geospatial API"
 project_copyright = "2024, UKCEH"
 author = "UKCEH"
 
-release = mypackage.__version__
+release = geospatial_api.__version__
 version = release
 
 # -- General configuration ---------------------------------------------------

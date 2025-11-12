@@ -1,13 +1,13 @@
-mypackage package
+dri-geospatial-api package
 =================
 
 Submodules
 ----------
 
-mypackage.module module
+dri-geospatial-api.module module
 -----------------------
 
-.. automodule:: mypackage.module
+.. automodule:: dri-geospatial-api.module
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ mypackage.module module
 Module contents
 ---------------
 
-.. automodule:: mypackage
+.. automodule:: dri-geospatial-api
    :members:
    :undoc-members:
    :show-inheritance:

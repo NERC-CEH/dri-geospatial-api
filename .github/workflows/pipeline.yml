@@ -18,7 +18,7 @@ jobs:
     uses: NERC-CEH/dri-cicd/.github/workflows/build-test-deploy-docker.yml@main
     with:
       use_uv: true
-      package_name: mypackage
+      package_name: dri-geospatial-api
     secrets:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
