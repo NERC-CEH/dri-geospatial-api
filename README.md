@@ -1,4 +1,4 @@
-# Python Project Template
+# Geospatial Data API
 
 [![tests badge](https://github.com/NERC-CEH/dri-geospatial-api/actions/workflows/pipeline.yml/badge.svg)](https://github.com/NERC-CEH/dri-geospatial-api/actions)
 [![docs badge](https://github.com/NERC-CEH/dri-geospatial-api/actions/workflows/deploy-docs.yml/badge.svg)](https://nerc-ceh.github.io/dri-geospatial-api/)
