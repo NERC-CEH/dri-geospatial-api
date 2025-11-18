@@ -21,10 +21,10 @@ dependencies = [
     "titiler.extensions",
 
 ]
-name = "dri-geospatial-api"
+name = "geospatial_api"
 dynamic = ["version"]
-authors = [{ name = "John Doe", email = "johdoe@ceh.ac.uk" }]
-description = "A minimal setup for a template package."
+authors = [{ name = "Samantha Hewkin", email = "samhew@ceh.ac.uk" }]
+description = "API for accessing geospatial data products"
 
 [dependency-groups]
 test = ["pytest", "pytest-cov"]
@@ -51,7 +51,7 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-omit = ["*__init__.py", "src/dri-geospatial-api/__main__.py"]
+omit = ["*__init__.py", "src/geospatial_api/__main__.py"]
 
 [tool.ruff]
 line-length = 120
