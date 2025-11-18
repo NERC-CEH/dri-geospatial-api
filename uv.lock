@@ -526,87 +526,6 @@ wheels = [
 ]
 
 [[package]]
-name = "dri-geospatial-api"
-source = { editable = "." }
-dependencies = [
-    { name = "autosemver" },
-    { name = "boto3" },
-    { name = "dri-utils" },
-    { name = "fastapi", extra = ["standard"] },
-    { name = "geojson" },
-    { name = "httpx" },
-    { name = "mypy-boto3-s3" },
-    { name = "pre-commit" },
-    { name = "prometheus-fastapi-instrumentator" },
-    { name = "pydantic-settings" },
-    { name = "pyright", extra = ["nodejs"] },
-    { name = "setuptools" },
-    { name = "titiler" },
-    { name = "titiler-extensions" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "ruff" },
-    { name = "sphinx" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-rtd-theme" },
-]
-docs = [
-    { name = "sphinx" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-rtd-theme" },
-]
-lint = [
-    { name = "ruff" },
-]
-test = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "autosemver" },
-    { name = "boto3", specifier = ">=1.36.24" },
-    { name = "dri-utils", extras = ["all"], git = "https://github.com/NERC-CEH/dri-utils.git" },
-    { name = "fastapi" },
-    { name = "fastapi", extras = ["standard"] },
-    { name = "geojson" },
-    { name = "httpx" },
-    { name = "mypy-boto3-s3" },
-    { name = "pre-commit" },
-    { name = "prometheus-fastapi-instrumentator" },
-    { name = "pydantic-settings" },
-    { name = "pyright", extras = ["nodejs"] },
-    { name = "setuptools" },
-    { name = "titiler" },
-    { name = "titiler-extensions" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "ruff" },
-    { name = "sphinx" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-rtd-theme" },
-]
-docs = [
-    { name = "sphinx" },
-    { name = "sphinx-copybutton" },
-    { name = "sphinx-rtd-theme" },
-]
-lint = [{ name = "ruff" }]
-test = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
-]
-
-[[package]]
 name = "dri-utils"
 version = "0.0.17"
 source = { git = "https://github.com/NERC-CEH/dri-utils.git#4597f3d3bdd2e98199d5276dd9dcda3782f5adbe" }
@@ -770,6 +689,87 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5c/52/961c8f7c51067f5d853a732cd4abc09b4d15c742384406dda8348b98071e/geojson_pydantic-2.1.0.tar.gz", hash = "sha256:78a52b2a7cd9c113bac4898a81ce00c146c7927dd2804f1c7e9fd05c2515073f", size = 9398, upload-time = "2025-10-08T13:31:12.474Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/18/8a9dca353e605b344408114f6b045b11d14082d19f4668b073259d3ed1a9/geojson_pydantic-2.1.0-py3-none-any.whl", hash = "sha256:f9091bed334ab9fbb1bef113674edc1212a3737f374a0b13b1aa493f57964c1d", size = 8819, upload-time = "2025-10-08T13:31:11.646Z" },
+]
+
+[[package]]
+name = "geospatial-api"
+source = { editable = "." }
+dependencies = [
+    { name = "autosemver" },
+    { name = "boto3" },
+    { name = "dri-utils" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "geojson" },
+    { name = "httpx" },
+    { name = "mypy-boto3-s3" },
+    { name = "pre-commit" },
+    { name = "prometheus-fastapi-instrumentator" },
+    { name = "pydantic-settings" },
+    { name = "pyright", extra = ["nodejs"] },
+    { name = "setuptools" },
+    { name = "titiler" },
+    { name = "titiler-extensions" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-rtd-theme" },
+]
+docs = [
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-rtd-theme" },
+]
+lint = [
+    { name = "ruff" },
+]
+test = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "autosemver" },
+    { name = "boto3", specifier = ">=1.36.24" },
+    { name = "dri-utils", extras = ["all"], git = "https://github.com/NERC-CEH/dri-utils.git" },
+    { name = "fastapi" },
+    { name = "fastapi", extras = ["standard"] },
+    { name = "geojson" },
+    { name = "httpx" },
+    { name = "mypy-boto3-s3" },
+    { name = "pre-commit" },
+    { name = "prometheus-fastapi-instrumentator" },
+    { name = "pydantic-settings" },
+    { name = "pyright", extras = ["nodejs"] },
+    { name = "setuptools" },
+    { name = "titiler" },
+    { name = "titiler-extensions" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-rtd-theme" },
+]
+docs = [
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-rtd-theme" },
+]
+lint = [{ name = "ruff" }]
+test = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
 ]
 
 [[package]]
