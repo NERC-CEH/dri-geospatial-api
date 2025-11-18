@@ -40,7 +40,7 @@ dev = [
 version = { attr = "geospatial_api.__version__" }
 
 [tool.pytest.ini_options]
-addopts = "--cov=geospatial_api"
+addopts = "--cov=."
 markers = [
     "slow: Marks slow tests",
 ]
