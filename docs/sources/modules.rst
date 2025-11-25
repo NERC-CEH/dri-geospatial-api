@@ -1,7 +1,7 @@
-dri-geospatial-api
+geospatial_api
 =========
 
 .. toctree::
    :maxdepth: 4
 
-   dri-geospatial-api
+   geospatial_api

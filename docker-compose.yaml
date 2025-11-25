@@ -32,7 +32,6 @@ services:
     ports:
       - "4566:4566"            # Make sure LocalStack is accessible to the app
       - "4510-4559:4510-4559"  # External services port range
-      - "6379:6379"  # Redis
     expose:
       - "4566"  # Make sure the container exposes the correct port
     environment:
