@@ -1,4 +1,8 @@
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -6,12 +10,14 @@ permissions:
   id-token: write
   actions: read
 
-
 jobs:
   test-python:
     uses: NERC-CEH/dri-cicd/.github/workflows/test-python.yml@main
     with:
       use_uv: true
+      coverage_threshold: 90
+      use_pyright: true
+      localstack_profile_name: localstack
 
   build-test-deploy-docker:
     needs: [test-python]
