@@ -16,7 +16,6 @@ jobs:
     with:
       use_uv: true
       coverage_threshold: 90
-      use_pyright: true
       localstack_profile_name: localstack
 
   build-test-deploy-docker:
