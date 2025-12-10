@@ -7,7 +7,7 @@ An API for accessing geospatial data
 
 ## Getting Started
 
-## Virtual environment setup
+### Virtual environment setup
 
 This both creates the initial venv and also updates it
 
@@ -16,7 +16,7 @@ uv sync
 source .venv/bin/activate
 ```
 
-## Linting
+### Linting
 
 Linting uses ruff using the config in pyproject.toml
 
@@ -24,7 +24,7 @@ Linting uses ruff using the config in pyproject.toml
 ruff check --fix
 ```
 
-## Formatting
+### Formatting
 
 Formatting uses ruff using the config in pyproject.toml which follows the default black settings.
 
@@ -32,11 +32,11 @@ Formatting uses ruff using the config in pyproject.toml which follows the defaul
 ruff format .
 ```
 
-## Static type checking
+### Static type checking
 
 Static type checking is undertaken using pyright using the config values in pyproject.toml
 
-## Pre commit hooks
+### Pre commit hooks
 
 The linting, formatting and type checking can be called as a pre-commit hook. Run below to set them up.
 
@@ -46,10 +46,16 @@ pre-commit install
 
 If you need to ignore the hook for a particular commit then use the `--no-verify` flag.
 
-### Run the Tests
+## Run the Tests
 
 To run the tests, ensure the localstack docker container is running, and the virtual environment is activated. Then run:
 
 ```commandline
 pytest
 ```
+
+
+## Localstack setup
+
+
+Localstack is used to create local AWS resoruces for testing the app locally. `localstack-setup.sh` is run when the container is initialised which creates the buckets and loads the sample geospatial data found in `./data`
