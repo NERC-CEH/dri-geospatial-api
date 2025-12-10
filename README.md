@@ -1,119 +1,55 @@
-# Geospatial Data API
-
 [![tests badge](https://github.com/NERC-CEH/dri-geospatial-api/actions/workflows/pipeline.yml/badge.svg)](https://github.com/NERC-CEH/dri-geospatial-api/actions)
 [![docs badge](https://github.com/NERC-CEH/dri-geospatial-api/actions/workflows/deploy-docs.yml/badge.svg)](https://nerc-ceh.github.io/dri-geospatial-api/)
 
-[Read the docs!](https://nerc-ceh.github.io/dri-geospatial-api)
+# Geospatial Data API
 
-This repository is a template for a basic Python project. Included here is:
-
-* Example Python package
-* Tests
-* Documentation
-* Automatic incremental versioning
-* CI/CD
-    * Installs and tests the package
-    * Builds documentation on branches
-    * Deploys documentation on main branch
-    * Deploys docker image to AWS ECR
-* Githook to ensure linting and code checking
+An API for accessing geospatial data
 
 ## Getting Started
 
-### Using the Githook
+## Virtual environment setup
 
-From the root directory of the repo, run:
+This both creates the initial venv and also updates it
 
-```console
-git config --local core.hooksPath .githooks/
-```
-
-This will set this repo up to use the git hooks in the `.githooks/` directory. The hook runs `ruff format --check` and `ruff check` to prevent commits that are not formatted correctly or have errors. The hook intentionally does not alter the files, but informs the user which command to run.
-
-### Installing the package
-
-You can install everything needed to run the project (even including
-Python) with [uv](https://docs.astral.sh/uv).
-
-```console
+```commandline
 uv sync
+source .venv/bin/activate
 ```
 
-It will set up a Python virtualenv in `.venv`.  Activate it as normal
-with `. .venv/bin/activate` or prefix commands with `uv run`.  In
-fact, `uv run` will automatically set things up with no need for `uv
-sync`.  You can add packages with `uv add` and remove them with `uv
-remove`.
+## Linting
 
-### Making it Your Own
+Linting uses ruff using the config in pyproject.toml
 
-This repo has a single package in the `./src/...` path called `dri-geospatial-api` (creative I know). Change this to the name of your package and update it in:
-
-* `docs/conf.py`
-* `src/**/*.py`
-* `tests/**/*.py`
-* `pyproject.toml`
-
-To make thing move a bit faster, use the script `./rename-package.sh` to rename all references of `dri-geospatial-api` to whatever you like. For example:
-
-```console
-./rename-package.sh "acoolnewname"
+```
+ruff check --fix
 ```
 
-Will rename the package and all references to "acoolnewname"
+## Formatting
 
-After doing this it is recommended to also run:
+Formatting uses ruff using the config in pyproject.toml which follows the default black settings.
 
-```console
-cd docs
-make apidoc
+```
+ruff format .
 ```
 
-To keep your documentation in sync with the package name. You may need to delete a file called `dri-geospatial-api.rst` from `./docs/sources/...`
+## Static type checking
 
-### Deploying Docs to GitHub Pages
+Static type checking is undertaken using pyright using the config values in pyproject.toml
 
-If you want docs to be published to github pages automatically, go to your repo settings and enable docs from GitHub Actions and the workflows will do the rest.
+## Pre commit hooks
 
-### Building Docs Locally
+The linting, formatting and type checking can be called as a pre-commit hook. Run below to set them up.
 
-The documentation is driven by [Sphinx](https://www.sphinx-doc.org/) an industry standard for documentation with a healthy userbase and lots of add-ons. It uses `sphinx-apidoc` to generate API documentation for the codebase from Python docstrings.
-
-To run `sphinx-apidoc` run:
-
-```console
-cd docs
-make apidoc
+```
+pre-commit install
 ```
 
-This will populate `./docs/sources/...` with `*.rst` files for each Python module, which may be included into the documentation.
-
-Documentation can then be built locally by running `make html`, or found on the [GitHub Deployment](https://nerc-ceh.github.io/dri-geospatial-api).
+If you need to ignore the hook for a particular commit then use the `--no-verify` flag.
 
 ### Run the Tests
 
-To run the tests run:
+To run the tests, ensure the localstack docker container is running, and the virtual environment is activated. Then run:
 
-```console
+```commandline
 pytest
 ```
-
-### Automatic Versioning
-
-This codebase is set up using [autosemver](https://autosemver.readthedocs.io/en/latest/usage.html#) a tool that uses git commit history to calculate the package version. Each time you make a commit, it increments the patch version by 1. You can increment by:
-
-* Normal commit. Use for bugfixes and small updates
-    * Increments patch version: `x.x.5 -> x.x.6`
-* Commit starts with `* NEW:`. Use for new features
-    * Increments minor version `x.1.x -> x.2.x`
-* Commit starts with `* INCOMPATIBLE:`. Use for API breaking changes
-    * Increments major version `2.x.x -> 3.x.x`
-
-### Docker and the ECR
-
-The python code is packaged into a docker image and pushed to the AWS ECR. For the deployment to succeed you must:
-
-* Add 2 secrets to the GitHub Actions:
-    * AWS_REGION: \<our-region\>
-    * AWS_ROLE_ARN: \<the-IAM-role-used-to-deploy\>
-* Add a repository to the ECR with the same name as the GitHub repo
