@@ -1,3 +1,4 @@
+from pathlib import Path
 from urllib.parse import urlparse
 
 import boto3
@@ -27,14 +28,53 @@ def get_s3_client() -> S3Client:
     return s3
 
 
-def get_file_path(url: str, s3_client: S3Client) -> str:
+def get_file_path(url: str | Path, s3_client: S3Client) -> str:
+    """
+    Extract the file path from the provided url.
+
+    It is assumed that the url is either a local path or an S3 url. The local path may have a file:// prefix that will
+    need removing.
+
+    Args:
+        url: S3 url or local file path to be parsed
+        s3_client: S3 Client to use to generate a presigned url to allow download of the S3 data.
+
+    Returns:
+        Parsed local file path or presigned s3 url.
+
+    """
+    # If a pathlib.Path object has been passed in then the file path should already be valid and can be returned
+    # directly
+    if isinstance(url, Path):
+        check_path_exists(url)
+        return str(url)
+
     url_parts = urlparse(url)
+    file_path = url_parts.path.replace("//", "/")
+
     if url_parts.scheme.lower() == "s3":
-        key = url_parts.path.replace("//", "/").lstrip("/")
+        key = file_path.lstrip("/")
         file_path = s3_client.generate_presigned_url(
             ClientMethod="get_object", Params={"Bucket": url_parts.netloc, "Key": key}
         )
-    elif url_parts.scheme == "file":
-        file_path = url_parts.path
+        return file_path
 
-    return file_path
+    if url_parts.scheme == "file":
+        check_path_exists(file_path)
+        return file_path
+
+
+def check_path_exists(path: str | Path) -> None:
+    """
+    Check a local file path exists
+
+    Args:
+        path: Pathlib.path or str representation of the file path.
+
+    Raises:
+        FileExistsError: The path does not exist.
+
+    """
+    path = Path(path)
+    if not path.exists():
+        raise FileExistsError(f"The provided path does not exist: {str(path)}")
