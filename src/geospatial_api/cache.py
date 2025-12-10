@@ -3,7 +3,7 @@
 import base64
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Callable
 
 import aiocache
 from starlette.concurrency import run_in_threadpool
@@ -13,7 +13,9 @@ from .settings import cache_setting
 
 
 class CachedABC(ABC, aiocache.cached):
-    async def get_from_cache(self, key: str) -> str | Response:
+    """Abstract base class for caching endpoint data"""
+
+    async def get_from_cache(self, key: str) -> str | Response | None:
         try:
             value = await self.cache.get(key)
             if isinstance(value, Response):
@@ -24,18 +26,48 @@ class CachedABC(ABC, aiocache.cached):
 
     @abstractmethod
     async def read_cache(self, key: str) -> Response:
+        """Read data from the cache.
+
+        Args:
+            key: key indexing the cached data to be returned.
+
+        Returns:
+            Response constructed from the cached data.
+
+        """
         pass
 
     @abstractmethod
     async def write_cache(self, key: str, result: Response) -> None:
+        """
+        Write data to the cache.
+
+        Args:
+            key: Key to use as an index for the data to be written within the cache.
+            result: Response data to write to the cache.
+
+        """
         pass
 
     async def decorator(
         self,
-        f: callable,
+        f: Callable,
         *args,
         **kwargs,
     ) -> Response:
+        """
+        The main decorator function
+
+        If data is available from the cache for the underlying router function, then it will be returned. Otherwise
+        the router function will be called and the response written to the cache before being returned.
+
+        Args:
+            f: Router function used to generate the data to be returned as a Response object.mro
+
+        Returns:
+            Response read from the cache, or from the provided router function.
+
+        """
         key = self.get_cache_key(f, args, kwargs)
 
         result = await self.read_cache(key)
@@ -53,7 +85,20 @@ class CachedABC(ABC, aiocache.cached):
 class CachedTiles(CachedABC):
     """Custom Cached Decorator for Titiler tile route(s)."""
 
-    async def read_cache(self, key: str) -> Response:
+    async def read_cache(self, key: str) -> Response | None:
+        """Read data from the cache.
+
+        To construct the returned response object, the image bytes data needs to be extracted from the stored json,
+        and decoded it from its bytes64 encoding. The headers can be used directly once the json string has been
+        converted back to a dictionary.
+
+        Args:
+            key: key indexing the cached data to be returned.
+
+        Returns:
+            Response constructed from the cached data.
+
+        """
         value = await self.get_from_cache(key)
         if value is None:
             return
@@ -65,6 +110,26 @@ class CachedTiles(CachedABC):
         return response
 
     async def write_cache(self, key: str, result: Response) -> None:
+        """
+        Write data to the cache.
+
+        In order to store the tiled image, the image data is converted to a string representation of dictionary
+        containing the following data
+        {
+                "body": image byte data encoded as a bytes64 string,
+                "headers": {
+                    "content-bbox": "-310028.5867247395,7169181.756923294,-309417.0904984586,7169793.2531495765",
+                    "content-crs": "<http://www.opengis.net/def/crs/EPSG/0/3857>",
+                    "content-length": "988",
+                    "content-type": "image/png"
+                    }
+            }
+
+        Args:
+            key: Key to use as an index for the data to be written within the cache.
+            result: Response data to write to the cache.
+
+        """
         image_bytes = base64.b64encode(result.body)
         data_to_cache = json.dumps(
             {
@@ -77,7 +142,7 @@ class CachedTiles(CachedABC):
 
 def setup_cache() -> None:
     """Setup aiocache."""
-    config: Dict[str, Any] = {
+    config: dict[str, Any] = {
         "cache": "aiocache.SimpleMemoryCache",
         "serializer": {"class": "aiocache.serializers.PickleSerializer"},
     }
