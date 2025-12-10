@@ -9,11 +9,22 @@ An API for accessing geospatial data
 
 ### Virtual environment setup
 
-This both creates the initial venv and also updates it
+To create the initial venv or update it:
 
 ```commandline
 uv sync
+```
+
+To activate the venv:
+
+```commandline
 source .venv/bin/activate
+```
+
+To update the uv lock file (e.g. when adding a new dependency):
+
+```commandline
+uv lock
 ```
 
 ### Linting
@@ -54,8 +65,32 @@ To run the tests, ensure the localstack docker container is running, and the vir
 pytest
 ```
 
-
 ## Localstack setup
 
+Localstack is used to create local AWS resoruces for testing the app locally. `localstack-setup.sh` is run when the
+container is initialised which creates the buckets and loads the sample geospatial data found in `./data`. If the contents of `./data` are updated then the localstack docker container will need to be stopped, the volume deleted and then recreated to pick up any new changes.
 
-Localstack is used to create local AWS resoruces for testing the app locally. `localstack-setup.sh` is run when the container is initialised which creates the buckets and loads the sample geospatial data found in `./data`
+To run localstack:
+
+```commandline
+docker compose --profile localstack up
+```
+
+
+## Running the API locally.
+
+The API can be run either within a python shell with the venv activated using `python -m geospatial_api`, or via a debug session. The configuration to use within a VSCode launch.json file for debugging the API is shown below.
+
+```
+{
+    "name": "Run geospatial_api",
+    "type": "debugpy",
+    "request": "launch",
+    "module": "geospatial_api",
+    "justMyCode": false,
+}
+```
+
+### URLs
+
+Once running locally, documentation for the API can be found at http://localhost:8000/api/docs
