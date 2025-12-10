@@ -4,6 +4,7 @@ from driutils.logger import setup_logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .cache import setup_cache
 from .config import setup_config
 from .metrics import Metrics
 from .routers import healthcheck, titiler_main, vector_main
@@ -30,6 +31,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Initialise the cache
+app.add_event_handler("startup", setup_cache)
 
 # Setup the API
 # ------------------------
