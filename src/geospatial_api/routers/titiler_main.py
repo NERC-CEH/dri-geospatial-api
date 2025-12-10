@@ -3,9 +3,9 @@ from functools import lru_cache
 
 from fastapi import Depends
 from mypy_boto3_s3 import S3Client
-from titiler.core.factory import TilerFactory
 from titiler.extensions import cogValidateExtension, cogViewerExtension, wmsExtension
 
+from geospatial_api.routers.cached_titiler import TilerFactory
 from geospatial_api.utils import get_file_path, get_s3_client
 
 logger = logging.getLogger(__name__)
