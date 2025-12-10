@@ -21,14 +21,16 @@ def available_data(s3_client: S3Client = Depends(lambda: s3)) -> dict[str, Any]:
     items = s3_client.list_objects_v2(Bucket=config.geospatial_data_bucket)
 
     for idx, item in enumerate(items.get("Contents", [])):
-        name, ext = item["Key"].split("/")[-1].split(".")
-        data.append(
-            {
-                "id": idx,
-                "name": name,
-                "data_type": EXT_MAPPING.get(ext, "unknown"),
-                "s3_url": f"S3://{config.geospatial_data_bucket}/{item['Key']}",
-                "geojson": None,
-            }
-        )
+        key = item["Key"]
+        if any([key.endswith(suffix) for suffix in EXT_MAPPING.keys()]):
+            name, ext = key.split("/")[-1].split(".")
+            data.append(
+                {
+                    "id": idx,
+                    "name": name,
+                    "data_type": EXT_MAPPING.get(ext, "unknown"),
+                    "s3_url": f"S3://{config.geospatial_data_bucket}/{item['Key']}",
+                    "geojson": None,
+                }
+            )
     return JSONResponse(data)

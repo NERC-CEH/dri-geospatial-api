@@ -1,12 +1,10 @@
-from typing import Optional
-
 from pydantic_settings import BaseSettings
 
 
 class CacheSettings(BaseSettings):
     """Cache settings"""
 
-    endpoint: Optional[str] = None
+    endpoint: str | None = None
     ttl: int = 3600
     namespace: str = ""
 
