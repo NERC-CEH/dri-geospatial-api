@@ -1,5 +1,4 @@
 import logging
-from functools import lru_cache
 
 from fastapi import Depends
 from mypy_boto3_s3 import S3Client
@@ -14,7 +13,6 @@ s3 = get_s3_client()
 
 
 # Custom Path dependency which will sign s3 url
-@lru_cache
 def DatasetPathParams(url: str, s3_client: S3Client = Depends(lambda: s3)) -> str:
     """Create dataset path from args"""
     # Use your provider library to sign the URL

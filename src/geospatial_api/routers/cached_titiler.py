@@ -5,8 +5,9 @@ from dataclasses import dataclass
 from typing import Callable, Literal, Type
 
 import rasterio
-from fastapi import Depends, Path
+from fastapi import Depends, HTTPException, Path
 from pydantic import Field
+from rio_tiler.errors import TileOutsideBounds
 from rio_tiler.io import BaseReader, Reader
 from rio_tiler.utils import CRS_to_uri
 from starlette.responses import Response
@@ -136,16 +137,19 @@ class TilerFactory(TiTilerFactory):
             with rasterio.Env(**env):
                 logger.info(f"opening data with reader: {self.reader}")
                 with self.reader(src_path, tms=tms, **reader_params.as_dict()) as src_dst:
-                    image = src_dst.tile(
-                        x,
-                        y,
-                        z,
-                        tilesize=scale * 256,
-                        **tile_params.as_dict(),
-                        **layer_params.as_dict(),
-                        **dataset_params.as_dict(),
-                    )
-                    dst_colormap = getattr(src_dst, "colormap", None)
+                    try:
+                        image = src_dst.tile(
+                            x,
+                            y,
+                            z,
+                            tilesize=scale * 256,
+                            **tile_params.as_dict(),
+                            **layer_params.as_dict(),
+                            **dataset_params.as_dict(),
+                        )
+                        dst_colormap = getattr(src_dst, "colormap", None)
+                    except TileOutsideBounds:
+                        raise HTTPException(status_code=500, detail="Requested tile is outside of the raster bounds.")
 
             if post_process:
                 image = post_process(image)
