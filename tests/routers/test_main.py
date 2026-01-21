@@ -15,6 +15,8 @@ class TestAvailableData:
                 "data_type": "raster",
                 "s3_url": "S3://ukceh-fdri-staging-geospatial/raster/test_raster_3857_cog_greyscale.tif",
                 "geojson": None,
+                "map_centre": [54.008128, -2.774925],
+                "colourmap_name": "terrain",
             },
             {
                 "id": 1,
@@ -22,6 +24,8 @@ class TestAvailableData:
                 "data_type": "raster",
                 "s3_url": "S3://ukceh-fdri-staging-geospatial/raster/test_raster_3857_cog_rendered.tif",
                 "geojson": None,
+                "map_centre": [54.008128, -2.774925],
+                "colourmap_name": None,
             },
             {
                 "id": 2,
@@ -29,6 +33,8 @@ class TestAvailableData:
                 "data_type": "vector",
                 "s3_url": "S3://ukceh-fdri-staging-geospatial/vector/test_vector_4326.geojson",
                 "geojson": None,
+                "map_centre": [54.008128, -2.774925],
+                "colourmap_name": None,
             },
         ]
 
