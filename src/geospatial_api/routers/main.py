@@ -42,8 +42,8 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-@router.get("/available_data")
-def available_data(s3_client: S3Client = Depends(lambda: s3)) -> dict[str, Any]:
+@router.get("/available_data_from_s3")
+def available_data_from_s3(s3_client: S3Client = Depends(lambda: s3)) -> dict[str, Any]:
     data = []
     items = s3_client.list_objects_v2(Bucket=config.geospatial_data_bucket)
 
@@ -65,8 +65,8 @@ def available_data(s3_client: S3Client = Depends(lambda: s3)) -> dict[str, Any]:
     return JSONResponse(data)
 
 
-@router.get("/available_data_from_db")
-def get_available_data_from_db(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
+@router.get("/available_data")
+def get_available_data(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
     layers = LayerRegistryInterface.get_db_entries(session=db)
 
     return JSONResponse([item.to_json_response() for item in layers])

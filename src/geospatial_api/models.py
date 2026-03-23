@@ -24,20 +24,30 @@ class SourceType(IDModel):
     base_url: str
 
     def to_json_response(self) -> dict[str, Any]:
-        response = {"id": self.id, "name": self.name, "object_key": self.object_key, "base_url": self.base_url}
+        response = super().to_json_response()
+        response["base_url"] = self.base_url
         return response
 
 
-class LayerRegistryItem(BaseModel):
+class Category(IDModel):
+    category_type: IDModel
+
+    def to_json_response(self) -> dict[str, Any]:
+        response = super().to_json_response()
+        response["category_type"] = self.category_type.to_json_response()
+        return response
+
+
+class Layer(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    id: int
     name: str
     project: IDModel
     start_date: datetime
     end_date: datetime
     source_type: SourceType
     source_id: str
-    source_url: str
     catalogue_id: Optional[str]
     data_format: IDModel
     data_type: IDModel
@@ -46,6 +56,9 @@ class LayerRegistryItem(BaseModel):
     boundary: Optional[shapely.Polygon]
     bbox: shapely.Polygon
     centroid: shapely.Point
+    primary_category: IDModel
+    secondary_category: Optional[IDModel] = None
+    tertiary_category: Optional[IDModel] = None
 
     def to_json_response(self) -> dict[str, Any]:
         # To save manually declaring the simpler fields, start off with a direct dictionary version of the model.
@@ -61,10 +74,31 @@ class LayerRegistryItem(BaseModel):
         response["source_type"] = self.source_type.to_json_response()
         response["data_format"] = self.data_format.to_json_response()
         response["data_type"] = self.data_type.to_json_response()
+        response['primary_category'] = self.primary_category.to_json_response()
+        response['secondary_category'] = self.secondary_category.to_json_response() if self.secondary_category else None
+        response['tertiary_category'] = self.tertiary_category.to_json_response() if self.tertiary_category else None
 
         # Convert the geometry information to WKT strings. At this point only the bbox and centroid need returning
         del response["boundary"]
         response["bbox"] = self.bbox.wkt
         response["centroid"] = self.centroid.wkt
 
+        # Construct the source_url from the other
+
         return response
+
+    def get_source_url(self) -> str:
+        if self.source_type.object_key.lower() == "s3":
+            secondary_key = f"/{self.secondary_category.object_key}" if self.secondary_category else ""
+            tertiary_key = f"/{self.tertiary_category.object_key}" if self.tertiary_category else ""
+
+            bucket_keys = f"{self.primary_category.object_key}{secondary_key}{tertiary_key}"
+            source_url = f"{self.source_type.base_url}/{bucket_keys}/{self.source_id}"
+            return source_url
+
+        # The provided base url may already have the joining /. If this is the case, set the joining character to ""
+        join_character = "/"
+        if self.source_type.base_url.endswith("/"):
+            join_character = ""
+
+        return f"{self.source_type.base_url}{join_character}{source_url}"

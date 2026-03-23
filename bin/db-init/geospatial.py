@@ -39,7 +39,9 @@ class Project(Base):
 
     name: Mapped[str]  # The display name
     object_key: Mapped[str]  # Value to associate with the display name, used for the S3 key etc.
-    # category_types: Mapped[list[int]] = mapped_column(ForeignKey("geospatial.category_type.id"))
+    primary_category_type: Mapped[list[int]] = mapped_column(ForeignKey("geospatial.category_type.id"))
+    secondary_category_type: Mapped[Optional[int]] = mapped_column(ForeignKey("geospatial.category_type.id"))
+    tertiary_category_type: Mapped[Optional[int]] = mapped_column(ForeignKey("geospatial.category_type.id"))
 
 
 class DataFormat(Base):
@@ -51,6 +53,7 @@ class DataFormat(Base):
 
     name: Mapped[str]  # The display name
     object_key: Mapped[str]  # Value to associate with the display name, used for the S3 key etc.
+
 
 class DataType(Base):
     __tablename__ = "data_type"
@@ -71,12 +74,12 @@ class SourceType(Base):
     last_updated: Mapped[datetime] = mapped_column(server_default=func.CURRENT_TIMESTAMP())
 
     name: Mapped[str]  # The display name
-    base_url: Mapped[str] # The base url (e.g. s3:// or "https://catalogue.ceh.ac.uk/")
+    base_url: Mapped[str]  # The base url (e.g. s3:// or "https://catalogue.ceh.ac.uk/")
     object_key: Mapped[str]  # Value to associate with the display name, used for the S3 key etc.
 
 
-class LayerRegistry(Base):
-    __tablename__ = "layer_registry"
+class Layer(Base):
+    __tablename__ = "layer"
     __table_args__ = ({"schema": "geospatial"},)
 
     id: Mapped[pk]
@@ -95,4 +98,6 @@ class LayerRegistry(Base):
     legend: Mapped[Optional[JSON]] = mapped_column(type_=JSON)
     boundary: Mapped[Optional[Geometry]] = mapped_column(type_=Geometry)
     bbox: Mapped[Geometry] = mapped_column(type_=Geometry)
-    # categories: Mapped[list[int]] = mapped_column(ForeignKey("geospatial.category.id"))
+    primary_category: Mapped[int] = mapped_column(ForeignKey("geospatial.category.id"))
+    secondary_category: Mapped[Optional[int]] = mapped_column(ForeignKey("geospatial.category.id"))
+    tertiary_category: Mapped[Optional[int]] = mapped_column(ForeignKey("geospatial.category.id"))

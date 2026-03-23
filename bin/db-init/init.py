@@ -21,11 +21,11 @@ from db import GeospatialDatabase
 #     CategoryType,
 #     DataFormat,
 #     DataType,
-#     LayerRegistry,
+#     Layer,
 #     Project,
 #     SourceType,
 # )
-from geospatial import Category, CategoryType, DataFormat, DataType, LayerRegistry, Project, SourceType
+from geospatial import Category, CategoryType, DataFormat, DataType, Layer, Project, SourceType
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
@@ -70,13 +70,7 @@ def intialise_db() -> None:
     db.create_tables()
 
     # Add initial data
-    projects = [
-        {
-            "name": "FDRI",
-            "object_key": "fdri",
-            # "category_types": [REGION_CATEGORY_NAME]
-        }
-    ]
+    projects = [{"name": "FDRI", "object_key": "fdri", "primary_category_type": REGION_CATEGORY_NAME}]
 
     data_formats = [
         {"name": "Raster", "object_key": "raster"},
@@ -93,13 +87,9 @@ def intialise_db() -> None:
         {
             "name": "S3",
             "object_key": "s3",
-            "base_url": "s3://",
+            "base_url": "s3://ukceh-fdri-staging-geospatial",
         },
-        {
-            "name": "EIDC Catalogue",
-            "object_key": "eidc_catalogue",
-            "base_url": "https://catalogue.ceh.ac.uk"
-        },
+        {"name": "EIDC Catalogue", "object_key": "eidc_catalogue", "base_url": "https://catalogue.ceh.ac.uk"},
     ]
 
     layer_registry = [
@@ -135,6 +125,23 @@ def intialise_db() -> None:
                 "-380408.61695664405 7461603.868603591, -380430.68545664405 7461603.868603591, "
                 "-380430.68545664405 7461576.03170359))"
             ),
+            "primary_category": REGION_CATEGORY_VALUE,
+        },
+        {
+            "name": "COSMOS Sites",
+            "project": "fdri",
+            "start_date": "2026-03-20",
+            "end_date": "2026-03-20",
+            "source_type": "s3",
+            "source_id": "cosmos_sites.geojson",
+            "data_format": "point_record",
+            "data_type": "dsm",
+            "bbox": (
+                "POLYGON ((-380430.68545664405 7461576.03170359, -380408.61695664405 7461576.03170359, "
+                "-380408.61695664405 7461603.868603591, -380430.68545664405 7461603.868603591, "
+                "-380430.68545664405 7461576.03170359))"
+            ),
+            "primary_category": REGION_CATEGORY_VALUE,
         }
     ]
 
@@ -145,10 +152,9 @@ def intialise_db() -> None:
     # Create the project tables, linking to the appropriate category type(s)
     print("Filling Project")
     for project in projects:
-        #     project_categories = [
-        #         db.get_db_item_by_key(CategoryType, object_key=category).id for category in project["category_types"]
-        #     ]
-        #     project["category_types"] = project_categories
+        project["primary_category_type"] = db.get_db_item_by_key(
+            CategoryType, object_key=project["primary_category_type"]
+        ).id
 
         db.add_db_items([Project(**project)])
 
@@ -185,7 +191,11 @@ def intialise_db() -> None:
         registry_item["data_format"] = db.get_db_item_by_key(DataFormat, object_key=registry_item["data_format"]).id
         registry_item["data_type"] = db.get_db_item_by_key(DataType, object_key=registry_item["data_type"]).id
 
-        db.add_db_items([LayerRegistry(**registry_item)])
+        registry_item["primary_category"] = db.get_db_item_by_key(
+            Category, object_key=registry_item["primary_category"]
+        ).id
+
+        db.add_db_items([Layer(**registry_item)])
 
     print("Finished initialising DB")
 

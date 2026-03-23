@@ -7,8 +7,8 @@ import geojson
 import rasterio
 import shapely
 
-# DATA_DIR = Path(__file__).parents[2].joinpath("data")
-DATA_DIR = Path("/data")
+DATA_DIR = Path(__file__).parents[2].joinpath("data")
+# DATA_DIR = Path("/data")
 
 RASTER_TYPE = "raster"
 VECTOR_TYPE = "vector"
@@ -43,14 +43,8 @@ def build_layer_registry() -> dict[str, Any]:
             # Calculate the resolution and fetch the legend information
             ds = rasterio.open(file_path)
             layer_data["resolution"] = ds.get_transform()[1]
-            layer_data["bbox"] = shapely.Polygon(
-                [
-                    [ds.bounds.left, ds.bounds.bottom],
-                    [ds.bounds.left, ds.bounds.top],
-                    [ds.bounds.right, ds.bounds.top],
-                    [ds.bounds.right, ds.bounds.bottom],
-                    [ds.bounds.left, ds.bounds.bottom],
-                ]
+            layer_data["bbox"] = shapely.geometry.box(
+                xmin=ds.bounds.left, ymin=ds.bounds.bottom, ymax=ds.bounds.top, xmax=ds.bounds.top
             )
             legend_path = file_path.parent.joinpath(f"{file_path.stem}{LEGEND_SUFFIX}")
             with open(legend_path) as legend_file:
