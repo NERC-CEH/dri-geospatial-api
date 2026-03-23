@@ -9,6 +9,8 @@ ENV UV_PYTHON_INSTALL_DIR=/python UV_PYTHON_PREFERENCE=only-managed
 RUN uv python install 3.12
 
 RUN apt update && apt install -y --no-install-recommends git
+RUN --mount=type=secret,id=GH_TOKEN,env=GH_TOKEN \
+    git config --global url."https://x-access-token:$GH_TOKEN@github.com/".insteadOf https://github.com/
 
 WORKDIR /app
 RUN --mount=type=cache,target=/root/.cache/uv \

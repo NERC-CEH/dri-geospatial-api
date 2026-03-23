@@ -1,16 +1,20 @@
-from typing import Any
+from typing import Annotated, Any, Generator
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from mypy_boto3_s3 import S3Client
+from sqlalchemy.orm import Session
 
 from geospatial_api.config import setup_config
+from geospatial_api.services.rds.auth import RDSLogin
+from geospatial_api.services.rds.db import LayerRegistryInterface
 from geospatial_api.utils import get_s3_client
 
 router = APIRouter()
 
 config = setup_config()
 s3 = get_s3_client()
+
 
 EXT_MAPPING = {"tif": "raster", "geojson": "vector"}
 
@@ -24,6 +28,18 @@ LAYER_CENTRES = {
     "chess": (51.71587, -0.58875),
     "test": (54.008128, -2.774925),
 }
+
+
+# A database Session generator
+SessionGenerator = RDSLogin.get_session_generator(config)
+
+
+def get_db() -> Generator[Session, None, None]:
+    db: Session = SessionGenerator()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @router.get("/available_data")
@@ -47,6 +63,13 @@ def available_data(s3_client: S3Client = Depends(lambda: s3)) -> dict[str, Any]:
                 }
             )
     return JSONResponse(data)
+
+
+@router.get("/available_data_from_db")
+def get_available_data_from_db(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
+    layers = LayerRegistryInterface.get_db_entries(session=db)
+
+    return JSONResponse([item.to_json_response() for item in layers])
 
 
 def get_map_centre(layer_name: str) -> tuple[float, float]:

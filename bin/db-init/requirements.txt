@@ -1,0 +1,8 @@
+git+https://x-access-token:${GH_TOKEN}@github.com/NERC-CEH/dri-database-models.git@feature/FPM-708-geospatial-tables#egg=dri-database-models
+# git+https://x-access-token:${GH_TOKEN}@github.com/NERC-CEH/dri-database-models.git@main#egg=dri-database-models
+psycopg2-binary>=2.9.10
+sqlalchemy>=2.0.42
+GeoAlchemy2>=0.18.4
+geojson>=3.2.0
+shapely>=2.1.2
+rasterio>=1.5.0
