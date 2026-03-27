@@ -7,8 +7,8 @@ import geojson
 import rasterio
 import shapely
 
-DATA_DIR = Path(__file__).parents[2].joinpath("data")
-# DATA_DIR = Path("/data")
+# DATA_DIR = Path(__file__).parents[2].joinpath("data")
+DATA_DIR = Path("/data")
 
 RASTER_TYPE = "raster"
 VECTOR_TYPE = "vector"
@@ -31,8 +31,7 @@ def build_layer_registry() -> dict[str, Any]:
         layer_data = {
             "name": file_path.stem,
             "project": FDRI_PROJECT,
-            "start_date": datetime.now().date(),
-            "end_date": datetime.now().date(),
+            "date": datetime.now().date(),
             "s3_key": file_path.name,
             "categories": [{REGION_CATEGORY_NAME: REGION_CATEGORY_VALUE}],
             "data_type": DSM_DATA_TYPE,

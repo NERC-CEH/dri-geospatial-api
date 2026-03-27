@@ -27,7 +27,7 @@ class GeospatialDatabase:
             session.commit()
         except SQLAlchemyError as e:
             session.rollback()
-            logger.error("Failed to write batch of phenocam images to database.")
+            logger.error("Failed to write data to database.")
             logger.exception(e)
             raise
         finally:

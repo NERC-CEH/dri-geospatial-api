@@ -37,8 +37,7 @@ class LayerRegistryInterface:
                         model_class=db_models.Project,
                         pydantic_model=models.IDModel,
                     ),
-                    start_date=item.start_date,
-                    end_date=item.end_date,
+                    date=item.date,
                     source_type=source_type,
                     source_id=item.source_id,
                     catalogue_id=item.catalogue_id,
@@ -48,10 +47,10 @@ class LayerRegistryInterface:
                         model_class=db_models.DataFormat,
                         pydantic_model=models.IDModel,
                     ),
-                    data_type=LayerRegistryInterface.get_instance(
+                    data_category=LayerRegistryInterface.get_instance(
                         session=session,
-                        model_id=item.data_type,
-                        model_class=db_models.DataType,
+                        model_id=item.data_category,
+                        model_class=db_models.DataCategory,
                         pydantic_model=models.IDModel,
                     ),
                     resolution=item.resolution,
@@ -59,9 +58,15 @@ class LayerRegistryInterface:
                     boundary=to_shape(item.boundary) if item.boundary else None,
                     bbox=bbox,
                     centroid=bbox.centroid,
-                    primary_category=LayerRegistryInterface.get_category_instance(
+                    processing_level=LayerRegistryInterface.get_instance(
                         session=session,
-                        category_id=item.primary_category,
+                        model_id=item.processing_level,
+                        model_class=db_models.ProcessingLevel,
+                        pydantic_model=models.IDModel,
+                    ),
+                    area_name=LayerRegistryInterface.get_area_name_instance(
+                        session=session,
+                        area_name_id=item.area_name,
                     ),
                 )
             )
@@ -83,19 +88,20 @@ class LayerRegistryInterface:
 
         return pydantic_model(**model_dict)
 
-    def get_category_instance(session: Session, category_id: int) -> models.Category:
-        category = session.get(db_models.Category, category_id)
-        category_type = LayerRegistryInterface.get_instance(
+
+    def get_area_name_instance(session: Session, area_name_id: int) -> models.AreaName:
+        area_name = session.get(db_models.AreaName, area_name_id)
+        area_type = LayerRegistryInterface.get_instance(
             session=session,
-            model_id=category.category_type,
-            model_class=db_models.CategoryType,
+            model_id=area_name.area_type,
+            model_class=db_models.AreaType,
             pydantic_model=models.IDModel,
         )
 
-        return models.Category(
-            id=category.id,
-            last_updated=category.last_updated,
-            name=category.name,
-            object_key=category.object_key,
-            category_type=category_type,
+        return models.AreaName(
+            id=area_name.id,
+            last_updated=area_name.last_updated,
+            name=area_name.name,
+            object_key=area_name.object_key,
+            area_type=area_type,
         )

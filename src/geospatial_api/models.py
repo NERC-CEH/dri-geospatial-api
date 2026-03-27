@@ -29,12 +29,12 @@ class SourceType(IDModel):
         return response
 
 
-class Category(IDModel):
-    category_type: IDModel
+class AreaName(IDModel):
+    area_type: IDModel
 
     def to_json_response(self) -> dict[str, Any]:
         response = super().to_json_response()
-        response["category_type"] = self.category_type.to_json_response()
+        response["area_type"] = self.area_type.to_json_response()
         return response
 
 
@@ -44,21 +44,19 @@ class Layer(BaseModel):
     id: int
     name: str
     project: IDModel
-    start_date: datetime
-    end_date: datetime
+    date: datetime
     source_type: SourceType
     source_id: str
     catalogue_id: Optional[str]
     data_format: IDModel
-    data_type: IDModel
+    data_category: IDModel
     resolution: Optional[float | int]
     legend: Optional[list[dict[str, Any]]]
     boundary: Optional[shapely.Polygon]
     bbox: shapely.Polygon
     centroid: shapely.Point
-    primary_category: IDModel
-    secondary_category: Optional[IDModel] = None
-    tertiary_category: Optional[IDModel] = None
+    processing_level: IDModel
+    area_name: AreaName
 
     def to_json_response(self) -> dict[str, Any]:
         # To save manually declaring the simpler fields, start off with a direct dictionary version of the model.
@@ -66,17 +64,15 @@ class Layer(BaseModel):
         response = self.__dict__.copy()
 
         # Convert the start and end dates to iso formatted date strings
-        response["start_date"] = self.start_date.strftime("%Y-%m-%d")
-        response["end_date"] = self.end_date.strftime("%Y-%m-%d")
+        response["date"] = self.date.strftime("%Y-%m-%d")
 
         # Convert the various sub-models to json
         response["project"] = self.project.to_json_response()
         response["source_type"] = self.source_type.to_json_response()
         response["data_format"] = self.data_format.to_json_response()
-        response["data_type"] = self.data_type.to_json_response()
-        response['primary_category'] = self.primary_category.to_json_response()
-        response['secondary_category'] = self.secondary_category.to_json_response() if self.secondary_category else None
-        response['tertiary_category'] = self.tertiary_category.to_json_response() if self.tertiary_category else None
+        response["data_category"] = self.data_category.to_json_response()
+        response["area_name"] = self.area_name.to_json_response()
+        response["processing_level"] = self.processing_level.to_json_response()
 
         # Convert the geometry information to WKT strings. At this point only the bbox and centroid need returning
         del response["boundary"]
@@ -84,15 +80,21 @@ class Layer(BaseModel):
         response["centroid"] = self.centroid.wkt
 
         # Construct the source_url from the other
+        response["source_url"] = self.get_source_url()
 
         return response
 
     def get_source_url(self) -> str:
         if self.source_type.object_key.lower() == "s3":
-            secondary_key = f"/{self.secondary_category.object_key}" if self.secondary_category else ""
-            tertiary_key = f"/{self.tertiary_category.object_key}" if self.tertiary_category else ""
+            bucket_keys = (
+                f"project={self.project.object_key}/"
+                f"area_type={self.area_name.area_type.object_key}/"
+                f"area_name={self.area_name.object_key}/"
+                f"data_category={self.data_category.object_key}/"
+                f"processing_level={self.data_category.object_key}/"
+                f"date={self.data_category.object_key}/"
+            )
 
-            bucket_keys = f"{self.primary_category.object_key}{secondary_key}{tertiary_key}"
             source_url = f"{self.source_type.base_url}/{bucket_keys}/{self.source_id}"
             return source_url
 

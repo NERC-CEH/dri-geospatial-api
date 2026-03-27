@@ -3,32 +3,19 @@ import time
 from datetime import datetime
 
 import psycopg2
-import shapely
-from build_layer_registry import (
-    DSM_DATA_TYPE,
-    FDRI_PROJECT,
-    POINT_RECORD_TYPE,
-    RASTER_TYPE,
-    REGION_CATEGORY_NAME,
-    REGION_CATEGORY_VALUE,
-    VECTOR_TYPE,
-    build_layer_registry,
-)
 from db import GeospatialDatabase
 
-# from dri_database_models.geospatial import (
-#     Category,
-#     CategoryType,
-#     DataFormat,
-#     DataType,
-#     Layer,
-#     Project,
-#     SourceType,
-# )
-from geospatial import Category, CategoryType, DataFormat, DataType, Layer, Project, SourceType
-from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import sessionmaker
+# from dri_database_models import geospatial
+import geospatial
+
+RASTER_TYPE = "raster"
+VECTOR_TYPE = "vector"
+POINT_RECORD_TYPE = "point_record"
+
+FDRI_PROJECT = "fdri"
+DSM_DATA_TYPE = "dsm"
+LEGEND_SUFFIX = "_legend.json"
+
 
 # Get connection details
 db_name: str = os.environ.get("POSTGRES_DB", "fdri")
@@ -70,7 +57,9 @@ def intialise_db() -> None:
     db.create_tables()
 
     # Add initial data
-    projects = [{"name": "FDRI", "object_key": "fdri", "primary_category_type": REGION_CATEGORY_NAME}]
+    projects = [{"name": "FDRI", "object_key": "fdri"}]
+
+    data_categories = [{"name": "DEM", "object_key": "dem"}, {"name": "DSM", "object_key": "dsm"}]
 
     data_formats = [
         {"name": "Raster", "object_key": "raster"},
@@ -78,10 +67,20 @@ def intialise_db() -> None:
         {"name": "Point record", "object_key": "point_record"},
     ]
 
-    data_types = [{"name": "DEM", "object_key": "dem"}, {"name": "DSM", "object_key": "dsm"}]
+    processing_levels = [{"name": "Processed", "object_key": "processed"}, {"name": "Raw", "object_key": "raw"}]
 
-    category_types = [{"name": "Region", "object_key": REGION_CATEGORY_NAME}]
-    categories = [{"name": "UK", "object_key": REGION_CATEGORY_VALUE, "category_type": REGION_CATEGORY_NAME}]
+    area_types = [
+        {"name": "National", "object_key": "national"},
+        {"name": "Region", "object_key": "region"},
+        {"name": "Catchment", "object_key": "catchment"},
+    ]
+
+    area_names = [
+        {"name": "UK", "object_key": "uk", "area_type": "national"},
+        {"name": "Tweed", "object_key": "tweed", "area_type": "catchment"},
+        {"name": "Chess", "object_key": "chess", "area_type": "catchment"},
+        {"name": "Severn", "object_key": "severn", "area_type": "catchment"},
+    ]
 
     source_types = [
         {
@@ -92,16 +91,15 @@ def intialise_db() -> None:
         {"name": "EIDC Catalogue", "object_key": "eidc_catalogue", "base_url": "https://catalogue.ceh.ac.uk"},
     ]
 
-    layer_registry = [
+    layers = [
         {
             "name": "Tweed DSM",
             "project": "fdri",
-            "start_date": "2026-03-20",
-            "end_date": "2026-03-20",
+            "date": "2026-03-20",
             "source_type": "s3",
             "source_id": "clipped_tweed_dsm_3857_colourised_cog.tif",
             "data_format": "raster",
-            "data_type": "dsm",
+            "data_category": "dsm",
             "resolution": 0.04,
             "legend": [
                 {"value": 289.97, "colour": [51, 51, 153]},
@@ -125,77 +123,62 @@ def intialise_db() -> None:
                 "-380408.61695664405 7461603.868603591, -380430.68545664405 7461603.868603591, "
                 "-380430.68545664405 7461576.03170359))"
             ),
-            "primary_category": REGION_CATEGORY_VALUE,
+            "processing_level": "processed",
+            "area_name": "tweed",
         },
-        {
-            "name": "COSMOS Sites",
-            "project": "fdri",
-            "start_date": "2026-03-20",
-            "end_date": "2026-03-20",
-            "source_type": "s3",
-            "source_id": "cosmos_sites.geojson",
-            "data_format": "point_record",
-            "data_type": "dsm",
-            "bbox": (
-                "POLYGON ((-380430.68545664405 7461576.03170359, -380408.61695664405 7461576.03170359, "
-                "-380408.61695664405 7461603.868603591, -380430.68545664405 7461603.868603591, "
-                "-380430.68545664405 7461576.03170359))"
-            ),
-            "primary_category": REGION_CATEGORY_VALUE,
-        }
+        # {
+        #     "name": "COSMOS Sites",
+        #     "project": "fdri",
+        #     "start_date": "2026-03-20",
+        #     "end_date": "2026-03-20",
+        #     "source_type": "s3",
+        #     "source_id": "cosmos_sites.geojson",
+        #     "data_format": "point_record",
+        #     "data_category": "dsm",
+        #     "bbox": (
+        #         "POLYGON ((-380430.68545664405 7461576.03170359, -380408.61695664405 7461576.03170359, "
+        #         "-380408.61695664405 7461603.868603591, -380430.68545664405 7461603.868603591, "
+        #         "-380430.68545664405 7461576.03170359))"
+        #     ),
+        # },
     ]
 
-    # Create list of category types
-    print("Filling CategoryType")
-    db.add_db_items([CategoryType(**category_type) for category_type in category_types])
+    print("Filling Projects")
+    db.add_db_items([geospatial.Project(**item) for item in projects])
 
-    # Create the project tables, linking to the appropriate category type(s)
-    print("Filling Project")
-    for project in projects:
-        project["primary_category_type"] = db.get_db_item_by_key(
-            CategoryType, object_key=project["primary_category_type"]
-        ).id
+    print("Filling Data Categories")
+    db.add_db_items([geospatial.DataCategory(**item) for item in data_categories])
 
-        db.add_db_items([Project(**project)])
+    print("Filling Data Formats")
+    db.add_db_items([geospatial.DataFormat(**item) for item in data_formats])
 
-    print("Filling Categories")
-    for category in categories:
-        category["category_type"] = db.get_db_item_by_key(CategoryType, object_key=category["category_type"]).id
-        db.add_db_items([Category(**category)])
+    print("Filling Processing Levels")
+    db.add_db_items([geospatial.ProcessingLevel(**item) for item in processing_levels])
 
-    print("Filling DataFormat")
-    db.add_db_items([DataFormat(**item) for item in data_formats])
+    print("Filling Area Types")
+    db.add_db_items([geospatial.AreaType(**item) for item in area_types])
 
-    print("Filling data types")
-    db.add_db_items([DataType(**item) for item in data_types])
+    print("Filling Area Names")
+    for area_name in area_names:
+        area_type = db.get_db_item_by_key(geospatial.AreaType, object_key=area_name["area_type"])
+        area_name["area_type"] = area_type.id
+        db.add_db_items([geospatial.AreaName(**area_name)])
 
     print("Filling source types")
-    db.add_db_items([SourceType(**item) for item in source_types])
+    db.add_db_items([geospatial.SourceType(**item) for item in source_types])
 
     print("Filling Layer Registry")
-    for registry_item in layer_registry:
-        # registry_item["project"] = db.get_db_item_by_key(Project, object_key=registry_item["project"])
-        # registry_item["project_id"] = registry_item["project"].id
-
-        # registry_item["source_type"] = db.get_db_item_by_key(SourceType, object_key=registry_item["source_type"])
-        # registry_item['source_type_id'] = registry_item['source_type']
-
-        # registry_item["data_format"] = db.get_db_item_by_key(DataFormat, object_key=registry_item["data_format"])
-        # registry_item['data_format_id'] = registry_item['data_format']
-
-        # registry_item["data_type"] = db.get_db_item_by_key(DataType, object_key=registry_item["data_type"])
-        # registry_item['data_type_id'] = registry_item['data_type']
-
-        registry_item["project"] = db.get_db_item_by_key(Project, object_key=registry_item["project"]).id
-        registry_item["source_type"] = db.get_db_item_by_key(SourceType, object_key=registry_item["source_type"]).id
-        registry_item["data_format"] = db.get_db_item_by_key(DataFormat, object_key=registry_item["data_format"]).id
-        registry_item["data_type"] = db.get_db_item_by_key(DataType, object_key=registry_item["data_type"]).id
-
-        registry_item["primary_category"] = db.get_db_item_by_key(
-            Category, object_key=registry_item["primary_category"]
+    for layer in layers:
+        layer["project"] = db.get_db_item_by_key(geospatial.Project, object_key=layer["project"]).id
+        layer["source_type"] = db.get_db_item_by_key(geospatial.SourceType, object_key=layer["source_type"]).id
+        layer["data_format"] = db.get_db_item_by_key(geospatial.DataFormat, object_key=layer["data_format"]).id
+        layer["data_category"] = db.get_db_item_by_key(geospatial.DataCategory, object_key=layer["data_category"]).id
+        layer["processing_level"] = db.get_db_item_by_key(
+            geospatial.ProcessingLevel, object_key=layer["processing_level"]
         ).id
+        layer["area_name"] = db.get_db_item_by_key(geospatial.AreaName, object_key=layer["area_name"]).id
 
-        db.add_db_items([Layer(**registry_item)])
+        db.add_db_items([geospatial.Layer(**layer)])
 
     print("Finished initialising DB")
 
