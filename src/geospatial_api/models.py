@@ -50,11 +50,9 @@ class Layer(BaseModel):
     catalogue_id: Optional[str]
     data_format: IDModel
     data_category: IDModel
-    resolution: Optional[float | int]
     legend: Optional[list[dict[str, Any]]]
     boundary: Optional[shapely.Polygon]
     bbox: shapely.Polygon
-    centroid: shapely.Point
     processing_level: IDModel
     area_name: AreaName
 
@@ -74,13 +72,17 @@ class Layer(BaseModel):
         response["area_name"] = self.area_name.to_json_response()
         response["processing_level"] = self.processing_level.to_json_response()
 
-        # Convert the geometry information to WKT strings. At this point only the bbox and centroid need returning
-        del response["boundary"]
+        # Convert the geometry information to WKT strings
         response["bbox"] = self.bbox.wkt
-        response["centroid"] = self.centroid.wkt
+        response["map_center"] = [self.bbox.centroid.x, self.bbox.centroid.y]
 
         # Construct the source_url from the other
         response["source_url"] = self.get_source_url()
+
+        # Remove any unneeded keys
+        keys_to_remove = ["boundary", "source_id"]
+        for key in keys_to_remove:
+            del response[key]
 
         return response
 
@@ -91,8 +93,8 @@ class Layer(BaseModel):
                 f"area_type={self.area_name.area_type.object_key}/"
                 f"area_name={self.area_name.object_key}/"
                 f"data_category={self.data_category.object_key}/"
-                f"processing_level={self.data_category.object_key}/"
-                f"date={self.data_category.object_key}/"
+                f"processing_level={self.processing_level.object_key}/"
+                f"date={self.date.date()}"
             )
 
             source_url = f"{self.source_type.base_url}/{bucket_keys}/{self.source_id}"

@@ -2,24 +2,28 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-
+from typing import Annotated, Any, Generator
 import geojson
 import rasterio
 import shapely
 
+from dri_database_models import geospatial as db_models
+
 # DATA_DIR = Path(__file__).parents[2].joinpath("data")
 DATA_DIR = Path("/data")
 
-RASTER_TYPE = "raster"
-VECTOR_TYPE = "vector"
-POINT_RECORD_TYPE = "point_record"
+from geospatial_api.services.rds.auth import RDSLogin
 
-FDRI_PROJECT = "fdri"
-DSM_DATA_TYPE = "dsm"
-LEGEND_SUFFIX = "_legend.json"
-REGION_CATEGORY_NAME = "region"
-REGION_CATEGORY_VALUE = "uk"
+# A database Session generator
+SessionGenerator = RDSLogin.get_session_generator(config)
 
+
+def get_db() -> Generator[Session, None, None]:
+    db: Session = SessionGenerator()
+    try:
+        yield db
+    finally:
+        db.close()
 
 def main() -> dict[str, Any]:
     build_layer_registry()
@@ -72,6 +76,8 @@ def build_layer_registry() -> dict[str, Any]:
     print("Layer registry")
     print(layer_registry)
     return layer_registry
+
+def add_items_to_db(layers: list[Layer]):
 
 
 if __name__ == "__main__":

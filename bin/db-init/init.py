@@ -59,7 +59,11 @@ def intialise_db() -> None:
     # Add initial data
     projects = [{"name": "FDRI", "object_key": "fdri"}]
 
-    data_categories = [{"name": "DEM", "object_key": "dem"}, {"name": "DSM", "object_key": "dsm"}]
+    data_categories = [
+        {"name": "DEM", "object_key": "dem"},
+        {"name": "DSM", "object_key": "dsm"},
+        {"name": "Stations", "object_key": "stations"},
+    ]
 
     data_formats = [
         {"name": "Raster", "object_key": "raster"},
@@ -100,7 +104,8 @@ def intialise_db() -> None:
             "source_id": "clipped_tweed_dsm_3857_colourised_cog.tif",
             "data_format": "raster",
             "data_category": "dsm",
-            "resolution": 0.04,
+            "processing_level": "processed",
+            "area_name": "tweed",
             "legend": [
                 {"value": 289.97, "colour": [51, 51, 153]},
                 {"value": 291.61, "colour": [14, 126, 228]},
@@ -114,33 +119,33 @@ def intialise_db() -> None:
                 {"value": 304.76, "colour": [199, 195, 195]},
             ],
             "boundary": (
-                "POLYGON ((-380430.5242783871 7461597.896342132, -380414.411218263 7461603.719226192, "
-                "-380408.8039965754 7461584.925790866, -380426.8580180529 7461576.052824679, "
-                "-380430.5242783871 7461597.896342132))"
+                "POLYGON ((-3.417466 55.510587, -3.417321 55.510616, -3.41727 55.510521, -3.417433 55.510476, "
+                "-3.417466 55.510587))"
             ),
             "bbox": (
-                "POLYGON ((-380430.68545664405 7461576.03170359, -380408.61695664405 7461576.03170359, "
-                "-380408.61695664405 7461603.868603591, -380430.68545664405 7461603.868603591, "
-                "-380430.68545664405 7461576.03170359))"
+                "POLYGON ((-3.417467 55.510475, -3.417269 55.510475, -3.417269 55.510617, -3.417467 55.510617, "
+                "-3.417467 55.510475))"
             ),
-            "processing_level": "processed",
-            "area_name": "tweed",
         },
-        # {
-        #     "name": "COSMOS Sites",
-        #     "project": "fdri",
-        #     "start_date": "2026-03-20",
-        #     "end_date": "2026-03-20",
-        #     "source_type": "s3",
-        #     "source_id": "cosmos_sites.geojson",
-        #     "data_format": "point_record",
-        #     "data_category": "dsm",
-        #     "bbox": (
-        #         "POLYGON ((-380430.68545664405 7461576.03170359, -380408.61695664405 7461576.03170359, "
-        #         "-380408.61695664405 7461603.868603591, -380430.68545664405 7461603.868603591, "
-        #         "-380430.68545664405 7461576.03170359))"
-        #     ),
-        # },
+        {
+            "name": "Cosmos Sites",
+            "project": "fdri",
+            "date": "2026-03-20",
+            "source_type": "s3",
+            "source_id": "cosmos_sites.geojson",
+            "data_format": "vector",
+            "data_category": "stations",
+            "processing_level": "processed",
+            "area_name": "uk",
+            "boundary": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+            "bbox": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+        },
     ]
 
     print("Filling Projects")

@@ -42,39 +42,8 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-@router.get("/available_data_from_s3")
-def available_data_from_s3(s3_client: S3Client = Depends(lambda: s3)) -> dict[str, Any]:
-    data = []
-    items = s3_client.list_objects_v2(Bucket=config.geospatial_data_bucket)
-
-    for idx, item in enumerate(items.get("Contents", [])):
-        key = item["Key"]
-        if any([key.endswith(suffix) for suffix in EXT_MAPPING.keys()]):
-            name, ext = key.split("/")[-1].split(".")
-            data.append(
-                {
-                    "id": idx,
-                    "name": name,
-                    "data_type": EXT_MAPPING.get(ext, "unknown"),
-                    "s3_url": f"S3://{config.geospatial_data_bucket}/{item['Key']}",
-                    "geojson": None,
-                    "map_centre": get_map_centre(name),
-                    "colourmap_name": "terrain" if "greyscale" in name.lower() else None,
-                }
-            )
-    return JSONResponse(data)
-
-
 @router.get("/available_data")
 def get_available_data(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
     layers = LayerRegistryInterface.get_db_entries(session=db)
 
     return JSONResponse([item.to_json_response() for item in layers])
-
-
-def get_map_centre(layer_name: str) -> tuple[float, float]:
-    for name_fragment, layer_centre in LAYER_CENTRES.items():
-        if name_fragment.lower() in layer_name.lower():
-            return layer_centre
-
-    return DEFAULT_MAP_CENTRE

@@ -53,11 +53,9 @@ class LayerRegistryInterface:
                         model_class=db_models.DataCategory,
                         pydantic_model=models.IDModel,
                     ),
-                    resolution=item.resolution,
                     legend=item.legend,
                     boundary=to_shape(item.boundary) if item.boundary else None,
                     bbox=bbox,
-                    centroid=bbox.centroid,
                     processing_level=LayerRegistryInterface.get_instance(
                         session=session,
                         model_id=item.processing_level,
@@ -105,3 +103,5 @@ class LayerRegistryInterface:
             object_key=area_name.object_key,
             area_type=area_type,
         )
+
+    

@@ -102,7 +102,6 @@ class Layer(Base):
     catalogue_id: Mapped[Optional[str]]
     data_format: Mapped[int] = mapped_column(ForeignKey("geospatial.data_format.id"))
     data_category: Mapped[int] = mapped_column(ForeignKey("geospatial.data_category.id"))
-    resolution: Mapped[Optional[float]]
     legend: Mapped[Optional[JSON]] = mapped_column(type_=JSON)
     boundary: Mapped[Optional[Geometry]] = mapped_column(type_=Geometry)
     bbox: Mapped[Geometry] = mapped_column(type_=Geometry)
