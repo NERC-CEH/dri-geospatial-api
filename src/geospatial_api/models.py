@@ -46,7 +46,8 @@ class Layer(BaseModel):
     project: IDModel
     date: datetime
     source_type: SourceType
-    source_id: str
+    colour_source_id: Optional[str]
+    raw_source_id: Optional[str]
     catalogue_id: Optional[str]
     data_format: IDModel
     data_category: IDModel
@@ -77,16 +78,19 @@ class Layer(BaseModel):
         response["map_center"] = [self.bbox.centroid.x, self.bbox.centroid.y]
 
         # Construct the source_url from the other
-        response["source_url"] = self.get_source_url()
+        response["colour_source_url"] = (
+            self.get_source_url(source_id=self.colour_source_id) if self.colour_source_id else None
+        )
+        response["raw_source_url"] = self.get_source_url(source_id=self.raw_source_id) if self.raw_source_id else None
 
         # Remove any unneeded keys
-        keys_to_remove = ["boundary", "source_id"]
+        keys_to_remove = ["boundary", "colour_source_id", "raw_source_id"]
         for key in keys_to_remove:
             del response[key]
 
         return response
 
-    def get_source_url(self) -> str:
+    def get_source_url(self, source_id: str) -> str:
         if self.source_type.object_key.lower() == "s3":
             bucket_keys = (
                 f"project={self.project.object_key}/"
@@ -97,7 +101,7 @@ class Layer(BaseModel):
                 f"date={self.date.date()}"
             )
 
-            source_url = f"{self.source_type.base_url}/{bucket_keys}/{self.source_id}"
+            source_url = f"{self.source_type.base_url}/{bucket_keys}/{source_id}"
             return source_url
 
         # The provided base url may already have the joining /. If this is the case, set the joining character to ""

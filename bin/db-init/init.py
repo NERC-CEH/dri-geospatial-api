@@ -1,9 +1,9 @@
 import os
 import time
 
-from dri_database_models import geospatial
 import psycopg2
 from db import GeospatialDatabase
+from dri_database_models import geospatial
 
 RASTER_TYPE = "raster"
 VECTOR_TYPE = "vector"
@@ -101,7 +101,7 @@ def intialise_db() -> None:
             "project": "fdri",
             "date": "2026-03-20",
             "source_type": "s3",
-            "source_id": "clipped_tweed_dsm_3857_colourised_cog.tif",
+            "colour_source_id": "clipped_tweed_dsm_3857_colourised_cog.tif",
             "data_format": "raster",
             "data_category": "dsm",
             "processing_level": "processed",
@@ -132,7 +132,7 @@ def intialise_db() -> None:
             "project": "fdri",
             "date": "2026-03-20",
             "source_type": "s3",
-            "source_id": "cosmos_sites.geojson",
+            "raw_source_id": "cosmos_sites.geojson",
             "data_format": "vector",
             "data_category": "stations",
             "processing_level": "processed",

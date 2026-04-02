@@ -1,7 +1,6 @@
 import logging
 
-# from dri_database_models.geospatial import Base
-from geospatial import Base
+from dri_database_models.geospatial import Base
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker

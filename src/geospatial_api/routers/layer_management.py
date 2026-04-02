@@ -91,16 +91,19 @@ async def add_layer(
     data_category: str,
     processing_level: str,
     area_name: str,
-    source_id: str | None = None,
-    source_file: UploadFile | None = None,
+    colour_source_id: str | None = None,
+    colour_source_file: UploadFile | None = None,
+    raw_source_id: str | None = None,
+    raw_source_file: UploadFile | None = None,
     legend: UploadFile | None = None,
     boundary: UploadFile | None = None,
     s3_client: S3Client = Depends(lambda: s3),
 ) -> JSONResponse:
-    # if source_id and source_file:
-    #     raise HTTPException("Only one of the source_id or the source_file should be provided")
-    if not source_id and not source_file:
-        raise HTTPException("Either the source_id or the source_file should be provided")
+    if not colour_source_id and not colour_source_file and not raw_source_id and not raw_source_file:
+        raise HTTPException(
+            "Either the source_id or the source_file should be provided for one or more of the raw or colour source "
+            "options"
+        )
 
     # Ensure the provided legend file is a json
     if legend and not legend.filename.lower().endswith(".json"):
@@ -120,7 +123,8 @@ async def add_layer(
         data_category_key=data_category,
         processing_level_key=processing_level,
         area_name_key=area_name,
-        source_id=source_file.filename if source_file else source_id,
+        colour_source_id=colour_source_file.filename if colour_source_file else colour_source_id,
+        raw_source_id=raw_source_file.filename if raw_source_file else raw_source_id,
         legend=json.load(legend.file) if legend else None,
         boundary=geojson.load(boundary.file) if boundary else None,
     )
@@ -128,9 +132,18 @@ async def add_layer(
     layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)
 
     # If the source type is S3 and a source_file has been provided, upload the data to S3 in the appropriate bucket
+    if colour_source_file:
+        destination_key = layer.get_source_url(source_id=colour_source_file.filename).replace(
+            f"s3://{config.geospatial_data_bucket}/", ""
+        )
+        content = await colour_source_file.read()
+        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
 
-    destination_key = layer.get_source_url().replace(f"s3://{config.geospatial_data_bucket}/", "")
-    content = await source_file.read()
-    s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+    if raw_source_file:
+        destination_key = layer.get_source_url(source_id=raw_source_file.filename).replace(
+            f"s3://{config.geospatial_data_bucket}/", ""
+        )
+        content = await raw_source_file.read()
+        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
 
     return JSONResponse(status_code=200, content=f"Successfully created layer {layer.name}")
