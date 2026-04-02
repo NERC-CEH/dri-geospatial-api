@@ -1,12 +1,9 @@
 import os
 import time
-from datetime import datetime
 
+from dri_database_models import geospatial
 import psycopg2
 from db import GeospatialDatabase
-
-# from dri_database_models import geospatial
-import geospatial
 
 RASTER_TYPE = "raster"
 VECTOR_TYPE = "vector"
@@ -53,6 +50,9 @@ def intialise_db() -> None:
         port=db_port,
         schema=db_schema,
     )
+    print("Clearing any existing data.")
+    db.drop_tables()
+
     print("Creating tables")
     db.create_tables()
 

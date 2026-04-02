@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .cache import setup_cache
 from .config import setup_config
 from .metrics import Metrics
-from .routers import healthcheck, titiler_main, vector_main
+from .routers import healthcheck, layer_management, titiler_main, vector_main
 from .routers import main as main_router
 
 logger = logging.getLogger(__name__)
@@ -59,6 +59,7 @@ api.include_router(healthcheck.router)
 api.include_router(main_router.router)
 api.include_router(titiler_main.router, prefix="/maps", tags=["Raster Data"])
 api.include_router(vector_main.router, tags=["Vector Data"])
+api.include_router(layer_management.router)
 
 
 # Mount services into base application
