@@ -58,6 +58,12 @@ class Layer(BaseModel):
     area_name: AreaName
 
     def to_json_response(self) -> dict[str, Any]:
+        """Convert the Layer model instance to a dictionary able to be easily converted to a JSONResponse object
+
+        Returns:
+            Dictionary containing the data to be converted to a JSONResponse object by the api endpoint.
+
+        """
         # To save manually declaring the simpler fields, start off with a direct dictionary version of the model.
         # Then modify indiviudal fields to make them suitable for a JSONResponse object
         response = self.__dict__.copy()
@@ -91,6 +97,11 @@ class Layer(BaseModel):
         return response
 
     def get_source_url(self, source_id: str) -> str:
+        """Construct the source url for the raw or colour source id.
+
+        At present it is assumed that the S3 bucket structure is constant.
+
+        """
         if self.source_type.object_key.lower() == "s3":
             bucket_keys = (
                 f"project={self.project.object_key}/"

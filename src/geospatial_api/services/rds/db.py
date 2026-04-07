@@ -16,6 +16,18 @@ config = setup_config()
 
 
 def add_db_item(session: Session, db_item: object) -> None:
+    """Adds a new item to the database.
+
+    Args:
+        session: The sqlalchemy Session instance
+        db_item: The item to be added to the database. This should be an instantiated version of the sqlalchemy class
+            for the relevant database table. For example the Layer class in dri_database_models.geospatial
+
+    Returns:
+        The database item provided to the function, updated with the corresponding primary key (id) and any other db
+        controlled fields (e.g. last_updated).
+
+    """
     try:
         session.add(db_item)
         session.commit()
@@ -31,6 +43,23 @@ def add_db_item(session: Session, db_item: object) -> None:
 
 
 def get_db_object_by_key(session: Session, db_model: object, object_key: str) -> object:
+    """Fetch a single database item using the object_key value
+
+    This expects the database model (table) to be queried to contain the field `object_key` and for the object_key
+    value to be unique.
+
+    Args:
+        session: The sqlalchemy Session instance
+        db_model: The sqlalchemy database class to query
+        object_key: The unique value to be searched for within the `object_key` column.
+
+    Raises:
+        ValueError: The query failed.
+
+    Returns:
+        An instance of the sqlalchemy database model corresponding to the requested object key and db_model.
+
+    """
     db_object = session.query(db_model).filter_by(object_key=object_key).first()
     if not db_object:
         raise ValueError(
@@ -43,6 +72,7 @@ def get_db_object_by_key(session: Session, db_model: object, object_key: str) ->
 class LayerRegistryInterface:
     @staticmethod
     def get_db_entries(session: Session) -> list[models.Layer]:
+        """Fetch all entries for the Layer model, converted to the corresponding pydantic model."""
         layers = []
         query = session.query(db_models.Layer)
         for item in query:
@@ -57,6 +87,19 @@ class LayerRegistryInterface:
         model_class: object,
         pydantic_model: object,
     ) -> object:
+        """Fetch a single db item, converted to the corresponding pydantic model. Note that it is assumed there are
+        no sub-dependent models - each field maps directly to a single value.
+
+        Args:
+            session: The sqlalchemy Session instance.
+            model_id: The numeric primary key id of the model instance to fetch
+            model_class: The sqlalchemy database class to query
+            pydantic_model: The corresponding pydantic model to use for the returned database data
+
+        Returns:
+            Pydantic model of the queried database model instance.
+
+        """
         model_instance = session.get(model_class, model_id)
 
         model_dict = {}
@@ -99,6 +142,30 @@ class LayerRegistryInterface:
         legend: dict[str, Any] | None = None,
         boundary: dict[str, Any] | None = None,
     ) -> db_models.Layer:
+        """Adds a new Layer instance to the database.
+
+        Args:
+            session: The sqlalchemy Session instance.
+            name: The name of the layer
+            project_key: The object_key value of the Project model instance to correspond to.
+            date: The date to associate with the layer
+            source_type_key: The object_key value of the SourceType database model instance it corresponds to.
+            data_format_key: The object_key value of the DataFormat database model instance it corresponds to.
+            data_category_key: The object_key value of the DataCategory database model instance it corresponds to.
+            processing_level_key: The object_key value of the ProcessingLevel database model instance it corresponds to.
+            area_name_key: The object_key value of the AreaName database model instance it corresponds to.
+            raw_source_id: S3 key or similar linking to the raw data source (e.g. geojson file, single band COG
+                formatted raster). If not provided then a colour_source_id value is expected . Defaults to None.
+            colour_source_id: S3 key or similar linking to the colourised data source (e.g. geojson file, single band
+                COG formatted raster). If not provided then a raw_source_id value is expected . Defaults to None.
+            legend: JSON string for the legend information. Defaults to None.
+            boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
+                Defaults to None.
+
+        Returns:
+            Layer instance
+
+        """
         # Get the instance of dependent models, matching on object_key values
         project = get_db_object_by_key(session=session, db_model=db_models.Project, object_key=project_key)
         source_type = get_db_object_by_key(session=session, db_model=db_models.SourceType, object_key=source_type_key)
@@ -135,6 +202,7 @@ class LayerRegistryInterface:
 
     @staticmethod
     def convert_layer_to_pydantic_model(session: Session, db_layer: db_models.Layer) -> models.Layer:
+        """Converts a the database Layer model into it's pydantic model equivalent."""
         bbox = to_shape(db_layer.bbox)
 
         source_type = LayerRegistryInterface.get_instance(
@@ -191,6 +259,7 @@ class LayerRegistryInterface:
 class IDModelInterface:
     @staticmethod
     def get_db_entries(session: Session, db_model: object) -> list:
+        """Fetch all items for any database model that fits within the pydantic IDModel baseclass."""
         query = session.query(db_model)
 
         items = []
@@ -202,11 +271,13 @@ class IDModelInterface:
 
     @staticmethod
     def add_model_entry(session: Session, db_model: object, name: str, object_key: str) -> object:
+        """Add a new model entry for any database model that corresponds to the pydantic IDModel base class."""
         new_db_item = add_db_item(session=session, db_item=db_model(name=name, object_key=object_key))
         return new_db_item
 
     @staticmethod
     def convert_to_pydantic_model(db_item: object) -> models.IDModel:
+        """Convert the db instance to a pydantic IDModel."""
         id_model = models.IDModel(
             id=db_item.id, last_updated=db_item.last_updated, name=db_item.name, object_key=db_item.object_key
         )
@@ -217,6 +288,7 @@ class IDModelInterface:
 class AreaNameModelInterface:
     @staticmethod
     def get_db_entries(session: Session, *_, **__) -> list[models.AreaName]:
+        """List all entries within the AreaName database table."""
         query = session.query(db_models.AreaName)
 
         items = []
@@ -241,6 +313,7 @@ class AreaNameModelInterface:
 
     @staticmethod
     def add_new_entry(session: Session, name: str, object_key: str, area_type_key: str) -> object:
+        """Add a new AreaName entry to the database."""
         area_type = get_db_object_by_key(session=session, db_model=db_models.AreaType, object_key=area_type_key)
         new_db_item = add_db_item(
             session=session, db_item=db_models.AreaName(name=name, object_key=object_key, area_type=area_type.id)

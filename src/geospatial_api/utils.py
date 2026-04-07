@@ -35,6 +35,7 @@ def get_s3_client() -> S3Client:
 
 
 def get_db() -> Generator[Session, None, None]:
+    """Create a new sqlalchemy database Session instance."""
     db: Session = SessionGenerator()
     try:
         yield db

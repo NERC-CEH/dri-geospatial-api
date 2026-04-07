@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 logger = logging.getLogger(__name__)
 
+
 class GeospatialDatabase:
     def __init__(self, user: str, password: str, host: str, port: int, db_name: str, schema: str, echo: bool = True):
         self.database_url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
@@ -38,4 +39,3 @@ class GeospatialDatabase:
             return session.query(db_table_class).filter_by(object_key=object_key).first()
         finally:
             session.close()
-
