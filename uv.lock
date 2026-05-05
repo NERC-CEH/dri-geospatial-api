@@ -550,11 +550,12 @@ wheels = [
 
 [[package]]
 name = "dri-database-models"
-version = "0.0.15"
-source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main#3aa8f9deb91da4a41974f56fedb9b207824c5f58" }
+version = "0.0.25"
+source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-708-geospatial-tables#c44a47d0ab84de6c3b15cf66c9a2922cd51dce76" }
 dependencies = [
     { name = "alembic" },
     { name = "autosemver" },
+    { name = "geoalchemy2" },
     { name = "psycopg2-binary" },
     { name = "setuptools" },
     { name = "sqlalchemy" },
@@ -707,6 +708,19 @@ wheels = [
 ]
 
 [[package]]
+name = "geoalchemy2"
+version = "0.19.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "sqlalchemy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f1/3e/8b6b15cd6a68bb4472ad865e8ecc83b010f1673a22834a52fa479cabf639/geoalchemy2-0.19.0.tar.gz", hash = "sha256:c88be59cdb90af9d74278bdd33a5f58acb23859f0f1380726593eed0f343f4a8", size = 240220, upload-time = "2026-04-12T21:02:16.544Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/35/78/0d5918bea58179dc7a6b724c097b3d972f875328460503f74521c46283bc/geoalchemy2-0.19.0-py3-none-any.whl", hash = "sha256:878a5859e23ae632fe20ea35412cda40f50c94fa69c9242587574941e4d4ec32", size = 81145, upload-time = "2026-04-12T21:02:15.337Z" },
+]
+
+[[package]]
 name = "geojson"
 version = "3.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -737,6 +751,7 @@ dependencies = [
     { name = "dri-database-models" },
     { name = "dri-utils" },
     { name = "fastapi", extra = ["standard"] },
+    { name = "geoalchemy2" },
     { name = "geojson" },
     { name = "httpx" },
     { name = "mypy-boto3-s3" },
@@ -776,10 +791,11 @@ requires-dist = [
     { name = "aiocache" },
     { name = "autosemver" },
     { name = "boto3", specifier = ">=1.36.24" },
-    { name = "dri-database-models", git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main" },
+    { name = "dri-database-models", git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-708-geospatial-tables" },
     { name = "dri-utils", git = "https://github.com/NERC-CEH/dri-utils.git" },
     { name = "fastapi" },
     { name = "fastapi", extras = ["standard"] },
+    { name = "geoalchemy2" },
     { name = "geojson" },
     { name = "httpx" },
     { name = "mypy-boto3-s3" },

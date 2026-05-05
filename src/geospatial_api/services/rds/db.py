@@ -177,8 +177,15 @@ class LayerRegistryInterface:
             session=session, db_model=db_models.ProcessingLevel, object_key=processing_level_key
         )
         area_name = get_db_object_by_key(session=session, db_model=db_models.AreaName, object_key=area_name_key)
-        boundary_geom = shapely.geometry.shape(boundary.features[0])
-        bbox = shapely.box(*boundary_geom.bounds)
+        if boundary:
+            boundary_geom = shapely.geometry.shape(boundary.features[0])
+            boundary_wkt = boundary_geom.wkt
+            bbox = shapely.box(*boundary_geom.bounds)
+            bbox_wkt = bbox.wkt
+        else:
+            boundary_wkt = None
+            bbox_wkt = None
+
         new_layer = add_db_item(
             session=session,
             db_item=db_models.Layer(
@@ -193,8 +200,8 @@ class LayerRegistryInterface:
                 raw_source_id=raw_source_id,
                 colour_source_id=colour_source_id,
                 legend=legend,
-                boundary=boundary_geom.wkt,
-                bbox=bbox.wkt,
+                boundary=boundary_wkt,
+                bbox=bbox_wkt,
             ),
         )
 
