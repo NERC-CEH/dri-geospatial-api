@@ -106,18 +106,47 @@ def intialise_db() -> None:
             "data_category": "dsm",
             "processing_level": "processed",
             "area_name": "tweed",
-            "legend": [
-                {"value": 289.97, "colour": [51, 51, 153]},
-                {"value": 291.61, "colour": [14, 126, 228]},
-                {"value": 293.25, "colour": [1, 188, 148]},
-                {"value": 294.9, "colour": [85, 221, 119]},
-                {"value": 296.54, "colour": [197, 243, 141]},
-                {"value": 298.18, "colour": [226, 218, 137]},
-                {"value": 299.83, "colour": [170, 146, 107]},
-                {"value": 301.47, "colour": [143, 112, 105]},
-                {"value": 303.11, "colour": [199, 183, 180]},
-                {"value": 304.76, "colour": [199, 195, 195]},
-            ],
+            "legend": {
+                "type": "range",
+                "values": [
+                    {
+                        "min": {"label": 289.97, "colour": [51, 51, 153]},
+                        "max": {"label": 291.61, "colour": [14, 126, 228]},
+                    },
+                    {
+                        "min": {"label": 291.61, "colour": [14, 126, 228]},
+                        "max": {"label": 293.25, "colour": [1, 188, 148]},
+                    },
+                    {
+                        "min": {"label": 293.25, "colour": [1, 188, 148]},
+                        "max": {"label": 294.9, "colour": [85, 221, 119]},
+                    },
+                    {
+                        "min": {"label": 294.9, "colour": [85, 221, 119]},
+                        "max": {"label": 296.54, "colour": [197, 243, 141]},
+                    },
+                    {
+                        "min": {"label": 296.54, "colour": [197, 243, 141]},
+                        "max": {"label": 298.18, "colour": [226, 218, 137]},
+                    },
+                    {
+                        "min": {"label": 298.18, "colour": [226, 218, 137]},
+                        "max": {"label": 299.83, "colour": [170, 146, 107]},
+                    },
+                    {
+                        "min": {"label": 299.83, "colour": [170, 146, 107]},
+                        "max": {"label": 301.47, "colour": [143, 112, 105]},
+                    },
+                    {
+                        "min": {"label": 301.47, "colour": [143, 112, 105]},
+                        "max": {"label": 303.11, "colour": [199, 183, 180]},
+                    },
+                    {
+                        "min": {"label": 303.11, "colour": [199, 183, 180]},
+                        "max": {"label": 304.76, "colour": [199, 195, 195]},
+                    },
+                ],
+            },
             "boundary": (
                 "POLYGON ((-3.417466 55.510587, -3.417321 55.510616, -3.41727 55.510521, -3.417433 55.510476, "
                 "-3.417466 55.510587))"

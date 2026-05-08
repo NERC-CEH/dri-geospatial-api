@@ -51,7 +51,7 @@ class Layer(BaseModel):
     catalogue_id: Optional[str]
     data_format: IDModel
     data_category: IDModel
-    legend: Optional[list[dict[str, Any]]]
+    legend: Optional[dict[str, Any]]
     boundary: Optional[shapely.Polygon]
     bbox: shapely.Polygon
     processing_level: IDModel
@@ -79,8 +79,10 @@ class Layer(BaseModel):
         response["area_name"] = self.area_name.to_json_response()
         response["processing_level"] = self.processing_level.to_json_response()
 
-        # Convert the geometry information to WKT strings
-        response["bbox"] = self.bbox.wkt
+        # Convert the geometry information into a series of bounds and the map centroid
+        min_x, min_y, max_x, max_y = self.bbox.bounds
+        response["bbox"] = {"min_x": min_x, "max_x": max_x, "min_y": min_y, "max_y": max_y}
+
         response["map_center"] = [self.bbox.centroid.x, self.bbox.centroid.y]
 
         # Construct the source_url from the other
