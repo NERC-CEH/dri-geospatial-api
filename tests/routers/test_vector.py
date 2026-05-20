@@ -23,7 +23,7 @@ class TestVector:
     def test_vector_from_s3(self, expected_geojson: dict[str, Any]) -> None:
         """Test the vector endpoint returns valid geojson from s3."""
         response = client.get(
-            "/api/vector?url=s3://ukceh-fdri-staging-geospatial/project=fdri/area_type=national/area_name=uk/"
+            "/api/vector?url=s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=national/location=uk/"
             "data_category=stations/processing_level=processed/date=2026-03-20/cosmos_sites.geojson"
         )
         assert response.status_code == 200

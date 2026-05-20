@@ -59,10 +59,15 @@ def intialise_db() -> None:
     # Add initial data
     projects = [{"name": "FDRI", "object_key": "fdri"}]
 
+    data_category_groups = [
+        {"name": "Topography and Remote Sensing", "object_key": "topo_rs"},
+        {"name": "Geology and Soils", "object_key": "geology_soils"},
+    ]
+
     data_categories = [
-        {"name": "DEM", "object_key": "dem"},
-        {"name": "DSM", "object_key": "dsm"},
-        {"name": "Stations", "object_key": "stations"},
+        {"name": "DEM", "object_key": "dem", "data_category_group": "topo_rs"},
+        {"name": "DSM", "object_key": "dsm", "data_category_group": "topo_rs"},
+        {"name": "Stations", "object_key": "stations", "data_category_group": "geology_soils"},
     ]
 
     data_formats = [
@@ -73,17 +78,33 @@ def intialise_db() -> None:
 
     processing_levels = [{"name": "Processed", "object_key": "processed"}, {"name": "Raw", "object_key": "raw"}]
 
-    area_types = [
+    location_types = [
         {"name": "National", "object_key": "national"},
         {"name": "Region", "object_key": "region"},
         {"name": "Catchment", "object_key": "catchment"},
     ]
 
-    area_names = [
-        {"name": "UK", "object_key": "uk", "area_type": "national"},
-        {"name": "Tweed", "object_key": "tweed", "area_type": "catchment"},
-        {"name": "Chess", "object_key": "chess", "area_type": "catchment"},
-        {"name": "Severn", "object_key": "severn", "area_type": "catchment"},
+    locations = [
+        {
+            "name": "UK",
+            "object_key": "uk",
+            "location_type": "national",
+            "boundary": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+        },
+        {
+            "name": "Tweed",
+            "object_key": "tweed",
+            "location_type": "catchment",
+            "boundary": (
+                "POLYGON ((-3.417466 55.510587, -3.417321 55.510616, -3.41727 55.510521, -3.417433 55.510476, "
+                "-3.417466 55.510587))"
+            ),
+        },
+        # {"name": "Chess", "object_key": "chess", "location_type": "catchment"},
+        # {"name": "Severn", "object_key": "severn", "location_type": "catchment"},
     ]
 
     source_types = [
@@ -105,7 +126,7 @@ def intialise_db() -> None:
             "data_format": "raster",
             "data_category": "dsm",
             "processing_level": "processed",
-            "area_name": "tweed",
+            "location": "tweed",
             "legend": {
                 "type": "range",
                 "values": [
@@ -165,7 +186,7 @@ def intialise_db() -> None:
             "data_format": "vector",
             "data_category": "stations",
             "processing_level": "processed",
-            "area_name": "uk",
+            "location": "uk",
             "boundary": (
                 "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
                 "-7.291954 50.03266))"
@@ -180,8 +201,16 @@ def intialise_db() -> None:
     print("Filling Projects")
     db.add_db_items([geospatial.Project(**item) for item in projects])
 
+    print("Filling Data Category Groups")
+    db.add_db_items([geospatial.DataCategoryGroup(**item) for item in data_category_groups])
+
     print("Filling Data Categories")
-    db.add_db_items([geospatial.DataCategory(**item) for item in data_categories])
+    for data_category in data_categories:
+        category_group = db.get_db_item_by_key(
+            geospatial.DataCategoryGroup, object_key=data_category["data_category_group"]
+        )
+        data_category["data_category_group"] = category_group.id
+        db.add_db_items([geospatial.DataCategory(**data_category)])
 
     print("Filling Data Formats")
     db.add_db_items([geospatial.DataFormat(**item) for item in data_formats])
@@ -190,13 +219,13 @@ def intialise_db() -> None:
     db.add_db_items([geospatial.ProcessingLevel(**item) for item in processing_levels])
 
     print("Filling Area Types")
-    db.add_db_items([geospatial.AreaType(**item) for item in area_types])
+    db.add_db_items([geospatial.LocationType(**item) for item in location_types])
 
     print("Filling Area Names")
-    for area_name in area_names:
-        area_type = db.get_db_item_by_key(geospatial.AreaType, object_key=area_name["area_type"])
-        area_name["area_type"] = area_type.id
-        db.add_db_items([geospatial.AreaName(**area_name)])
+    for location in locations:
+        location_type = db.get_db_item_by_key(geospatial.LocationType, object_key=location["location_type"])
+        location["location_type"] = location_type.id
+        db.add_db_items([geospatial.Location(**location)])
 
     print("Filling source types")
     db.add_db_items([geospatial.SourceType(**item) for item in source_types])
@@ -210,7 +239,7 @@ def intialise_db() -> None:
         layer["processing_level"] = db.get_db_item_by_key(
             geospatial.ProcessingLevel, object_key=layer["processing_level"]
         ).id
-        layer["area_name"] = db.get_db_item_by_key(geospatial.AreaName, object_key=layer["area_name"]).id
+        layer["location"] = db.get_db_item_by_key(geospatial.Location, object_key=layer["location"]).id
 
         db.add_db_items([geospatial.Layer(**layer)])
 

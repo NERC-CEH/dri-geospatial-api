@@ -551,7 +551,7 @@ wheels = [
 [[package]]
 name = "dri-database-models"
 version = "0.0.25"
-source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-708-geospatial-tables#c44a47d0ab84de6c3b15cf66c9a2922cd51dce76" }
+source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-708-geospatial-tables#9b7ecfcc43e5b274e343e58a09e6b2d202f6dead" }
 dependencies = [
     { name = "alembic" },
     { name = "autosemver" },

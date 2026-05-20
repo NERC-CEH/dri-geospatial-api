@@ -29,12 +29,28 @@ class SourceType(IDModel):
         return response
 
 
-class AreaName(IDModel):
-    area_type: IDModel
+class Location(IDModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    location_type: IDModel
+    boundary: shapely.Polygon
 
     def to_json_response(self) -> dict[str, Any]:
         response = super().to_json_response()
-        response["area_type"] = self.area_type.to_json_response()
+        response["location_type"] = self.location_type.to_json_response()
+
+        # Calculate the bounds of the location boundary, to be used for zoom to layer functionality
+        min_x, min_y, max_x, max_y = self.boundary.bounds
+        response["bbox"] = {"min_x": min_x, "max_x": max_x, "min_y": min_y, "max_y": max_y}
+        return response
+
+
+class DataCategory(IDModel):
+    data_category_group: IDModel
+
+    def to_json_response(self) -> dict[str, Any]:
+        response = super().to_json_response()
+        response["data_category_group"] = self.data_category_group.to_json_response()
         return response
 
 
@@ -43,19 +59,22 @@ class Layer(BaseModel):
 
     id: int
     name: str
+    description: Optional[str]
     project: IDModel
-    date: datetime
+    date: Optional[datetime]
+    start_date: Optional[datetime]
+    end_date: Optional[datetime]
     source_type: SourceType
     colour_source_id: Optional[str]
     raw_source_id: Optional[str]
-    catalogue_id: Optional[str]
     data_format: IDModel
-    data_category: IDModel
+    data_category: DataCategory
     legend: Optional[dict[str, Any]]
     boundary: Optional[shapely.Polygon]
     bbox: shapely.Polygon
     processing_level: IDModel
-    area_name: AreaName
+    location: Location
+    field_metadata: Optional[dict[str, Any]]
 
     def to_json_response(self) -> dict[str, Any]:
         """Convert the Layer model instance to a dictionary able to be easily converted to a JSONResponse object
@@ -76,7 +95,7 @@ class Layer(BaseModel):
         response["source_type"] = self.source_type.to_json_response()
         response["data_format"] = self.data_format.to_json_response()
         response["data_category"] = self.data_category.to_json_response()
-        response["area_name"] = self.area_name.to_json_response()
+        response["location"] = self.location.to_json_response()
         response["processing_level"] = self.processing_level.to_json_response()
 
         # Convert the geometry information into a series of bounds and the map centroid
@@ -107,8 +126,8 @@ class Layer(BaseModel):
         if self.source_type.object_key.lower() == "s3":
             bucket_keys = (
                 f"project={self.project.object_key}/"
-                f"area_type={self.area_name.area_type.object_key}/"
-                f"area_name={self.area_name.object_key}/"
+                f"location_type={self.location.location_type.object_key}/"
+                f"location={self.location.object_key}/"
                 f"data_category={self.data_category.object_key}/"
                 f"processing_level={self.processing_level.object_key}/"
                 f"date={self.date.date()}"

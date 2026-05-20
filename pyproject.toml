@@ -7,7 +7,7 @@ dependencies = [
     "setuptools >= 61.0,<81",
     "autosemver",
     "aiocache",
-    "dri-database-models @ git+https://github.com/NERC-CEH/dri-database-models.git@feature/FPM-708-geospatial-tabl",
+    "dri-database-models @ git+https://github.com/NERC-CEH/dri-database-models.git@feature/FPM-708-geospatial-tables",
     "dri-utils @ git+https://github.com/NERC-CEH/dri-utils.git",
     "fastapi",
     "fastapi[standard]",

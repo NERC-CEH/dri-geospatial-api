@@ -109,22 +109,41 @@ class LayerRegistryInterface:
         return pydantic_model(**model_dict)
 
     @staticmethod
-    def get_area_name_instance(session: Session, area_name_id: int) -> models.AreaName:
-        area_name = session.get(db_models.AreaName, area_name_id)
-        area_type = LayerRegistryInterface.get_instance(
+    def get_nested_model_instance(
+        session: Session,
+        main_model_id: int,
+        main_db_model_class: object,
+        nested_model_field: str,
+        nested_db_model_class: object,
+        pydantic_model: object,
+    ) -> models.Location:
+        main_model = session.get(main_db_model_class, main_model_id)
+        nested_pydantic_model = LayerRegistryInterface.get_instance(
             session=session,
-            model_id=area_name.area_type,
-            model_class=db_models.AreaType,
+            model_id=getattr(main_model, nested_model_field),
+            model_class=nested_db_model_class,
             pydantic_model=models.IDModel,
         )
 
-        return models.AreaName(
-            id=area_name.id,
-            last_updated=area_name.last_updated,
-            name=area_name.name,
-            object_key=area_name.object_key,
-            area_type=area_type,
-        )
+        pydantic_model_data = {
+            "id": main_model.id,
+            "last_updated": main_model.last_updated,
+            "name": main_model.name,
+            "object_key": main_model.object_key,
+            nested_model_field: nested_pydantic_model,
+        }
+
+        # Search for any geometry fields and convert to shapely.Polygon objects
+        geometry_fields = [
+            field_name
+            for (field_name, field_info) in pydantic_model.model_fields.items()
+            if field_info.annotation == shapely.Polygon
+        ]
+        for geometry_field in geometry_fields:
+            geometry = to_shape(getattr(main_model, geometry_field))
+            pydantic_model_data[geometry_field] = geometry
+
+        return pydantic_model(**pydantic_model_data)
 
     @staticmethod
     def add_new_layer(
@@ -153,7 +172,7 @@ class LayerRegistryInterface:
             data_format_key: The object_key value of the DataFormat database model instance it corresponds to.
             data_category_key: The object_key value of the DataCategory database model instance it corresponds to.
             processing_level_key: The object_key value of the ProcessingLevel database model instance it corresponds to.
-            area_name_key: The object_key value of the AreaName database model instance it corresponds to.
+            area_name_key: The object_key value of the Location database model instance it corresponds to.
             raw_source_id: S3 key or similar linking to the raw data source (e.g. geojson file, single band COG
                 formatted raster). If not provided then a colour_source_id value is expected . Defaults to None.
             colour_source_id: S3 key or similar linking to the colourised data source (e.g. geojson file, single band
@@ -176,7 +195,7 @@ class LayerRegistryInterface:
         processing_level = get_db_object_by_key(
             session=session, db_model=db_models.ProcessingLevel, object_key=processing_level_key
         )
-        area_name = get_db_object_by_key(session=session, db_model=db_models.AreaName, object_key=area_name_key)
+        location = get_db_object_by_key(session=session, db_model=db_models.Location, object_key=area_name_key)
         if boundary:
             boundary_geom = shapely.geometry.shape(boundary.features[0])
             boundary_wkt = boundary_geom.wkt
@@ -196,7 +215,7 @@ class LayerRegistryInterface:
                 data_format=data_format.id,
                 data_category=data_category.id,
                 processing_level=processing_level.id,
-                area_name=area_name.id,
+                location=location.id,
                 raw_source_id=raw_source_id,
                 colour_source_id=colour_source_id,
                 legend=legend,
@@ -222,6 +241,7 @@ class LayerRegistryInterface:
         layer = models.Layer(
             id=db_layer.id,
             name=db_layer.name,
+            description=db_layer.description,
             project=LayerRegistryInterface.get_instance(
                 session=session,
                 model_id=db_layer.project,
@@ -229,21 +249,24 @@ class LayerRegistryInterface:
                 pydantic_model=models.IDModel,
             ),
             date=db_layer.date,
+            start_date=db_layer.start_date,
+            end_date=db_layer.end_date,
             source_type=source_type,
             colour_source_id=db_layer.colour_source_id,
             raw_source_id=db_layer.raw_source_id,
-            catalogue_id=db_layer.catalogue_id,
             data_format=LayerRegistryInterface.get_instance(
                 session=session,
                 model_id=db_layer.data_format,
                 model_class=db_models.DataFormat,
                 pydantic_model=models.IDModel,
             ),
-            data_category=LayerRegistryInterface.get_instance(
+            data_category=LayerRegistryInterface.get_nested_model_instance(
                 session=session,
-                model_id=db_layer.data_category,
-                model_class=db_models.DataCategory,
-                pydantic_model=models.IDModel,
+                main_model_id=db_layer.data_category,
+                main_db_model_class=db_models.DataCategory,
+                nested_model_field="data_category_group",
+                nested_db_model_class=db_models.DataCategoryGroup,
+                pydantic_model=models.DataCategory,
             ),
             legend=db_layer.legend,
             boundary=to_shape(db_layer.boundary) if db_layer.boundary else None,
@@ -254,10 +277,15 @@ class LayerRegistryInterface:
                 model_class=db_models.ProcessingLevel,
                 pydantic_model=models.IDModel,
             ),
-            area_name=LayerRegistryInterface.get_area_name_instance(
+            location=LayerRegistryInterface.get_nested_model_instance(
                 session=session,
-                area_name_id=db_layer.area_name,
+                main_model_id=db_layer.location,
+                main_db_model_class=db_models.Location,
+                nested_model_field="location_type",
+                nested_db_model_class=db_models.LocationType,
+                pydantic_model=models.Location,
             ),
+            field_metadata=db_layer.field_metadata,
         )
 
         return layer
@@ -292,37 +320,79 @@ class IDModelInterface:
         return id_model
 
 
-class AreaNameModelInterface:
+class LocationModelInterface:
     @staticmethod
-    def get_db_entries(session: Session, *_, **__) -> list[models.AreaName]:
-        """List all entries within the AreaName database table."""
-        query = session.query(db_models.AreaName)
+    def get_db_entries(session: Session, *_, **__) -> list[models.Location]:
+        """List all entries within the Location database table."""
+        query = session.query(db_models.Location)
 
         items = []
         for item in query:
-            area_type = session.get(db_models.AreaType, item.area_type)
+            location_type = session.get(db_models.LocationType, item.location_type)
             area_type_model = models.IDModel(
-                id=area_type.id,
-                last_updated=area_type.last_updated,
-                name=area_type.name,
-                object_key=area_type.object_key,
+                id=location_type.id,
+                last_updated=location_type.last_updated,
+                name=location_type.name,
+                object_key=location_type.object_key,
             )
             items.append(
-                models.AreaName(
+                models.Location(
                     id=item.id,
                     last_updated=item.last_updated,
                     name=item.name,
                     object_key=item.object_key,
-                    area_type=area_type_model,
+                    location_type=area_type_model,
                 )
             )
         return items
 
     @staticmethod
     def add_new_entry(session: Session, name: str, object_key: str, area_type_key: str) -> object:
-        """Add a new AreaName entry to the database."""
-        area_type = get_db_object_by_key(session=session, db_model=db_models.AreaType, object_key=area_type_key)
+        """Add a new Location entry to the database."""
+        location_type = get_db_object_by_key(session=session, db_model=db_models.LocationType, object_key=area_type_key)
         new_db_item = add_db_item(
-            session=session, db_item=db_models.AreaName(name=name, object_key=object_key, area_type=area_type.id)
+            session=session,
+            db_item=db_models.Location(name=name, object_key=object_key, location_type=location_type.id),
+        )
+        return new_db_item
+
+
+class DataCategoryModelInterface:
+    @staticmethod
+    def get_db_entries(session: Session, *_, **__) -> list[models.Location]:
+        """List all entries within the DataCategory database table."""
+        query = session.query(db_models.DataCategory)
+
+        items = []
+        for item in query:
+            category_group = session.get(db_models.DataCategoryGroup, item.data_category_group)
+            category_group_model = models.IDModel(
+                id=category_group.id,
+                last_updated=category_group.last_updated,
+                name=category_group.name,
+                object_key=category_group.object_key,
+            )
+            items.append(
+                models.DataCategory(
+                    id=item.id,
+                    last_updated=item.last_updated,
+                    name=item.name,
+                    object_key=item.object_key,
+                    data_category_group=category_group_model,
+                )
+            )
+        return items
+
+    @staticmethod
+    def add_new_entry(session: Session, name: str, object_key: str, data_category_group_key: str) -> object:
+        """Add a new DataCategory entry to the database."""
+        data_category_group = get_db_object_by_key(
+            session=session, db_model=db_models.DataCategoryGroup, object_key=data_category_group_key
+        )
+        new_db_item = add_db_item(
+            session=session,
+            db_item=db_models.DataCategory(
+                name=name, object_key=object_key, data_category_group=data_category_group.id
+            ),
         )
         return new_db_item

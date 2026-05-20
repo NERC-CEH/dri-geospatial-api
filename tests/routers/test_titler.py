@@ -36,7 +36,7 @@ class TestTitiler:
 
         response = client.get(
             "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
-            "/area_type=catchment/area_name=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+            "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
             "clipped_tweed_dsm_3857_colourised_cog.tif"
         )
 
@@ -61,7 +61,7 @@ class TestCachedTitiler:
         # Call the raster tile endpoint once initially to store the tile in the cache
         response_1 = client.get(
             "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
-            "/area_type=catchment/area_name=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+            "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
             "clipped_tweed_dsm_3857_colourised_cog.tif"
         )
 
@@ -71,7 +71,7 @@ class TestCachedTitiler:
         with mock.patch.object(TilerFactory, "tile") as mock_tile:
             response_2 = client.get(
                 "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
-                "/area_type=catchment/area_name=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+                "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
                 "clipped_tweed_dsm_3857_colourised_cog.tif"
             )
             # If caching has worked correctly, then the response should contain a valid image, but the tile function

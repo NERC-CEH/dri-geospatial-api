@@ -7,5 +7,5 @@ awslocal s3api create-bucket --bucket ukceh-fdri-staging-geospatial --region eu-
 
 echo "########### Load the sample data into the s3 bucket #########"
 
-awslocal s3api put-object --bucket ukceh-fdri-staging-geospatial --key project=fdri/area_type=catchment/area_name=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/clipped_tweed_dsm_3857_colourised_cog.tif --body /var/lib/localstack/data/clipped_tweed_dsm_3857_colourised_cog.tif
-awslocal s3api put-object --bucket ukceh-fdri-staging-geospatial --key project=fdri/area_type=national/area_name=uk/data_category=stations/processing_level=processed/date=2026-03-20/cosmos_sites.geojson --body /var/lib/localstack/data/cosmos_sites.geojson
+awslocal s3api put-object --bucket ukceh-fdri-staging-geospatial --key project=fdri/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/clipped_tweed_dsm_3857_colourised_cog.tif --body /var/lib/localstack/data/clipped_tweed_dsm_3857_colourised_cog.tif
+awslocal s3api put-object --bucket ukceh-fdri-staging-geospatial --key project=fdri/location_type=national/location=uk/data_category=stations/processing_level=processed/date=2026-03-20/cosmos_sites.geojson --body /var/lib/localstack/data/cosmos_sites.geojson

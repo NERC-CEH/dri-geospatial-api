@@ -12,7 +12,12 @@ from sqlalchemy.orm import Session
 
 from geospatial_api import models as py_models
 from geospatial_api.config import setup_config
-from geospatial_api.services.rds.db import AreaNameModelInterface, IDModelInterface, LayerRegistryInterface
+from geospatial_api.services.rds.db import (
+    LocationModelInterface,
+    DataCategoryModelInterface,
+    IDModelInterface,
+    LayerRegistryInterface,
+)
 from geospatial_api.utils import get_db, get_s3_client
 
 router = APIRouter(tags=["Layer Management"])
@@ -29,17 +34,22 @@ MODEL_MAPPING = {
     "data_format": ModelMap(
         db_model=db_models.DataFormat, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
     ),
+    "data_category_group": ModelMap(
+        db_model=db_models.DataCategoryGroup, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
+    ),
     "data_category": ModelMap(
-        db_model=db_models.DataCategory, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
+        db_model=db_models.DataCategory,
+        model_interface=DataCategoryModelInterface,
+        pydantic_model=py_models.DataCategory,
     ),
     "processing_level": ModelMap(
         db_model=db_models.ProcessingLevel, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
     ),
-    "area_type": ModelMap(
-        db_model=db_models.AreaType, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
+    "location_type": ModelMap(
+        db_model=db_models.LocationType, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
     ),
-    "area_name": ModelMap(
-        db_model=db_models.AreaName, model_interface=AreaNameModelInterface, pydantic_model=py_models.AreaName
+    "location": ModelMap(
+        db_model=db_models.Location, model_interface=LocationModelInterface, pydantic_model=py_models.Location
     ),
 }
 
@@ -73,7 +83,7 @@ def add_model(db: Annotated[Session, Depends(get_db)], model_name: str, name: st
 def add_area_name(
     db: Annotated[Session, Depends(get_db)], name: str, object_key: str, area_type_key: str
 ) -> JSONResponse:
-    new_db_item = AreaNameModelInterface.add_new_entry(
+    new_db_item = LocationModelInterface.add_new_entry(
         session=db, name=name, object_key=object_key, area_type_key=area_type_key
     )
 
@@ -90,7 +100,7 @@ async def add_layer(
     data_format: str,
     data_category: str,
     processing_level: str,
-    area_name: str,
+    location: str,
     colour_source_id: str | None = None,
     colour_source_file: UploadFile | None = None,
     raw_source_id: str | None = None,
@@ -122,7 +132,7 @@ async def add_layer(
         data_format_key=data_format,
         data_category_key=data_category,
         processing_level_key=processing_level,
-        area_name_key=area_name,
+        area_name_key=location,
         colour_source_id=colour_source_file.filename if colour_source_file else colour_source_id,
         raw_source_id=raw_source_file.filename if raw_source_file else raw_source_id,
         legend=json.load(legend.file) if legend else None,
