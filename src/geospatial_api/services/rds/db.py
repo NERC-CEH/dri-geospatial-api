@@ -69,6 +69,30 @@ def get_db_object_by_key(session: Session, db_model: object, object_key: str) ->
     return db_object
 
 
+def get_db_object_by_primary_key(session: Session, db_model: object, id: int) -> object:
+    """Fetch a single database item using the primary key id value
+
+    Args:
+        session: The sqlalchemy Session instance
+        db_model: The sqlalchemy database class to query
+        id: The unique value to be searched for within the `id` column.
+
+    Raises:
+        ValueError: The query failed.
+
+    Returns:
+        An instance of the sqlalchemy database model corresponding to the requested object key and db_model.
+
+    """
+    db_object = session.get(db_model, id)
+    if not db_object:
+        raise ValueError(
+            f"Could not fetch model instance `{str(db_model)} for primary key: {id}. Object may not exist."
+        )
+
+    return db_object
+
+
 class LayerRegistryInterface:
     @staticmethod
     def get_db_entries(session: Session) -> list[models.Layer]:
@@ -150,16 +174,20 @@ class LayerRegistryInterface:
         session: Session,
         name: str,
         project_key: str,
-        date: str,
         source_type_key: str,
         data_format_key: str,
         data_category_key: str,
         processing_level_key: str,
         area_name_key: str,
+        description: str | None = None,
+        date: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
         raw_source_id: str | None = None,
         colour_source_id: str | None = None,
         legend: dict[str, Any] | None = None,
         boundary: dict[str, Any] | None = None,
+        field_metadata: dict[str, Any] | None = None,
     ) -> db_models.Layer:
         """Adds a new Layer instance to the database.
 
@@ -172,7 +200,7 @@ class LayerRegistryInterface:
             data_format_key: The object_key value of the DataFormat database model instance it corresponds to.
             data_category_key: The object_key value of the DataCategory database model instance it corresponds to.
             processing_level_key: The object_key value of the ProcessingLevel database model instance it corresponds to.
-            area_name_key: The object_key value of the Location database model instance it corresponds to.
+            location_key: The object_key value of the Location database model instance it corresponds to.
             raw_source_id: S3 key or similar linking to the raw data source (e.g. geojson file, single band COG
                 formatted raster). If not provided then a colour_source_id value is expected . Defaults to None.
             colour_source_id: S3 key or similar linking to the colourised data source (e.g. geojson file, single band
@@ -180,6 +208,7 @@ class LayerRegistryInterface:
             legend: JSON string for the legend information. Defaults to None.
             boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
                 Defaults to None.
+            field_metadata: JSON string containing metadata for displaying field information from the vector in the UI
 
         Returns:
             Layer instance
@@ -209,8 +238,11 @@ class LayerRegistryInterface:
             session=session,
             db_item=db_models.Layer(
                 name=name,
+                description=description,
                 project=project.id,
                 date=date,
+                start_date=start_date,
+                end_date=end_date,
                 source_type=source_type.id,
                 data_format=data_format.id,
                 data_category=data_category.id,
@@ -221,6 +253,7 @@ class LayerRegistryInterface:
                 legend=legend,
                 boundary=boundary_wkt,
                 bbox=bbox_wkt,
+                field_metadata=field_metadata,
             ),
         )
 
@@ -322,37 +355,56 @@ class IDModelInterface:
 
 class LocationModelInterface:
     @staticmethod
+    def get_single_location(session: Session, location_id: int) -> models.Location:
+        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Location, id=location_id)
+        return LocationModelInterface.convert_db_item_to_pydantic_model(session=session, db_item=db_item)
+
+    @staticmethod
     def get_db_entries(session: Session, *_, **__) -> list[models.Location]:
         """List all entries within the Location database table."""
         query = session.query(db_models.Location)
 
         items = []
         for item in query:
-            location_type = session.get(db_models.LocationType, item.location_type)
-            area_type_model = models.IDModel(
-                id=location_type.id,
-                last_updated=location_type.last_updated,
-                name=location_type.name,
-                object_key=location_type.object_key,
-            )
-            items.append(
-                models.Location(
-                    id=item.id,
-                    last_updated=item.last_updated,
-                    name=item.name,
-                    object_key=item.object_key,
-                    location_type=area_type_model,
-                )
-            )
+            items.append(LocationModelInterface.convert_db_item_to_pydantic_model(session=session, db_item=item))
         return items
 
     @staticmethod
-    def add_new_entry(session: Session, name: str, object_key: str, area_type_key: str) -> object:
+    def convert_db_item_to_pydantic_model(session: Session, db_item: db_models.Location) -> models.Location:
+        location_type = session.get(db_models.LocationType, db_item.location_type)
+        location_type_model = models.IDModel(
+            id=location_type.id,
+            last_updated=location_type.last_updated,
+            name=location_type.name,
+            object_key=location_type.object_key,
+        )
+
+        return models.Location(
+            id=db_item.id,
+            last_updated=db_item.last_updated,
+            name=db_item.name,
+            object_key=db_item.object_key,
+            location_type=location_type_model,
+            boundary=to_shape(db_item.boundary),
+        )
+
+    @staticmethod
+    def add_new_entry(
+        session: Session, name: str, object_key: str, location_type_key: str, boundary: dict[str, Any]
+    ) -> object:
         """Add a new Location entry to the database."""
-        location_type = get_db_object_by_key(session=session, db_model=db_models.LocationType, object_key=area_type_key)
+        location_type = get_db_object_by_key(
+            session=session, db_model=db_models.LocationType, object_key=location_type_key
+        )
+
+        boundary_geom = shapely.geometry.shape(boundary.features[0])
+        boundary_wkt = boundary_geom.wkt
+
         new_db_item = add_db_item(
             session=session,
-            db_item=db_models.Location(name=name, object_key=object_key, location_type=location_type.id),
+            db_item=db_models.Location(
+                name=name, object_key=object_key, location_type=location_type.id, boundary=boundary_wkt
+            ),
         )
         return new_db_item
 

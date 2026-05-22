@@ -65,9 +65,9 @@ def intialise_db() -> None:
     ]
 
     data_categories = [
-        {"name": "DEM", "object_key": "dem", "data_category_group": "topo_rs"},
-        {"name": "DSM", "object_key": "dsm", "data_category_group": "topo_rs"},
-        {"name": "Stations", "object_key": "stations", "data_category_group": "geology_soils"},
+        {"name": "Digital Elevation Model", "object_key": "dem", "data_category_group": "topo_rs"},
+        {"name": "Digital Surface Model", "object_key": "dsm", "data_category_group": "topo_rs"},
+        {"name": "Soil Moisture", "object_key": "soil_moisture", "data_category_group": "geology_soils"},
     ]
 
     data_formats = [
@@ -119,6 +119,7 @@ def intialise_db() -> None:
     layers = [
         {
             "name": "Tweed DSM",
+            "description": "Digital surface model covering the Tweed catchment",
             "project": "fdri",
             "date": "2026-03-20",
             "source_type": "s3",
@@ -180,11 +181,12 @@ def intialise_db() -> None:
         {
             "name": "Cosmos Sites",
             "project": "fdri",
-            "date": "2026-03-20",
+            "start_date": "2026-03-20",
+            "end_date": "2026-05-01",
             "source_type": "s3",
             "raw_source_id": "cosmos_sites.geojson",
             "data_format": "vector",
-            "data_category": "stations",
+            "data_category": "soil_moisture",
             "processing_level": "processed",
             "location": "uk",
             "boundary": (

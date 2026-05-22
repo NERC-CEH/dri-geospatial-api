@@ -42,6 +42,8 @@ class Location(IDModel):
         # Calculate the bounds of the location boundary, to be used for zoom to layer functionality
         min_x, min_y, max_x, max_y = self.boundary.bounds
         response["bbox"] = {"min_x": min_x, "max_x": max_x, "min_y": min_y, "max_y": max_y}
+        response["centroid"] = {"x": self.boundary.centroid.x, "y": self.boundary.centroid.y}
+
         return response
 
 
@@ -87,8 +89,13 @@ class Layer(BaseModel):
         # Then modify indiviudal fields to make them suitable for a JSONResponse object
         response = self.__dict__.copy()
 
-        # Convert the start and end dates to iso formatted date strings
-        response["date"] = self.date.strftime("%Y-%m-%d")
+        # Convert the dates to iso formatted date strings
+        if self.date:
+            response["date"] = self.date.strftime("%Y-%m-%d")
+        if self.start_date:
+            response["start_date"] = self.start_date.strftime("%Y-%m-%d")
+        if self.end_date:
+            response["end_date"] = self.end_date.strftime("%Y-%m-%d")
 
         # Convert the various sub-models to json
         response["project"] = self.project.to_json_response()
@@ -124,13 +131,21 @@ class Layer(BaseModel):
 
         """
         if self.source_type.object_key.lower() == "s3":
+            if self.date:
+                date_str = self.date.date()
+            else:
+                end_date_str = ""
+                if self.end_date:
+                    end_date_str = f"-{self.end_date.date()}"
+                date_str = f"{self.start_date.date()}{end_date_str}"
+
             bucket_keys = (
                 f"project={self.project.object_key}/"
                 f"location_type={self.location.location_type.object_key}/"
                 f"location={self.location.object_key}/"
                 f"data_category={self.data_category.object_key}/"
                 f"processing_level={self.processing_level.object_key}/"
-                f"date={self.date.date()}"
+                f"date={date_str}"
             )
 
             source_url = f"{self.source_type.base_url}/{bucket_keys}/{source_id}"

@@ -79,15 +79,40 @@ def add_model(db: Annotated[Session, Depends(get_db)], model_name: str, name: st
     return JSONResponse(status_code=200, content=f"Successfully created {model_name} {new_model.name}")
 
 
-@router.post("/add_area_name")
-def add_area_name(
-    db: Annotated[Session, Depends(get_db)], name: str, object_key: str, area_type_key: str
+@router.post("/add_data_category")
+def add_data_category(
+    db: Annotated[Session, Depends(get_db)],
+    name: str,
+    object_key: str,
+    category_group_key: str,
 ) -> JSONResponse:
-    new_db_item = LocationModelInterface.add_new_entry(
-        session=db, name=name, object_key=object_key, area_type_key=area_type_key
+    new_db_item = DataCategoryModelInterface.add_new_entry(
+        session=db,
+        name=name,
+        object_key=object_key,
+        data_category_group_key=category_group_key,
     )
 
-    return JSONResponse(status_code=200, content=f"Successfully created new area name {new_db_item.name}")
+    return JSONResponse(status_code=200, content=f"Successfully created new data category {new_db_item.name}")
+
+
+@router.post("/add_location")
+def add_location(
+    db: Annotated[Session, Depends(get_db)],
+    name: str,
+    object_key: str,
+    location_type_key: str,
+    boundary: UploadFile,
+) -> JSONResponse:
+    new_db_item = LocationModelInterface.add_new_entry(
+        session=db,
+        name=name,
+        object_key=object_key,
+        location_type_key=location_type_key,
+        boundary=geojson.load(boundary.file),
+    )
+
+    return JSONResponse(status_code=200, content=f"Successfully created new location {new_db_item.name}")
 
 
 @router.post("/add_layer")
@@ -95,18 +120,22 @@ async def add_layer(
     db: Annotated[Session, Depends(get_db)],
     name: str,
     project: str,
-    date: str,
     source_type: str,
     data_format: str,
     data_category: str,
     processing_level: str,
     location: str,
+    description: str | None = None,
+    date: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
     colour_source_id: str | None = None,
     colour_source_file: UploadFile | None = None,
     raw_source_id: str | None = None,
     raw_source_file: UploadFile | None = None,
     legend: UploadFile | None = None,
     boundary: UploadFile | None = None,
+    field_metadata: UploadFile | None = None,
     s3_client: S3Client = Depends(lambda: s3),
 ) -> JSONResponse:
     if not colour_source_id and not colour_source_file and not raw_source_id and not raw_source_file:
@@ -119,15 +148,33 @@ async def add_layer(
     if legend and not legend.filename.lower().endswith(".json"):
         raise HTTPException("The legend must be provided as a .json file.")
 
+    # Ensure the provided field metadata file is a json
+    if field_metadata and not field_metadata.filename.lower().endswith(".json"):
+        raise HTTPException("Field metadata must be provided as a .json file.")
+
     # Ensure the provided boundary file is a geojson
     if boundary and not boundary.filename.lower().endswith(".geojson"):
         raise HTTPException("The boundary must be provided as a .geojson file.")
 
+    # Ensure either a single date, or a combination of start date and end date have been provided
+    if (
+        (not date and not start_date and not end_date)
+        or (date and (start_date or end_date))
+        or (end_date and not date and not start_date)
+    ):
+        raise HTTPException(
+            "Either a single date or a start and end date combination need to be provided. "
+            "If the dataset is ongoing, leave the end date blank"
+        )
+
     new_layer = LayerRegistryInterface.add_new_layer(
         session=db,
         name=name,
+        description=description,
         project_key=project,
-        date=datetime.strptime(date, "%Y-%m-%d"),
+        date=datetime.strptime(date, "%Y-%m-%d") if date else None,
+        start_date=datetime.strptime(start_date, "%Y-%m-%d") if start_date else None,
+        end_date=datetime.strptime(end_date, "%Y-%m-%d") if end_date else None,
         source_type_key=source_type,
         data_format_key=data_format,
         data_category_key=data_category,
