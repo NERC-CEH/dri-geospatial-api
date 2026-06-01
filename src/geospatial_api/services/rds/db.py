@@ -69,13 +69,13 @@ def get_db_object_by_key(session: Session, db_model: object, object_key: str) ->
     return db_object
 
 
-def get_db_object_by_primary_key(session: Session, db_model: object, id: int) -> object:
+def get_db_object_by_primary_key(session: Session, db_model: object, primary_key: int) -> object:
     """Fetch a single database item using the primary key id value
 
     Args:
         session: The sqlalchemy Session instance
         db_model: The sqlalchemy database class to query
-        id: The unique value to be searched for within the `id` column.
+        primary_key: The unique value to be searched for within the `id` column.
 
     Raises:
         ValueError: The query failed.
@@ -84,16 +84,21 @@ def get_db_object_by_primary_key(session: Session, db_model: object, id: int) ->
         An instance of the sqlalchemy database model corresponding to the requested object key and db_model.
 
     """
-    db_object = session.get(db_model, id)
+    db_object = session.get(db_model, primary_key)
     if not db_object:
         raise ValueError(
-            f"Could not fetch model instance `{str(db_model)} for primary key: {id}. Object may not exist."
+            f"Could not fetch model instance `{str(db_model)} for primary key: {primary_key}. Object may not exist."
         )
 
     return db_object
 
 
 class LayerRegistryInterface:
+    @staticmethod
+    def get_single_layer(session: Session, layer_id: int) -> models.Location:
+        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Layer, primary_key=layer_id)
+        return LayerRegistryInterface.convert_layer_to_pydantic_model(session=session, db_layer=db_item)
+
     @staticmethod
     def get_db_entries(session: Session) -> list[models.Layer]:
         """Fetch all entries for the Layer model, converted to the corresponding pydantic model."""
@@ -356,7 +361,7 @@ class IDModelInterface:
 class LocationModelInterface:
     @staticmethod
     def get_single_location(session: Session, location_id: int) -> models.Location:
-        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Location, id=location_id)
+        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Location, primary_key=location_id)
         return LocationModelInterface.convert_db_item_to_pydantic_model(session=session, db_item=db_item)
 
     @staticmethod

@@ -13,12 +13,12 @@ from sqlalchemy.orm import Session
 from geospatial_api import models as py_models
 from geospatial_api.config import setup_config
 from geospatial_api.services.rds.db import (
-    LocationModelInterface,
     DataCategoryModelInterface,
     IDModelInterface,
     LayerRegistryInterface,
+    LocationModelInterface,
 )
-from geospatial_api.utils import get_db, get_s3_client
+from geospatial_api.utils.utils import get_db, get_s3_client
 
 router = APIRouter(tags=["Layer Management"])
 s3 = get_s3_client()

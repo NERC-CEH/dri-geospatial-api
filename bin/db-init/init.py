@@ -62,12 +62,14 @@ def intialise_db() -> None:
     data_category_groups = [
         {"name": "Topography and Remote Sensing", "object_key": "topo_rs"},
         {"name": "Geology and Soils", "object_key": "geology_soils"},
+        {"name": "Hydrology", "object_key": "hydrology"},
     ]
 
     data_categories = [
         {"name": "Digital Elevation Model", "object_key": "dem", "data_category_group": "topo_rs"},
         {"name": "Digital Surface Model", "object_key": "dsm", "data_category_group": "topo_rs"},
         {"name": "Soil Moisture", "object_key": "soil_moisture", "data_category_group": "geology_soils"},
+        {"name": "Flow Monitoring", "object_key": "flow_monitoring", "data_category_group": "hydrology"},
     ]
 
     data_formats = [
@@ -103,8 +105,6 @@ def intialise_db() -> None:
                 "-3.417466 55.510587))"
             ),
         },
-        # {"name": "Chess", "object_key": "chess", "location_type": "catchment"},
-        # {"name": "Severn", "object_key": "severn", "location_type": "catchment"},
     ]
 
     source_types = [
@@ -113,6 +113,7 @@ def intialise_db() -> None:
             "object_key": "s3",
             "base_url": "s3://ukceh-fdri-staging-geospatial",
         },
+        {"name": "Metadata API", "object_key": "metadata_api", "base_url": "https://dri-metadata-api.dri.ceh.ac.uk"},
         {"name": "EIDC Catalogue", "object_key": "eidc_catalogue", "base_url": "https://catalogue.ceh.ac.uk"},
     ]
 
@@ -183,8 +184,11 @@ def intialise_db() -> None:
             "project": "fdri",
             "start_date": "2026-03-20",
             "end_date": "2026-05-01",
-            "source_type": "s3",
-            "raw_source_id": "cosmos_sites.geojson",
+            "source_type": "metadata_api",
+            "raw_source_id": (
+                "id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains."
+                "hasGeometry.*"
+            ),
             "data_format": "vector",
             "data_category": "soil_moisture",
             "processing_level": "processed",
@@ -197,6 +201,61 @@ def intialise_db() -> None:
                 "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
                 "-7.291954 50.03266))"
             ),
+            "field_metadata": [
+                {
+                    "display_label": "Name",
+                    "key": "name",
+                    "field_keys": [{"key": "label", "type": "list", "index": 0}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "Name",
+                    "key": "geometry",
+                    "field_keys": [
+                        {"key": "hasGeometry", "type": "wkt_list", "index": None},
+                    ],
+                    "data_type": "string",
+                },
+            ],
+        },
+        {
+            "name": "EA Flow Gaugings",
+            "project": "fdri",
+            "start_date": "2024-01-01",
+            "end_date": None,
+            "source_type": "metadata_api",
+            "raw_source_id": (
+                "id/network/ea-manual-sites?_projection=contains.label,contains.comment,contains.identifier,"
+                "contains.hasGeometry.*"
+            ),
+            "data_format": "vector",
+            "data_category": "flow_monitoring",
+            "processing_level": "raw",
+            "location": "uk",
+            "boundary": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+            "bbox": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+            "field_metadata": [
+                {
+                    "display_label": "Name",
+                    "key": "name",
+                    "field_keys": [{"key": "label", "type": "list", "index": 0}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "Name",
+                    "key": "geometry",
+                    "field_keys": [
+                        {"key": "hasGeometry", "type": "wkt_list", "index": None},
+                    ],
+                    "data_type": "string",
+                },
+            ],
         },
     ]
 

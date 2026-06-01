@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from geospatial_api.utils import get_file_path, get_s3_client
+from geospatial_api.utils.utils import get_file_path, get_s3_client
 
 
 class TestGetFilePath:

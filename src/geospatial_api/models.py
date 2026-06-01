@@ -76,7 +76,7 @@ class Layer(BaseModel):
     bbox: shapely.Polygon
     processing_level: IDModel
     location: Location
-    field_metadata: Optional[dict[str, Any]]
+    field_metadata: Optional[list[dict[str, Any]]]
 
     def to_json_response(self) -> dict[str, Any]:
         """Convert the Layer model instance to a dictionary able to be easily converted to a JSONResponse object
@@ -156,4 +156,4 @@ class Layer(BaseModel):
         if self.source_type.base_url.endswith("/"):
             join_character = ""
 
-        return f"{self.source_type.base_url}{join_character}{source_url}"
+        return f"{self.source_type.base_url}{join_character}{self.raw_source_id}"

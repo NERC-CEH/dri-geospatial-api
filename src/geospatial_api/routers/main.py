@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from geospatial_api.config import setup_config
-from geospatial_api.services.rds.db import LayerRegistryInterface, LocationModelInterface, get_db_object_by_key
-from geospatial_api.utils import get_db, get_s3_client
+from geospatial_api.services.rds.db import LayerRegistryInterface, LocationModelInterface
+from geospatial_api.utils.utils import get_db, get_s3_client
 
 router = APIRouter()
 
