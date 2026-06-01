@@ -24,7 +24,7 @@ class TestVector:
         """Test the vector endpoint returns valid geojson from s3."""
         response = client.get(
             "/api/vector?url=s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=national/location=uk/"
-            "data_category=stations/processing_level=processed/date=2026-03-20/cosmos_sites.geojson"
+            "data_category=soil_moisture/processing_level=processed/date=2026-03-20-2026-05-01/cosmos_sites.geojson"
         )
         assert response.status_code == 200
         assert response.json() == expected_geojson
