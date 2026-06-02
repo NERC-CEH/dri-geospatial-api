@@ -293,7 +293,7 @@ def intialise_db() -> None:
 
     print("Filling Layer Registry")
     for layer in layers:
-        layer["project"] = db.get_db_item_by_key(geospatial.Project, object_key=layer["project"]).id
+        layer["project"] = getattr(db.get_db_item_by_key(geospatial.Project, object_key=layer["project"]), "id", None)
         layer["source_type"] = db.get_db_item_by_key(geospatial.SourceType, object_key=layer["source_type"]).id
         layer["data_format"] = db.get_db_item_by_key(geospatial.DataFormat, object_key=layer["data_format"]).id
         layer["data_category"] = db.get_db_item_by_key(geospatial.DataCategory, object_key=layer["data_category"]).id
