@@ -28,6 +28,7 @@ jobs:
     with:
       use_uv: true
       package_name: geospatial_api
+      private_repos: true
       event_type: ${{ github.event_name }}
     secrets:
       AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -40,6 +41,7 @@ jobs:
     with:
       use_uv: true
       package_name: geospatial_api
+      private_repos: true
       event_type: ${{ github.event_name }}
     secrets:
       AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -52,6 +54,7 @@ jobs:
     with:
       use_uv: true
       package_name: geospatial_api
+      private_repos: true
       event_type: ${{ github.event_name }}
     secrets:
       AWS_REGION: ${{ secrets.AWS_REGION }}
