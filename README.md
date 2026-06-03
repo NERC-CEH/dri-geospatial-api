@@ -113,8 +113,8 @@ docker compose command.
 docker compose --profile localstack --profile db up
 ```
 
-This will create or clear and reinitialise the database, including adding loading all test data and registering it with
-the postgis database. 
+This will initialise both localstack and the database, clearing and recreating the tables in the process. 
+All test data will then be loaded into localstack and registered the postgis database. 
 
 ## Adding / Deleting test data
 
