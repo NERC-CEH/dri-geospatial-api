@@ -30,13 +30,13 @@ def engine() -> Engine:
 def tables(engine: Engine, monkeypatch: pytest.MonkeyPatch) -> Generator[None, None, None]:
     """Create geospatial sqlalchemy tables (dri-database-models) in the in-memory database."""
     schema_name = "geospatial"
-    monkeypatch.setenv("SPATIALITE_LIBRARY_PATH", SPATIALITE_LIBRARY_PATH)
 
     # Register an event listener to ATTACH the 'geospatial' database
     # This gets around the lack of 'geospatial' schema in sqlite
     @event.listens_for(engine, "connect")
     def set_sqlite_pragma(dbapi_connection: sqlite3.Connection, connection_record: Connection) -> None:
         # Ensure the spatialite extension is loaded in order to support the geometry columns
+        monkeypatch.setenv("SPATIALITE_LIBRARY_PATH", SPATIALITE_LIBRARY_PATH)
         load_spatialite(dbapi_connection)
 
         # Attach a second in-memory database with the name 'geospatial'
