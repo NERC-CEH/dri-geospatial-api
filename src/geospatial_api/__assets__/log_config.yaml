@@ -7,6 +7,9 @@ formatters:
   access:
     "()": uvicorn.logging.AccessFormatter
     format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+filters:
+  healthcheck:
+    "()": geospatial_api.logger.HealthCheckFilter
 handlers:
   default:
     formatter: default
@@ -16,6 +19,8 @@ handlers:
     formatter: access
     class: logging.StreamHandler
     stream: ext://sys.stdout
+    filters:
+      - healthcheck
 loggers:
   uvicorn.error:
     level: DEBUG
