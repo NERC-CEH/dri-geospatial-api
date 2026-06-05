@@ -209,7 +209,7 @@ def intialise_db() -> None:
                     "data_type": "string",
                 },
                 {
-                    "display_label": "Name",
+                    "display_label": "Location",
                     "key": "geometry",
                     "field_keys": [
                         {"key": "hasGeometry", "type": "wkt_list", "index": None},
