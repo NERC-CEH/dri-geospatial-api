@@ -1,3 +1,7 @@
+secrets:
+  GH_TOKEN:
+    environment: GH_TOKEN
+
 x-common: &api-common
   container_name: "geospatial_api"
   image: "dri-geospatial-api"
@@ -52,6 +56,45 @@ services:
     networks:
       - app-network  # Ensure communication within the same network
 
+  postgres:
+    image: postgis/postgis:18-3.6-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fdri
+    volumes:
+      - postgres_data:/var/lib/postgresql/18/data
+      - ./bin/db-init/init-sql:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    profiles:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d fdri"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  init-db:
+    build:
+      context: ./bin/db-init
+      secrets:
+        - GH_TOKEN
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=fdri
+      - POSTGRES_PORT=5432
+      - POSTGRES_SCHEMA=geospatial
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - db
+
 networks:
   app-network:
     driver: bridge  # Ensures all services can communicate
+
+volumes:
+  postgres_data:

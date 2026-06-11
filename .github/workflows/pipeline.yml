@@ -17,8 +17,11 @@ jobs:
     uses: NERC-CEH/dri-cicd/.github/workflows/test-python.yml@main
     with:
       use_uv: true
-      coverage_threshold: 90
+      private_repos: true
+      coverage_threshold: 80
       localstack_profile_name: localstack
+    secrets:
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
   build-test-deploy-docker-staging:
     if: ${{ github.ref_name == 'staging' || github.base_ref == 'staging' }}
@@ -27,10 +30,12 @@ jobs:
     with:
       use_uv: true
       package_name: geospatial_api
+      private_repos: true
       event_type: ${{ github.event_name }}
     secrets:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
   
   build-test-deploy-docker-production:
     if: ${{ github.ref_name == 'production' || github.base_ref == 'production' }}
@@ -39,10 +44,12 @@ jobs:
     with:
       use_uv: true
       package_name: geospatial_api
+      private_repos: true
       event_type: ${{ github.event_name }}
     secrets:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
   create-staging-to-production-pr:
     needs: [build-test-deploy-docker-staging]

@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "tweed_dsm_clipped_boundary_4326",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -3.417465545048778, 55.510586712239522 ], [ -3.417320798966943, 55.510616331759344 ], [ -3.41727042843751, 55.510520734287191 ], [ -3.41743261047184, 55.510475599662271 ], [ -3.417465545048778, 55.510586712239522 ] ] ] } }
+]
+}

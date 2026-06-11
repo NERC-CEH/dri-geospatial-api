@@ -1,11 +1,13 @@
-from typing import Any
+from typing import Annotated, Any
 
+import geojson
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from mypy_boto3_s3 import S3Client
+from sqlalchemy.orm import Session
 
 from geospatial_api.config import setup_config
-from geospatial_api.utils import get_s3_client
+from geospatial_api.services.rds.db import LayerRegistryInterface, LocationModelInterface
+from geospatial_api.utils.utils import get_db, get_s3_client
 
 router = APIRouter()
 
@@ -27,31 +29,14 @@ LAYER_CENTRES = {
 
 
 @router.get("/available_data")
-def available_data(s3_client: S3Client = Depends(lambda: s3)) -> dict[str, Any]:
-    data = []
-    items = s3_client.list_objects_v2(Bucket=config.geospatial_data_bucket)
+def get_available_data(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
+    layers = LayerRegistryInterface.get_db_entries(session=db)
 
-    for idx, item in enumerate(items.get("Contents", [])):
-        key = item["Key"]
-        if any([key.endswith(suffix) for suffix in EXT_MAPPING.keys()]):
-            name, ext = key.split("/")[-1].split(".")
-            data.append(
-                {
-                    "id": idx,
-                    "name": name,
-                    "data_type": EXT_MAPPING.get(ext, "unknown"),
-                    "s3_url": f"S3://{config.geospatial_data_bucket}/{item['Key']}",
-                    "geojson": None,
-                    "map_centre": get_map_centre(name),
-                    "colourmap_name": "terrain" if "greyscale" in name.lower() else None,
-                }
-            )
-    return JSONResponse(data)
+    return JSONResponse([item.to_json_response() for item in layers])
 
 
-def get_map_centre(layer_name: str) -> tuple[float, float]:
-    for name_fragment, layer_centre in LAYER_CENTRES.items():
-        if name_fragment.lower() in layer_name.lower():
-            return layer_centre
-
-    return DEFAULT_MAP_CENTRE
+@router.get("/location_boundary")
+def get_location_boundary(db: Annotated[Session, Depends(get_db)], location_id: int) -> dict[str, Any]:
+    location = LocationModelInterface.get_single_location(session=db, location_id=location_id)
+    geojson_feature = geojson.Feature(geometry=location.boundary)
+    return geojson.FeatureCollection([geojson_feature])

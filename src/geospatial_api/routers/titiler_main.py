@@ -5,7 +5,7 @@ from mypy_boto3_s3 import S3Client
 from titiler.extensions import cogValidateExtension, cogViewerExtension, wmsExtension
 
 from geospatial_api.routers.cached_titiler import TilerFactory
-from geospatial_api.utils import get_file_path, get_s3_client
+from geospatial_api.utils.utils import get_file_path, get_s3_client
 
 logger = logging.getLogger(__name__)
 

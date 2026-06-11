@@ -1,16 +1,22 @@
 from pathlib import Path
+from typing import Generator
 from urllib.parse import urlparse
 
 import boto3
 import boto3.session
 from botocore.client import Config
 from mypy_boto3_s3 import S3Client
+from sqlalchemy.orm import Session
 
 from geospatial_api.config import LocalConfig, setup_config
+from geospatial_api.services.rds.auth import RDSLogin
 
 boto3_config = Config(max_pool_connections=100)
 
 config = setup_config()
+
+# A database Session generator
+SessionGenerator = RDSLogin.get_session_generator(config)
 
 
 def get_s3_client() -> S3Client:
@@ -26,6 +32,15 @@ def get_s3_client() -> S3Client:
         s3 = boto3.client("s3", config=boto3_config)
 
     return s3
+
+
+def get_db() -> Generator[Session, None, None]:
+    """Create a new sqlalchemy database Session instance."""
+    db: Session = SessionGenerator()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def get_file_path(url: str | Path, s3_client: S3Client) -> str:

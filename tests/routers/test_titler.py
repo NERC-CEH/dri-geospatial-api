@@ -14,19 +14,13 @@ client = TestClient(app)
 
 def check_image_response(response: Response) -> None:
     expected_image_bytes = (
-        "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADo0lEQVR4nO3cwVHDQBAAQYlcyD8soqDgAR8eQNmWfKeb7gj8mlrvrb1vEPD+"
-        "9vox+jPM6GX0BwDGEQAIEwAI20d/ALiX7/WPMwFAmABAmABAmABAmABAmFcALsHG/xwmAAgTAAgTAAgTAAizBGQYi73xTAAQJgAQJgAQJgAQ"
-        "JgAQJgAQJgAQJgAQJgAQJgAQJgAQJgAQJgAQJgAQJgAQ5v8AOJTf+F+LCQDCBADCBADCBADCBADCBADCBADCBADCBADCBADCnAJzFye/azAB"
-        "QJgAQJgAQJgAQJgAQJhXAH6w3W8xAUCYAECYAECYAECYAECYAECYAECYAECYAECYAECYU+AoJ79smwkA0gQAwgQAwgQAwiwBAyz8+I0JAMIE"
-        "AMIEAMIEAMIEAMIEAMIEAMIEAMIEAMIEAMKcAi/EyS+3MgFAmABAmABAmABAmABAmFeAydnscyYTAIQJAIQJAIQJAIQJAIQJAIQJAIQJAIQJ"
-        "AIS5BJyIqz+ezQQAYQIAYQIAYQIAYQIAYV4BBrDtZxYmAAgTAAgTAAgTAAizBDyZhR8zMwFAmABAmABAmABAmABAmABAmABAmABAmABAmABA"
-        "mFPggzj55YpMABAmABAmABAmABAmABDmFeAftvuszAQAYQIAYQIAYQIAYQIAYQIAYQIAYQIAYQIAYQIAYU6Bvzn5pcgEAGECAGECAGECAGHJ"
-        "JaCFH3wxAUCYAECYAECYAECYAECYAECYAECYAECYAECYAEDY0qfATn7hbyYACBMACBMACBMACLvcEtBiD45jAoAwAYAwAYAwAYAwAYAwAYAw"
-        "AYAwAYAwAYAwAYCwqU+Bnf3CuUwAECYAECYAECYAECYAEPb0VwCbfZiHCQDCBADCBADCBADCBADCBADCBADCBADCBADCBADCBADCBADCBADC"
-        "BADCBADCDvk/AL/xh2syAUCYAECYAECYAECYAEDYza8ANv6wDhMAhAkAhAkAhAkAhAkAhAkAhAkAhAkAhAkAhO3b5roPqkwAECYAECYAECYA"
-        "ECYAELZ7AYAuEwCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCE"
-        "CQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCECQCEfQLi4lC3"
-        "8Hu+JwAAAABJRU5ErkJggg=="
+        "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAB60lEQVR4nO3ZwSpEYRgG4G+mU2NhlBmUFKXJRlIWsrBQdvYsrWwtXIWycgGy"
+        "dAlspsZWKclGDAuUKYthIQw5ruGok46e5wLe3s3/9fX9EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAAAAAA/Bulvy4A/N7U1Fra1xuI18ZC3DQ3Mr/nch6lgPxNzO+kvbGlKI8uRlIbi4/WSpo1I8mjGJC/ke3nSEdL8bxX"
+        "ieXJuzhvzUXEYaYMAwAKauvoMYbmh2Nw9To6Fx/RfnnPnGEAQEHVZxaiWhuP5k4jqvEVpdn9zBluAFBQt51udN7SOPi8j932SVTrZ5kzbABQ"
+        "UJXp/rhMrqJ7ehzJ91Osbz741QMAAAAAAAAAAAAAAAAAAAAAAACAgvgBF1g1Lx3BssMAAAAASUVORK5CYII="
     )
 
     decoded_image_bytes = base64.b64encode(response.content).decode()
@@ -41,8 +35,9 @@ class TestTitiler:
         monkeypatch.setenv("AIOCACHE_DISABLE", 1)
 
         response = client.get(
-            "api/maps/tiles/WebMercatorQuad/16/32261/21043.png?url=S3://ukceh-fdri-staging-geospatial/raster/"
-            "test_raster_3857_cog_rendered.tif"
+            "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+            "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+            "clipped_tweed_dsm_3857_colourised_cog.tif"
         )
 
         assert response.status_code == 200
@@ -52,8 +47,8 @@ class TestTitiler:
         # Disable the cache to ensure that we are testing the core raster fetching logic
         monkeypatch.setenv("AIOCACHE_DISABLE", 1)
 
-        raster_path = data_dir.joinpath("test_raster_3857_cog_rendered.tif")
-        response = client.get(f"api/maps/tiles/WebMercatorQuad/16/32261/21043.png?url=file:///{raster_path}")
+        raster_path = data_dir.joinpath("clipped_tweed_dsm_3857_colourised_cog.tif")
+        response = client.get(f"api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=file:///{raster_path}")
 
         assert response.status_code == 200
         check_image_response(response)
@@ -65,8 +60,9 @@ class TestCachedTitiler:
 
         # Call the raster tile endpoint once initially to store the tile in the cache
         response_1 = client.get(
-            "api/maps/tiles/WebMercatorQuad/16/32261/21043.png?url=S3://ukceh-fdri-staging-geospatial/raster/"
-            "test_raster_3857_cog_rendered.tif"
+            "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+            "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+            "clipped_tweed_dsm_3857_colourised_cog.tif"
         )
 
         assert response_1.status_code == 200
@@ -74,8 +70,9 @@ class TestCachedTitiler:
 
         with mock.patch.object(TilerFactory, "tile") as mock_tile:
             response_2 = client.get(
-                "api/maps/tiles/WebMercatorQuad/16/32261/21043.png?url=S3://ukceh-fdri-staging-geospatial/raster/"
-                "test_raster_3857_cog_rendered.tif"
+                "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+                "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+                "clipped_tweed_dsm_3857_colourised_cog.tif"
             )
             # If caching has worked correctly, then the response should contain a valid image, but the tile function
             # from TilerFactor should not have been called
