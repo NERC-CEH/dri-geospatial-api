@@ -27,6 +27,12 @@ class BaseConfig(BaseSettings):
     geospatial_data_bucket: str
     metadata_url: str
 
+    db_user_name: str
+    db_host: str
+    db_port: int
+    db_name: str
+    db_schema: str
+
     @field_validator("api_environment")
     def check_api_environment(cls, value: str) -> str:
         """Validate the api_environment variable."""
@@ -53,6 +59,8 @@ class LocalConfig(BaseConfig):
     AWS_SECRET_ACCESS_KEY: str
     AWS_NO_SIGN_REQUEST: str
     endpoint_url: str
+
+    db_password: str
 
     api_environment: str = "local"
     model_config = SettingsConfigDict(env_file=ENV_FILE_PATH)

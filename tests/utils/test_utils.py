@@ -3,13 +3,13 @@ from unittest import mock
 
 import pytest
 
-from geospatial_api.utils import get_file_path, get_s3_client
+from geospatial_api.utils.utils import get_file_path, get_s3_client
 
 
 class TestGetFilePath:
     def test_local_file_path(self, data_dir: Path) -> None:
         """Check a valid local file path is returned unmodified."""
-        input_path = data_dir.joinpath("test_raster_3857_cog_rendered.tif")
+        input_path = data_dir.joinpath("clipped_tweed_dsm_3857_colourised_cog.tif")
         mock_s3_client = mock.MagicMock()
         file_path = get_file_path(url=input_path, s3_client=mock_s3_client)
 
@@ -25,7 +25,7 @@ class TestGetFilePath:
 
     def test_remote_formatted_local_file_path(self, data_dir: Path) -> None:
         """Check a local path in the format of `file:////path_to/raster.tif` is parsed correctly."""
-        input_path = data_dir.joinpath("test_raster_3857_cog_rendered.tif")
+        input_path = data_dir.joinpath("clipped_tweed_dsm_3857_colourised_cog.tif")
         mock_s3_client = mock.MagicMock()
         file_path = get_file_path(url=f"file:///{input_path}", s3_client=mock_s3_client)
 
@@ -33,7 +33,7 @@ class TestGetFilePath:
         assert file_path == str(input_path)
 
     def test_s3_url(self) -> None:
-        s3_url = "S3://ukceh-fdri-staging-geospatial/raster/test_raster_3857_cog_rendered.tif"
+        s3_url = "S3://ukceh-fdri-staging-geospatial/raster/clipped_tweed_dsm_3857_colourised_cog.tif"
 
         mock_s3_client = mock.MagicMock()
         mock_s3_client.generate_presigned_url.return_value = "presigned_s3"
