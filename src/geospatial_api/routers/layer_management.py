@@ -21,7 +21,7 @@ from geospatial_api.services.rds.db import (
 from geospatial_api.utils.ip_whitelisting import require_whitelisted_ip_address
 from geospatial_api.utils.utils import get_db, get_s3_client
 
-private_router = APIRouter(tags=["Private", "Layer Management"], dependencies=[Depends(require_whitelisted_ip_address)])
+private_router = APIRouter(tags=["Layer Management"], dependencies=[Depends(require_whitelisted_ip_address)])
 
 s3 = get_s3_client()
 config = setup_config()

@@ -10,7 +10,7 @@ from geospatial_api.services.rds.db import LayerRegistryInterface
 from geospatial_api.utils.utils import get_db, get_file_path, get_s3_client
 from geospatial_api.utils.vector_https_utils import fetch_vector_data_from_https
 
-public_router = APIRouter(tags=["Public", "Vector Data"])
+public_router = APIRouter(tags=["Vector Data"])
 s3 = get_s3_client()
 
 

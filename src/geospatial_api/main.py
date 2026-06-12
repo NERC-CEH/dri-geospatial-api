@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .cache import setup_cache
 from .config import setup_config
 from .metrics import Metrics
+from .routers import docs as api_docs
 from .routers import healthcheck, layer_management, titiler_main, vector_main
 from .routers import main as main_router
 
@@ -44,6 +45,8 @@ api = FastAPI(
     title=config.title,
     description=config.description,
     contact={"name": config.contact_name, "url": config.contact_url},
+    docs_url=None,
+    openapi_url=None,
 )
 
 # metrics
@@ -62,6 +65,8 @@ api.include_router(vector_main.public_router, tags=["Vector Data"])
 # private routes
 api.include_router(layer_management.private_router)
 
+# Documentation
+api_docs.setup_docs(api)
 
 # Mount services into base application
 # ------------------------------------

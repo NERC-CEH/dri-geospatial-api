@@ -9,7 +9,7 @@ from geospatial_api.config import setup_config
 from geospatial_api.services.rds.db import LayerRegistryInterface, LocationModelInterface
 from geospatial_api.utils.utils import get_db, get_s3_client
 
-public_router = APIRouter(tags=["Public"])
+public_router = APIRouter(tags=[])
 
 config = setup_config()
 s3 = get_s3_client()
