@@ -18,9 +18,11 @@ from geospatial_api.services.rds.db import (
     LayerRegistryInterface,
     LocationModelInterface,
 )
+from geospatial_api.utils.ip_whitelisting import require_whitelisted_ip_address
 from geospatial_api.utils.utils import get_db, get_s3_client
 
-router = APIRouter(tags=["Layer Management"])
+private_router = APIRouter(tags=["Private", "Layer Management"], dependencies=[Depends(require_whitelisted_ip_address)])
+
 s3 = get_s3_client()
 config = setup_config()
 
@@ -54,7 +56,7 @@ MODEL_MAPPING = {
 }
 
 
-@router.get("/list_model")
+@private_router.get("/list_model")
 def get_model(model_name: str, db: Annotated[Session, Depends(get_db)]) -> JSONResponse:
     model_mapping = MODEL_MAPPING.get(model_name)
     if not model_mapping:
@@ -65,7 +67,7 @@ def get_model(model_name: str, db: Annotated[Session, Depends(get_db)]) -> JSONR
     return JSONResponse([item.to_json_response() for item in model_items])
 
 
-@router.post("/add_model")
+@private_router.post("/add_model")
 def add_model(db: Annotated[Session, Depends(get_db)], model_name: str, name: str, object_key: str) -> JSONResponse:
     model_mapping = MODEL_MAPPING.get(model_name)
     if not model_mapping:
@@ -79,7 +81,7 @@ def add_model(db: Annotated[Session, Depends(get_db)], model_name: str, name: st
     return JSONResponse(status_code=200, content=f"Successfully created {model_name} {new_model.name}")
 
 
-@router.post("/add_data_category")
+@private_router.post("/add_data_category")
 def add_data_category(
     db: Annotated[Session, Depends(get_db)],
     name: str,
@@ -96,7 +98,7 @@ def add_data_category(
     return JSONResponse(status_code=200, content=f"Successfully created new data category {new_db_item.name}")
 
 
-@router.post("/add_location")
+@private_router.post("/add_location")
 def add_location(
     db: Annotated[Session, Depends(get_db)],
     name: str,
@@ -115,7 +117,7 @@ def add_location(
     return JSONResponse(status_code=200, content=f"Successfully created new location {new_db_item.name}")
 
 
-@router.post("/add_layer")
+@private_router.post("/add_layer")
 async def add_layer(
     db: Annotated[Session, Depends(get_db)],
     name: str,

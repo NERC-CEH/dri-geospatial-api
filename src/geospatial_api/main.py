@@ -53,13 +53,14 @@ metrics.setup_metrics(service=api)
 # state
 api.state.config = config
 
-# routes
-
-api.include_router(healthcheck.router)
-api.include_router(main_router.router)
+# public routes
+api.include_router(healthcheck.public_router)
+api.include_router(main_router.public_router)
 api.include_router(titiler_main.router, prefix="/maps", tags=["Raster Data"])
-api.include_router(vector_main.router, tags=["Vector Data"])
-api.include_router(layer_management.router)
+api.include_router(vector_main.public_router, tags=["Vector Data"])
+
+# private routes
+api.include_router(layer_management.private_router)
 
 
 # Mount services into base application
