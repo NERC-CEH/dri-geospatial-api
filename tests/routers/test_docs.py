@@ -66,11 +66,25 @@ class TestOpenApiEndpoint:
         [
             "/list_model",
             "/add_model",
+            "/update_model",
             "/add_data_category",
+            "/update_data_category",
             "/add_location",
+            "/update_location",
             "/add_layer",
+            "/update_layer",
         ],
-        ids=["list model", "add model", "add data category", "add location", "add layer"],
+        ids=[
+            "list model",
+            "add model",
+            "update model",
+            "add data category",
+            "update data category",
+            "add location",
+            "update_location",
+            "add layer",
+            "update layer",
+        ],
     )
     def test_each_private_route_excluded_for_non_whitelisted_ip(self, path: str) -> None:
         """Test that each known private route is absent from the public schema."""

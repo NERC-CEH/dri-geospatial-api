@@ -81,6 +81,26 @@ def add_model(db: Annotated[Session, Depends(get_db)], model_name: str, name: st
     return JSONResponse(status_code=200, content=f"Successfully created {model_name} {new_model.name}")
 
 
+@private_router.post("/update_model")
+def update_model(
+    db: Annotated[Session, Depends(get_db)],
+    model_name: str,
+    model_id: int,
+    name: str | None = None,
+    object_key: str | None = None,
+) -> JSONResponse:
+    model_mapping = MODEL_MAPPING.get(model_name)
+    if not model_mapping:
+        raise HTTPException(f"The model {model_name} is not supported")
+
+    new_db_item = model_mapping.model_interface.update_model_entry(
+        session=db, db_model=model_mapping.db_model, model_id=model_id, name=name, object_key=object_key
+    )
+    updated_model_item = model_mapping.model_interface.convert_to_pydantic_model(new_db_item)
+
+    return JSONResponse(status_code=200, content=updated_model_item.to_json_response())
+
+
 @private_router.post("/add_data_category")
 def add_data_category(
     db: Annotated[Session, Depends(get_db)],
@@ -96,6 +116,27 @@ def add_data_category(
     )
 
     return JSONResponse(status_code=200, content=f"Successfully created new data category {new_db_item.name}")
+
+
+@private_router.post("/update_data_category")
+def update_data_category(
+    db: Annotated[Session, Depends(get_db)],
+    model_id: int,
+    name: str | None = None,
+    object_key: str | None = None,
+    category_group_key: str | None = None,
+) -> JSONResponse:
+    updated_db_item = DataCategoryModelInterface.update_entry(
+        session=db,
+        model_id=model_id,
+        name=name,
+        object_key=object_key,
+        data_category_group_key=category_group_key,
+    )
+
+    data_category = DataCategoryModelInterface.convert_db_item_to_pydantic_model(session=db, db_item=updated_db_item)
+
+    return JSONResponse(status_code=200, content=data_category.to_json_response())
 
 
 @private_router.post("/add_location")
@@ -115,6 +156,32 @@ def add_location(
     )
 
     return JSONResponse(status_code=200, content=f"Successfully created new location {new_db_item.name}")
+
+
+@private_router.post("/update_location")
+def update_location(
+    db: Annotated[Session, Depends(get_db)],
+    model_id: int,
+    name: str | None = None,
+    object_key: str | None = None,
+    location_type_key: str | None = None,
+    boundary: UploadFile | None = None,
+) -> JSONResponse:
+    if boundary is not None:
+        boundary = geojson.load(boundary.file)
+
+    updated_db_item = LocationModelInterface.update_entry(
+        session=db,
+        model_id=model_id,
+        name=name,
+        object_key=object_key,
+        location_type_key=location_type_key,
+        boundary=boundary,
+    )
+
+    location = LocationModelInterface.convert_db_item_to_pydantic_model(session=db, db_item=updated_db_item)
+
+    return JSONResponse(status_code=200, content=location.to_json_response())
 
 
 @private_router.post("/add_layer")
@@ -181,7 +248,7 @@ async def add_layer(
         data_format_key=data_format,
         data_category_key=data_category,
         processing_level_key=processing_level,
-        area_name_key=location,
+        location_key=location,
         colour_source_id=colour_source_file.filename if colour_source_file else colour_source_id,
         raw_source_id=raw_source_file.filename if raw_source_file else raw_source_id,
         legend=json.load(legend.file) if legend else None,

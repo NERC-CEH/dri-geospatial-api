@@ -186,8 +186,8 @@ def intialise_db() -> None:
             "end_date": "2026-05-01",
             "source_type": "metadata_api",
             "raw_source_id": (
-                "id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains."
-                "hasGeometry.*"
+                "id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,"
+                "contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude"
             ),
             "data_format": "vector",
             "data_category": "soil_moisture",
@@ -209,6 +209,30 @@ def intialise_db() -> None:
                     "data_type": "string",
                 },
                 {
+                    "display_label": "Description",
+                    "key": "description",
+                    "field_keys": [{"key": "comment", "type": "list", "index": 0}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "Altitude",
+                    "key": "altitude",
+                    "field_keys": [{"key": "altitude", "type": "value"}],
+                    "data_type": "float",
+                },
+                {
+                    "display_label": "Start Date",
+                    "key": "start_date",
+                    "field_keys": [{"key": "operatingPeriod", "type": "value"}, {"key": "startDate", "type": "value"}],
+                    "data_type": "date",
+                },
+                {
+                    "display_label": "Start Date",
+                    "key": "end_date",
+                    "field_keys": [{"key": "operatingPeriod", "type": "value"}, {"key": "endDate", "type": "value"}],
+                    "data_type": "date",
+                },
+                {
                     "display_label": "Location",
                     "key": "geometry",
                     "field_keys": [
@@ -226,7 +250,7 @@ def intialise_db() -> None:
             "source_type": "metadata_api",
             "raw_source_id": (
                 "id/network/ea-manual-sites?_projection=contains.label,contains.comment,contains.identifier,"
-                "contains.hasGeometry.*"
+                "contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude"
             ),
             "data_format": "vector",
             "data_category": "flow_monitoring",
