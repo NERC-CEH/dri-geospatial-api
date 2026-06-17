@@ -7,11 +7,8 @@ from fastapi.testclient import TestClient
 from httpx import Request, Response
 
 from geospatial_api.main import app
-from geospatial_api.models import SourceType
-from geospatial_api.services.rds.db import (
-    DataCategoryModelInterface,
-    IDModelInterface,
-)
+from geospatial_api.models import IDModel, SourceType
+from geospatial_api.services.rds.db import DataCategoryModelInterface, IDModelInterface, SourceTypeModelInterface
 
 client = TestClient(app)
 
@@ -21,11 +18,29 @@ NON_WHITELISTED_IP = "1.2.3.4"
 
 
 class TestListModel:
-    def test_list_model(self) -> None:
-        expected_json = [{"id": 1, "name": "S3", "object_key": "s3", "base_url": "http://base_url.com"}]
+    def test_list_model_id_model(self) -> None:
+        expected_json = [{"id": 1, "name": "FDRI", "object_key": "fdri"}]
         with (
             patch("requests.Session.get") as mock_get,
             patch.object(IDModelInterface, "get_db_entries") as mock_db_interface,
+        ):
+            mock_request = Request(method="get", url="http://test_url.com")
+            mock_response = Response(200, json={}, request=mock_request)
+            mock_get.return_value = mock_response
+            mock_db_interface.return_value = [
+                IDModel(id=1, name="FDRI", object_key="fdri", last_updated=date(2026, 1, 1))
+            ]
+
+            response = client.get("/api/list_model?model_name=project", headers={"X-Forwarded-For": WHITELISTED_IP})
+
+        assert response.status_code == 200
+        assert response.json() == expected_json
+
+    def test_list_model_source_type(self) -> None:
+        expected_json = [{"id": 1, "name": "S3", "object_key": "s3", "base_url": "http://base_url.com"}]
+        with (
+            patch("requests.Session.get") as mock_get,
+            patch.object(SourceTypeModelInterface, "get_db_entries") as mock_db_interface,
         ):
             mock_request = Request(method="get", url="http://test_url.com")
             mock_response = Response(200, json={}, request=mock_request)

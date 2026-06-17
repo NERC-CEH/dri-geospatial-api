@@ -227,7 +227,7 @@ def intialise_db() -> None:
                     "data_type": "date",
                 },
                 {
-                    "display_label": "Start Date",
+                    "display_label": "End date",
                     "key": "end_date",
                     "field_keys": [{"key": "operatingPeriod", "type": "value"}, {"key": "endDate", "type": "value"}],
                     "data_type": "date",

@@ -396,9 +396,13 @@ class LayerRegistryInterface:
                 model_class=db_models.DataFormat,
                 pydantic_model=models.IDModel,
             ),
-            data_category=DataCategoryModelInterface.convert_db_item_to_pydantic_model(
+            data_category=LayerRegistryInterface.get_nested_model_instance(
                 session=session,
-                db_item=db_layer.data_category,
+                main_model_id=db_layer.data_category,
+                main_db_model_class=db_models.DataCategory,
+                nested_model_field="data_category_group",
+                nested_db_model_class=db_models.DataCategoryGroup,
+                pydantic_model=models.DataCategory,
             ),
             legend=db_layer.legend,
             boundary=to_shape(db_layer.boundary) if db_layer.boundary else None,
@@ -464,6 +468,60 @@ class IDModelInterface:
         )
 
         return id_model
+
+
+class SourceTypeModelInterface:
+    @staticmethod
+    def get_db_entries(session: Session, *_, **__) -> list:
+        """Fetch all items for the SourceType database model."""
+        query = session.query(db_models.SourceType)
+
+        items = []
+        for item in query:
+            items.append(SourceTypeModelInterface.convert_to_pydantic_model(db_item=item))
+        return items
+
+    @staticmethod
+    def convert_to_pydantic_model(db_item: object) -> models.SourceType:
+        """Convert the db instance to a pydantic SourceType."""
+        source_type = models.SourceType(
+            id=db_item.id, last_updated=db_item.last_updated, name=db_item.name, object_key=db_item.object_key
+        )
+
+        return source_type
+
+    @staticmethod
+    def add_new_entry(
+        session: Session,
+        name: str,
+        object_key: str,
+        base_url: str,
+    ) -> object:
+        """Add a new SourceType entry to the database."""
+        new_db_item = add_db_item(
+            session=session,
+            db_item=db_models.Location(name=name, object_key=object_key, base_url=base_url),
+        )
+        return new_db_item
+
+    @staticmethod
+    def update_model_entry(
+        session: Session,
+        model_id: int,
+        name: str | None = None,
+        object_key: str | None = None,
+        base_url: str | None = None,
+    ) -> object:
+        """Update an existing SourceType model entry."""
+        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.SourceType, primary_key=model_id)
+
+        db_item.name = name if name is not None else db_item.name
+        db_item.object_key = object_key if object_key is not None else db_item.object_key
+        db_item.base_url = base_url if base_url is not None else db_item.base_url
+
+        session.commit()
+
+        return db_item
 
 
 class LocationModelInterface:
