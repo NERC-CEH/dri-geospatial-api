@@ -107,13 +107,13 @@ def add_source_type(
     db: Annotated[Session, Depends(get_db)],
     name: str,
     object_key: str,
-    category_group_key: str,
+    base_url: str,
 ) -> JSONResponse:
     new_db_item = SourceTypeModelInterface.add_new_entry(
         session=db,
         name=name,
         object_key=object_key,
-        data_category_group_key=category_group_key,
+        base_url=base_url,
     )
 
     return JSONResponse(status_code=200, content=f"Successfully created new source type {new_db_item.name}")
@@ -338,12 +338,6 @@ async def update_layer(
     field_metadata: UploadFile | None = None,
     s3_client: S3Client = Depends(lambda: s3),
 ) -> JSONResponse:
-    if not colour_source_id and not colour_source_file and not raw_source_id and not raw_source_file:
-        raise HTTPException(
-            "Either the source_id or the source_file should be provided for one or more of the raw or colour source "
-            "options"
-        )
-
     # Ensure the provided legend file is a json
     if legend and not legend.filename.lower().endswith(".json"):
         raise HTTPException("The legend must be provided as a .json file.")
@@ -355,17 +349,6 @@ async def update_layer(
     # Ensure the provided boundary file is a geojson
     if boundary and not boundary.filename.lower().endswith(".geojson"):
         raise HTTPException("The boundary must be provided as a .geojson file.")
-
-    # Ensure either a single date, or a combination of start date and end date have been provided
-    if (
-        (not date and not start_date and not end_date)
-        or (date and (start_date or end_date))
-        or (end_date and not date and not start_date)
-    ):
-        raise HTTPException(
-            "Either a single date or a start and end date combination need to be provided. "
-            "If the dataset is ongoing, leave the end date blank"
-        )
 
     new_layer = LayerRegistryInterface.update_layer(
         session=db,
@@ -404,4 +387,4 @@ async def update_layer(
         content = await raw_source_file.read()
         s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
 
-    return JSONResponse(status_code=200, content=f"Successfully created layer {layer.name}")
+    return JSONResponse(status_code=200, content=layer.to_json_response())

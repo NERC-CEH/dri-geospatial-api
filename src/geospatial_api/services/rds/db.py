@@ -313,10 +313,14 @@ class LayerRegistryInterface:
         layer = get_db_object_by_primary_key(session=session, db_model=db_models.Layer, primary_key=model_id)
 
         layer.name = name if name is not None else layer.name
-        layer.description = (description if description is not None else layer.description,)
+        layer.description = description if description is not None else layer.description
         layer.date = (date if date is not None else layer.date,)
-        layer.start_date = (start_date if start_date is not None else layer.start_date,)
-        layer.end_date = (end_date if end_date is not None else layer.end_date,)
+        layer.start_date = start_date if start_date is not None else layer.start_date
+        layer.end_date = end_date if end_date is not None else layer.end_date
+        layer.raw_source_id = raw_source_id if raw_source_id is not None else layer.raw_source_id
+        layer.colour_source_id = colour_source_id if raw_source_id is not None else layer.colour_source_id
+        layer.legend = legend if legend is not None else layer.legend
+        layer.field_metadata = field_metadata if field_metadata is not None else layer.field_metadata
 
         if project_key is not None:
             project = get_db_object_by_key(session=session, db_model=db_models.Project, object_key=project_key)
@@ -485,7 +489,11 @@ class SourceTypeModelInterface:
     def convert_to_pydantic_model(db_item: object) -> models.SourceType:
         """Convert the db instance to a pydantic SourceType."""
         source_type = models.SourceType(
-            id=db_item.id, last_updated=db_item.last_updated, name=db_item.name, object_key=db_item.object_key
+            id=db_item.id,
+            last_updated=db_item.last_updated,
+            name=db_item.name,
+            object_key=db_item.object_key,
+            base_url=db_item.base_url,
         )
 
         return source_type
@@ -500,7 +508,7 @@ class SourceTypeModelInterface:
         """Add a new SourceType entry to the database."""
         new_db_item = add_db_item(
             session=session,
-            db_item=db_models.Location(name=name, object_key=object_key, base_url=base_url),
+            db_item=db_models.SourceType(name=name, object_key=object_key, base_url=base_url),
         )
         return new_db_item
 
