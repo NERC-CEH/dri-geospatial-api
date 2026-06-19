@@ -9,7 +9,7 @@ from geospatial_api.config import setup_config
 from geospatial_api.services.rds.db import LayerRegistryInterface, LocationModelInterface
 from geospatial_api.utils.utils import get_db, get_s3_client
 
-router = APIRouter()
+public_router = APIRouter(tags=[])
 
 config = setup_config()
 s3 = get_s3_client()
@@ -28,14 +28,14 @@ LAYER_CENTRES = {
 }
 
 
-@router.get("/available_data")
+@public_router.get("/available_data")
 def get_available_data(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
     layers = LayerRegistryInterface.get_db_entries(session=db)
 
     return JSONResponse([item.to_json_response() for item in layers])
 
 
-@router.get("/location_boundary")
+@public_router.get("/location_boundary")
 def get_location_boundary(db: Annotated[Session, Depends(get_db)], location_id: int) -> dict[str, Any]:
     location = LocationModelInterface.get_single_location(session=db, location_id=location_id)
     geojson_feature = geojson.Feature(geometry=location.boundary)
