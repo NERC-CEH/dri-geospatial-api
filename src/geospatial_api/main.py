@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from .cache import setup_cache
 from .config import setup_config
 from .metrics import Metrics
-from .routers import docs as api_docs
 from .routers import healthcheck, layer_management, titiler_main, vector_main
 from .routers import main as main_router
 
@@ -45,8 +44,6 @@ api = FastAPI(
     title=config.title,
     description=config.description,
     contact={"name": config.contact_name, "url": config.contact_url},
-    docs_url=None,
-    openapi_url=None,
 )
 
 # metrics
@@ -56,17 +53,14 @@ metrics.setup_metrics(service=api)
 # state
 api.state.config = config
 
-# public routes
-api.include_router(healthcheck.public_router)
-api.include_router(main_router.public_router)
+# routes
+
+api.include_router(healthcheck.router)
+api.include_router(main_router.router)
 api.include_router(titiler_main.router, prefix="/maps", tags=["Raster Data"])
-api.include_router(vector_main.public_router, tags=["Vector Data"])
+api.include_router(vector_main.router, tags=["Vector Data"])
+api.include_router(layer_management.router)
 
-# private routes
-api.include_router(layer_management.private_router)
-
-# Documentation
-api_docs.setup_docs(api)
 
 # Mount services into base application
 # ------------------------------------
