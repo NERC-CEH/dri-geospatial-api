@@ -100,11 +100,7 @@ class TestAvailableData:
                 },
                 "field_metadata": None,
                 "map_center": [-3.417368, 55.510546],
-                "colour_source_url": (
-                    "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/"
-                    "data_category=dsm/processing_level=processed/date=2026-03-20/"
-                    "clipped_tweed_dsm_3857_colourised_cog.tif"
-                ),
+                "colour_source_url": "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/clipped_tweed_dsm_3857_colourised_cog.tif",
                 "raw_source_url": None,
             },
             {
@@ -147,37 +143,7 @@ class TestAvailableData:
                         "data_type": "string",
                     },
                     {
-                        "display_label": "Description",
-                        "key": "description",
-                        "field_keys": [{"key": "comment", "type": "list", "index": 0}],
-                        "data_type": "string",
-                    },
-                    {
-                        "display_label": "Altitude",
-                        "key": "altitude",
-                        "field_keys": [{"key": "altitude", "type": "value"}],
-                        "data_type": "float",
-                    },
-                    {
-                        "display_label": "Start Date",
-                        "key": "start_date",
-                        "field_keys": [
-                            {"key": "operatingPeriod", "type": "value"},
-                            {"key": "startDate", "type": "value"},
-                        ],
-                        "data_type": "date",
-                    },
-                    {
-                        "display_label": "End date",
-                        "key": "end_date",
-                        "field_keys": [
-                            {"key": "operatingPeriod", "type": "value"},
-                            {"key": "endDate", "type": "value"},
-                        ],
-                        "data_type": "date",
-                    },
-                    {
-                        "display_label": "Location",
+                        "display_label": "Name",
                         "key": "geometry",
                         "field_keys": [{"key": "hasGeometry", "type": "wkt_list", "index": None}],
                         "data_type": "string",
@@ -185,11 +151,7 @@ class TestAvailableData:
                 ],
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": (
-                    "https://dri-metadata-api.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,"
-                    "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
-                    "contains.altitude"
-                ),
+                "raw_source_url": "https://dri-metadata-api.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*",
             },
             {
                 "id": 3,
@@ -239,11 +201,7 @@ class TestAvailableData:
                 ],
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": (
-                    "https://dri-metadata-api.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection=contains.label,"
-                    "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
-                    "contains.altitude"
-                ),
+                "raw_source_url": "https://dri-metadata-api.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*",
             },
         ]
 

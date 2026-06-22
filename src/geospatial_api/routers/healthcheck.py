@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-public_router = APIRouter(tags=["Healthcheck"])
+router = APIRouter(tags=["Healthcheck"])
 
 
-@public_router.get("/healthcheck/")
+@router.get("/healthcheck/")
 def healthcheck() -> dict[str, str]:
     """
     \f
