@@ -13,10 +13,6 @@ from geospatial_api.services.rds.db import DataCategoryModelInterface, IDModelIn
 client = TestClient(app)
 
 
-WHITELISTED_IP = "127.0.0.1"
-NON_WHITELISTED_IP = "1.2.3.4"
-
-
 class TestListModel:
     def test_list_model_id_model(self) -> None:
         expected_json = [{"id": 1, "name": "FDRI", "object_key": "fdri"}]
@@ -31,7 +27,7 @@ class TestListModel:
                 IDModel(id=1, name="FDRI", object_key="fdri", last_updated=date(2026, 1, 1))
             ]
 
-            response = client.get("/api/list_model?model_name=project", headers={"X-Forwarded-For": WHITELISTED_IP})
+            response = client.get("/api/list_model?model_name=project")
 
         assert response.status_code == 200
         assert response.json() == expected_json
@@ -51,7 +47,7 @@ class TestListModel:
                 )
             ]
 
-            response = client.get("/api/list_model?model_name=source_type", headers={"X-Forwarded-For": WHITELISTED_IP})
+            response = client.get("/api/list_model?model_name=source_type")
 
         assert response.status_code == 200
         assert response.json() == expected_json
@@ -65,7 +61,7 @@ class TestListModel:
             mock_get.return_value = mock_response
 
             with pytest.raises(ValueError):
-                client.get("/api/list_model?model_name=invalid_model", headers={"X-Forwarded-For": WHITELISTED_IP})
+                client.get("/api/list_model?model_name=invalid_model")
 
 
 class TestAddModel:
@@ -86,7 +82,6 @@ class TestAddModel:
 
             response = client.post(
                 "/api/add_model?model_name=data_format&name=GeoJSON&object_key=geojson",
-                headers={"X-Forwarded-For": WHITELISTED_IP},
             )
 
         assert response.status_code == 200
@@ -103,7 +98,6 @@ class TestAddModel:
             with pytest.raises(ValueError):
                 client.post(
                     "/api/add_model?model_name=invalid_model&name=GeoJSON&object_key=geojson",
-                    headers={"X-Forwarded-For": WHITELISTED_IP},
                 )
 
 
@@ -122,7 +116,6 @@ class TestAddDataCategory:
 
             response = client.post(
                 "/api/add_data_category?name=Category 1&object_key=category_1&category_group_key=1",
-                headers={"X-Forwarded-For": WHITELISTED_IP},
             )
 
         assert response.status_code == 200
