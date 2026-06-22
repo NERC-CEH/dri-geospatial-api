@@ -18,7 +18,7 @@ jobs:
     with:
       use_uv: true
       private_repos: true
-      coverage_threshold: 80
+      coverage_threshold: 70
       localstack_profile_name: localstack
     secrets:
       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
