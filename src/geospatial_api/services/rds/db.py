@@ -183,7 +183,7 @@ class LayerRegistryInterface:
         data_format_key: str,
         data_category_key: str,
         processing_level_key: str,
-        area_name_key: str,
+        location_key: str,
         description: str | None = None,
         date: str | None = None,
         start_date: str | None = None,
@@ -229,7 +229,7 @@ class LayerRegistryInterface:
         processing_level = get_db_object_by_key(
             session=session, db_model=db_models.ProcessingLevel, object_key=processing_level_key
         )
-        location = get_db_object_by_key(session=session, db_model=db_models.Location, object_key=area_name_key)
+        location = get_db_object_by_key(session=session, db_model=db_models.Location, object_key=location_key)
         if boundary:
             boundary_geom = shapely.geometry.shape(boundary.features[0])
             boundary_wkt = boundary_geom.wkt
@@ -263,6 +263,108 @@ class LayerRegistryInterface:
         )
 
         return new_layer
+
+    @staticmethod
+    def update_layer(
+        session: Session,
+        model_id: int,
+        name: str | None = None,
+        description: str | None = None,
+        project_key: str | None = None,
+        date: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        source_type_key: str | None = None,
+        data_format_key: str | None = None,
+        data_category_key: str | None = None,
+        processing_level_key: str | None = None,
+        location_key: str | None = None,
+        raw_source_id: str | None = None,
+        colour_source_id: str | None = None,
+        legend: dict[str, Any] | None = None,
+        boundary: dict[str, Any] | None = None,
+        field_metadata: dict[str, Any] | None = None,
+    ) -> db_models.Layer:
+        """Adds a new Layer instance to the database.
+
+        Args:
+            session: The sqlalchemy Session instance.
+            name: The name of the layer
+            project_key: The object_key value of the Project model instance to correspond to.
+            date: The date to associate with the layer
+            source_type_key: The object_key value of the SourceType database model instance it corresponds to.
+            data_format_key: The object_key value of the DataFormat database model instance it corresponds to.
+            data_category_key: The object_key value of the DataCategory database model instance it corresponds to.
+            processing_level_key: The object_key value of the ProcessingLevel database model instance it corresponds to.
+            location_key: The object_key value of the Location database model instance it corresponds to.
+            raw_source_id: S3 key or similar linking to the raw data source (e.g. geojson file, single band COG
+                formatted raster). If not provided then a colour_source_id value is expected . Defaults to None.
+            colour_source_id: S3 key or similar linking to the colourised data source (e.g. geojson file, single band
+                COG formatted raster). If not provided then a raw_source_id value is expected . Defaults to None.
+            legend: JSON string for the legend information. Defaults to None.
+            boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
+                Defaults to None.
+            field_metadata: JSON string containing metadata for displaying field information from the vector in the UI
+
+        Returns:
+            Layer instance
+
+        """
+        layer = get_db_object_by_primary_key(session=session, db_model=db_models.Layer, primary_key=model_id)
+
+        layer.name = name if name is not None else layer.name
+        layer.description = description if description is not None else layer.description
+        layer.date = (date if date is not None else layer.date,)
+        layer.start_date = start_date if start_date is not None else layer.start_date
+        layer.end_date = end_date if end_date is not None else layer.end_date
+        layer.raw_source_id = raw_source_id if raw_source_id is not None else layer.raw_source_id
+        layer.colour_source_id = colour_source_id if raw_source_id is not None else layer.colour_source_id
+        layer.legend = legend if legend is not None else layer.legend
+        layer.field_metadata = field_metadata if field_metadata is not None else layer.field_metadata
+
+        if project_key is not None:
+            project = get_db_object_by_key(session=session, db_model=db_models.Project, object_key=project_key)
+            layer.project = project
+
+        if source_type_key is not None:
+            source_type = get_db_object_by_key(
+                session=session, db_model=db_models.SourceType, object_key=source_type_key
+            )
+            layer.source_type = source_type.id
+
+        if data_format_key is not None:
+            data_format = get_db_object_by_key(
+                session=session, db_model=db_models.DataFormat, object_key=data_format_key
+            )
+            layer.data_format = data_format.id
+
+        if data_category_key is not None:
+            data_category = get_db_object_by_key(
+                session=session, db_model=db_models.DataCategory, object_key=data_category_key
+            )
+            layer.data_category = data_category.id
+
+        if processing_level_key is not None:
+            processing_level = get_db_object_by_key(
+                session=session, db_model=db_models.ProcessingLevel, object_key=processing_level_key
+            )
+            layer.processing_level = processing_level.id
+
+        if location_key is not None:
+            location = get_db_object_by_key(session=session, db_model=db_models.Location, object_key=location_key)
+            layer.location = location.id
+
+        if boundary:
+            boundary_geom = shapely.geometry.shape(boundary.features[0])
+            boundary_wkt = boundary_geom.wkt
+            bbox = shapely.box(*boundary_geom.bounds)
+            bbox_wkt = bbox.wkt
+
+            layer.boundary = boundary_wkt
+            layer.bbox = bbox_wkt
+
+        session.commit()
+        return layer
 
     @staticmethod
     def convert_layer_to_pydantic_model(session: Session, db_layer: db_models.Layer) -> models.Layer:
@@ -349,6 +451,20 @@ class IDModelInterface:
         return new_db_item
 
     @staticmethod
+    def update_model_entry(
+        session: Session, db_model: object, model_id: int, name: str | None = None, object_key: str | None = None
+    ) -> object:
+        """Update an existing model entry for any database model that corresponds to the pydantic IDModel base class."""
+        db_item = get_db_object_by_primary_key(session=session, db_model=db_model, primary_key=model_id)
+
+        db_item.name = name if name else db_item.name
+        db_item.object_key = object_key if object_key else db_item.object_key
+
+        session.commit()
+
+        return db_item
+
+    @staticmethod
     def convert_to_pydantic_model(db_item: object) -> models.IDModel:
         """Convert the db instance to a pydantic IDModel."""
         id_model = models.IDModel(
@@ -356,6 +472,64 @@ class IDModelInterface:
         )
 
         return id_model
+
+
+class SourceTypeModelInterface:
+    @staticmethod
+    def get_db_entries(session: Session, *_, **__) -> list:
+        """Fetch all items for the SourceType database model."""
+        query = session.query(db_models.SourceType)
+
+        items = []
+        for item in query:
+            items.append(SourceTypeModelInterface.convert_to_pydantic_model(db_item=item))
+        return items
+
+    @staticmethod
+    def convert_to_pydantic_model(db_item: object) -> models.SourceType:
+        """Convert the db instance to a pydantic SourceType."""
+        source_type = models.SourceType(
+            id=db_item.id,
+            last_updated=db_item.last_updated,
+            name=db_item.name,
+            object_key=db_item.object_key,
+            base_url=db_item.base_url,
+        )
+
+        return source_type
+
+    @staticmethod
+    def add_new_entry(
+        session: Session,
+        name: str,
+        object_key: str,
+        base_url: str,
+    ) -> object:
+        """Add a new SourceType entry to the database."""
+        new_db_item = add_db_item(
+            session=session,
+            db_item=db_models.SourceType(name=name, object_key=object_key, base_url=base_url),
+        )
+        return new_db_item
+
+    @staticmethod
+    def update_entry(
+        session: Session,
+        model_id: int,
+        name: str | None = None,
+        object_key: str | None = None,
+        base_url: str | None = None,
+    ) -> object:
+        """Update an existing SourceType model entry."""
+        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.SourceType, primary_key=model_id)
+
+        db_item.name = name if name is not None else db_item.name
+        db_item.object_key = object_key if object_key is not None else db_item.object_key
+        db_item.base_url = base_url if base_url is not None else db_item.base_url
+
+        session.commit()
+
+        return db_item
 
 
 class LocationModelInterface:
@@ -413,6 +587,37 @@ class LocationModelInterface:
         )
         return new_db_item
 
+    @staticmethod
+    def update_entry(
+        session: Session,
+        model_id: int,
+        name: str | None = None,
+        object_key: str | None = None,
+        location_type_key: str | None = None,
+        boundary: dict[str, Any] | None = None,
+    ) -> object:
+        """Add a new Location entry to the database."""
+        location_instance = get_db_object_by_primary_key(
+            session=session, db_model=db_models.Location, primary_key=model_id
+        )
+
+        location_instance.name = name if name is not None else location_instance.name
+        location_instance.object_key = object_key if object_key is not None else location_instance.object_key
+
+        if location_type_key is not None:
+            location_type = get_db_object_by_key(
+                session=session, db_model=db_models.LocationType, object_key=location_type_key
+            )
+            location_instance.location_type = location_type.id
+
+        if boundary is not None:
+            boundary_geom = shapely.geometry.shape(boundary.features[0])
+            boundary_wkt = boundary_geom.wkt
+            location_instance.boundary = boundary_wkt
+
+        session.commit()
+        return location_instance
+
 
 class DataCategoryModelInterface:
     @staticmethod
@@ -441,6 +646,24 @@ class DataCategoryModelInterface:
         return items
 
     @staticmethod
+    def convert_db_item_to_pydantic_model(session: Session, db_item: db_models.DataCategory) -> models.DataCategory:
+        category_group_db_item = session.get(db_models.DataCategoryGroup, db_item.data_category_group)
+        category_group_model = models.IDModel(
+            id=category_group_db_item.id,
+            last_updated=category_group_db_item.last_updated,
+            name=category_group_db_item.name,
+            object_key=category_group_db_item.object_key,
+        )
+
+        return models.DataCategory(
+            id=db_item.id,
+            last_updated=db_item.last_updated,
+            name=db_item.name,
+            object_key=db_item.object_key,
+            data_category_group=category_group_model,
+        )
+
+    @staticmethod
     def add_new_entry(session: Session, name: str, object_key: str, data_category_group_key: str) -> object:
         """Add a new DataCategory entry to the database."""
         data_category_group = get_db_object_by_key(
@@ -453,3 +676,24 @@ class DataCategoryModelInterface:
             ),
         )
         return new_db_item
+
+    @staticmethod
+    def update_entry(
+        session: Session, model_id: int, name: str, object_key: str, data_category_group_key: str
+    ) -> object:
+        """Add a new DataCategory entry to the database."""
+        data_category_instance = get_db_object_by_primary_key(
+            session=session, db_model=db_models.DataCategory, primary_key=model_id
+        )
+
+        data_category_instance.name = name if name is not None else data_category_instance.name
+        data_category_instance.object_key = object_key if object_key is not None else data_category_instance.object_key
+
+        if data_category_group_key is not None:
+            data_category_group = get_db_object_by_key(
+                session=session, db_model=db_models.DataCategoryGroup, object_key=data_category_group_key
+            )
+            data_category_instance.data_category_group = data_category_group.id
+
+        session.commit()
+        return data_category_instance
