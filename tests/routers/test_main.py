@@ -94,7 +94,7 @@ class TestAvailableData:
                     "id": 2,
                     "name": "Tweed",
                     "object_key": "tweed",
-                    "location_type": {"id": 3, "name": "Catchment", "object_key": "catchment"},
+                    "location_type": {"id": 2, "name": "Catchment", "object_key": "catchment"},
                     "bbox": {"min_x": -3.417466, "max_x": -3.41727, "min_y": 55.510476, "max_y": 55.510616},
                     "centroid": {"x": -3.4173733172561627, "y": 55.51054843676313},
                 },

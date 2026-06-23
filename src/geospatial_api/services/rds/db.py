@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Union
 
 import shapely
 from dri_database_models import geospatial as db_models
@@ -166,7 +166,7 @@ class LayerRegistryInterface:
         geometry_fields = [
             field_name
             for (field_name, field_info) in pydantic_model.model_fields.items()
-            if field_info.annotation == shapely.Polygon
+            if (field_info.annotation == Union[shapely.Polygon, shapely.MultiPolygon])
         ]
         for geometry_field in geometry_fields:
             geometry = to_shape(getattr(main_model, geometry_field))
@@ -230,14 +230,16 @@ class LayerRegistryInterface:
             session=session, db_model=db_models.ProcessingLevel, object_key=processing_level_key
         )
         location = get_db_object_by_key(session=session, db_model=db_models.Location, object_key=location_key)
+
+        # Use the provided boundary if one is available, otherwise use the boundary from the location
         if boundary:
             boundary_geom = shapely.geometry.shape(boundary.features[0])
-            boundary_wkt = boundary_geom.wkt
-            bbox = shapely.box(*boundary_geom.bounds)
-            bbox_wkt = bbox.wkt
         else:
-            boundary_wkt = None
-            bbox_wkt = None
+            boundary_geom = to_shape(location.boundary)
+
+        boundary_wkt = boundary_geom.wkt
+        bbox = shapely.box(*boundary_geom.bounds)
+        bbox_wkt = bbox.wkt
 
         new_layer = add_db_item(
             session=session,

@@ -291,6 +291,7 @@ async def add_layer(
         raw_source_id=raw_source_file.filename if raw_source_file else raw_source_id,
         legend=json.load(legend.file) if legend else None,
         boundary=geojson.load(boundary.file) if boundary else None,
+        field_metadata=json.load(field_metadata.file) if field_metadata else None,
     )
 
     layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)
@@ -367,6 +368,7 @@ async def update_layer(
         raw_source_id=raw_source_file.filename if raw_source_file else raw_source_id,
         legend=json.load(legend.file) if legend else None,
         boundary=geojson.load(boundary.file) if boundary else None,
+        field_metadata=json.load(field_metadata.file) if field_metadata else None,
     )
 
     layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)

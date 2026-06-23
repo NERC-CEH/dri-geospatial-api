@@ -60,7 +60,7 @@ class MetadataTransformer(TransformerABC):
         response_data: dict[str | Any], field_metadata: dict[str | Any]
     ) -> geojson.FeatureCollection:
         if not isinstance(field_metadata, list):
-            raise ValueError("Unabel to transform response, no corresponding field metadata")
+            raise ValueError("Unable to transform response, no corresponding field metadata")
 
         features = []
         for item in response_data.get("items", [{}])[0].get("contains", []):
