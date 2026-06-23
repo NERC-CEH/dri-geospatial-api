@@ -33,7 +33,7 @@ class Location(IDModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     location_type: IDModel
-    boundary: shapely.Polygon
+    boundary: shapely.Polygon | shapely.MultiPolygon
 
     def to_json_response(self) -> dict[str, Any]:
         response = super().to_json_response()
@@ -72,7 +72,7 @@ class Layer(BaseModel):
     data_format: IDModel
     data_category: DataCategory
     legend: Optional[dict[str, Any]]
-    boundary: Optional[shapely.Polygon]
+    boundary: Optional[shapely.Polygon | shapely.MultiPolygon]
     bbox: shapely.Polygon
     processing_level: IDModel
     location: Location

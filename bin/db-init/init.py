@@ -82,7 +82,6 @@ def intialise_db() -> None:
 
     location_types = [
         {"name": "National", "object_key": "national"},
-        {"name": "Region", "object_key": "region"},
         {"name": "Catchment", "object_key": "catchment"},
     ]
 
