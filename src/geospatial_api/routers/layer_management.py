@@ -19,7 +19,7 @@ from geospatial_api.services.rds.db import (
     LocationModelInterface,
     SourceTypeModelInterface,
 )
-from geospatial_api.utils.utils import get_db, get_s3_client
+from geospatial_api.utils.utils import get_db, get_s3_client, upload_file_to_s3_for_layer
 
 router = APIRouter(tags=["Layer Management"])
 
@@ -298,14 +298,10 @@ async def add_layer(
 
     # If the source type is S3 and a source_file has been provided, upload the data to S3 in the appropriate bucket
     if colour_source_file:
-        destination_key = layer.get_s3_key(source_id=colour_source_file.filename)
-        content = await colour_source_file.read()
-        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+        upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=colour_source_file, layer=layer)
 
     if raw_source_file:
-        destination_key = layer.get_s3_key(source_id=raw_source_file.filename)
-        content = await raw_source_file.read()
-        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+        upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=raw_source_file, layer=layer)
 
     return JSONResponse(status_code=200, content=f"Successfully created layer {layer.name}")
 
@@ -371,17 +367,9 @@ async def update_layer(
 
     # If the source type is S3 and a source_file has been provided, upload the data to S3 in the appropriate bucket
     if colour_source_file:
-        destination_key = layer.get_source_url(source_id=colour_source_file.filename).replace(
-            f"s3://{config.geospatial_data_bucket}/", ""
-        )
-        content = await colour_source_file.read()
-        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+        upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=colour_source_file, layer=layer)
 
     if raw_source_file:
-        destination_key = layer.get_source_url(source_id=raw_source_file.filename).replace(
-            f"s3://{config.geospatial_data_bucket}/", ""
-        )
-        content = await raw_source_file.read()
-        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+        upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=raw_source_file, layer=layer)
 
     return JSONResponse(status_code=200, content=layer.to_json_response())

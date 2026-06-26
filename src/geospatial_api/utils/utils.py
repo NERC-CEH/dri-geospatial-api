@@ -5,10 +5,12 @@ from urllib.parse import urlparse
 import boto3
 import boto3.session
 from botocore.client import Config
+from fastapi import UploadFile
 from mypy_boto3_s3 import S3Client
 from sqlalchemy.orm import Session
 
 from geospatial_api.config import LocalConfig, setup_config
+from geospatial_api.models import Layer
 from geospatial_api.services.rds.auth import RDSLogin
 
 boto3_config = Config(max_pool_connections=100)
@@ -93,3 +95,9 @@ def check_path_exists(path: str | Path) -> None:
     path = Path(path)
     if not path.exists():
         raise FileExistsError(f"The provided path does not exist: {str(path)}")
+
+
+async def upload_file_to_s3_for_layer(s3_client: S3Client, upload_file: UploadFile, layer: Layer) -> None:
+    destination_key = layer.get_s3_key(source_id=upload_file.filename)
+    content = await upload_file.read()
+    s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
