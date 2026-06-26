@@ -27,7 +27,7 @@ def read_index(
     if url_parts.scheme.lower() == "s3":
         response = s3_client.get_object(Bucket=url_parts.netloc, Key=url_parts.path.lstrip("/"))
         geojson_data = geojson.load(response["Body"])
-    elif url_parts.scheme.lower() == "https":
+    elif url_parts.scheme.lower() in {"https", "http"}:
         if layer_id is None:
             raise HTTPException(
                 "A layer id must be provided when sourcing vector data from https. No transformation schema available"
