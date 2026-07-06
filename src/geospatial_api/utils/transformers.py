@@ -1,5 +1,4 @@
 import logging
-import re
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Any
@@ -45,13 +44,11 @@ class MetadataTransformer(TransformerABC):
                 continue
             else:
                 # WGS84 coordinates
-                match = re.search(r"POINT\((-?\d+\.?\d*),\s*(-?\d+\.?\d*)\)", wkt_str)
-                if match:
-                    lat = match.group(2)
-                    lon = match.group(1)
-
-                    geometry = shapely.Point(lon, lat)
-                    break
+                try:
+                    geometry = shapely.wkt.loads(wkt_str)
+                    return geometry
+                except shapely.errors.GEOSException:
+                    continue
 
         return geometry
 
