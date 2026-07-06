@@ -99,13 +99,13 @@ class TestVector:
                                     "@id": "http://fdri.ceh.ac.uk/id/site/cosmos-waddn#geo-eastings",
                                     "asWKT": (
                                         "\u003chttp://www.opengis.net/def/crs/EPSG/0/27700\u003e "
-                                        "POINT(472548.0, 216170.0)"
+                                        "POINT(472548.0 216170.0)"
                                     ),
                                     "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
                                 },
                                 {
                                     "@id": "http://fdri.ceh.ac.uk/id/site/cosmos-waddn#geo-latlong",
-                                    "asWKT": "POINT(-0.948405, 51.839436)",
+                                    "asWKT": "POINT(-0.948405 51.839436)",
                                     "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
                                 },
                             ],
@@ -126,14 +126,14 @@ class TestVector:
                             "hasGeometry": [
                                 {
                                     "@id": "http://fdri.ceh.ac.uk/id/site/cosmos-holln#geo-latlong",
-                                    "asWKT": "POINT(-0.959477, 54.110665)",
+                                    "asWKT": "POINT(-0.959477 54.110665)",
                                     "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
                                 },
                                 {
                                     "@id": "http://fdri.ceh.ac.uk/id/site/cosmos-holln#geo-eastings",
                                     "asWKT": (
                                         "\u003chttp://www.opengis.net/def/crs/EPSG/0/27700\u003e "
-                                        "POINT(468123.0, 468809.0)"
+                                        "POINT(468123.0 468809.0)"
                                     ),
                                     "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
                                 },
