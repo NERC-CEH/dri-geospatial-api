@@ -75,7 +75,7 @@ def intialise_db() -> None:
     data_formats = [
         {"name": "Raster", "object_key": "raster"},
         {"name": "Vector", "object_key": "vector"},
-        {"name": "Point record", "object_key": "point_record"},
+        {"name": "Web Map Services", "object_key": "wms"},
     ]
 
     processing_levels = [{"name": "Processed", "object_key": "processed"}, {"name": "Raw", "object_key": "raw"}]
@@ -113,7 +113,7 @@ def intialise_db() -> None:
             "base_url": "s3://ukceh-fdri-staging-geospatial",
         },
         {"name": "Metadata API", "object_key": "metadata_api", "base_url": "https://dri-metadata-api.dri.ceh.ac.uk"},
-        {"name": "EIDC Catalogue", "object_key": "eidc_catalogue", "base_url": "https://catalogue.ceh.ac.uk"},
+        {"name": "EIDC Catalogue WMS", "object_key": "eidc_wms", "base_url": "https://catalogue.ceh.ac.uk/maps"},
     ]
 
     layers = [
@@ -279,6 +279,27 @@ def intialise_db() -> None:
                     "data_type": "string",
                 },
             ],
+        },
+        {
+            "name": "Landcover map",
+            "project": "fdri",
+            "start_date": "2024-01-01",
+            "end_date": None,
+            "source_type": "metadata_api",
+            "raw_source_id": ("76405b92-17ec-4ed2-ac7f-17caeb2d14f6"),
+            "data_format": "wms",
+            "data_category": "flow_monitoring",
+            "processing_level": "raw",
+            "location": "uk",
+            "boundary": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+            "bbox": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+            "field_metadata": None,
         },
     ]
 
