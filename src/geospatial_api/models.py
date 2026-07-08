@@ -125,6 +125,16 @@ class Layer(BaseModel):
         return response
 
     def get_s3_key(self, source_id: str) -> str:
+        """
+        Construct the S3 key for the raw or colour source ID. It is assumed that the S3 bucket structure is constant
+
+        Args:
+            source_id: The file name to use for the final part of the s3 key
+
+        Returns:
+            S3 key, excluding the source bucket
+
+        """
         if self.date:
             date_str = self.date.date()
         else:

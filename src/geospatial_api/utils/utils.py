@@ -98,6 +98,17 @@ def check_path_exists(path: str | Path) -> None:
 
 
 async def upload_file_to_s3_for_layer(s3_client: S3Client, upload_file: UploadFile, layer: Layer) -> None:
+    """
+    Upload a file to S3
+
+    Constructs the S3 key, assuming a constant bucket structure, before uploading it.
+
+    Args:
+        s3_client: S3Client
+        upload_file: File to upload
+        layer: Layer object associated with the file to be uploaded.
+
+    """
     destination_key = layer.get_s3_key(source_id=upload_file.filename)
     content = await upload_file.read()
     s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
