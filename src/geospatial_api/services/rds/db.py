@@ -320,7 +320,7 @@ class LayerRegistryInterface:
         layer.start_date = start_date if start_date is not None else layer.start_date
         layer.end_date = end_date if end_date is not None else layer.end_date
         layer.raw_source_id = raw_source_id if raw_source_id is not None else layer.raw_source_id
-        layer.colour_source_id = colour_source_id if raw_source_id is not None else layer.colour_source_id
+        layer.colour_source_id = colour_source_id if colour_source_id is not None else layer.colour_source_id
         layer.legend = legend if legend is not None else layer.legend
         layer.field_metadata = field_metadata if field_metadata is not None else layer.field_metadata
 
