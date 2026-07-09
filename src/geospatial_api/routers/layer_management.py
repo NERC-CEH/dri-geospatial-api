@@ -366,10 +366,10 @@ async def update_layer(
     layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)
 
     # If the source type is S3 and a source_file has been provided, upload the data to S3 in the appropriate bucket
-    if colour_source_file:
-        upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=colour_source_file, layer=layer)
+    if colour_source_file is not None:
+        await upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=colour_source_file, layer=layer)
 
-    if raw_source_file:
-        upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=raw_source_file, layer=layer)
+    if raw_source_file is not None:
+        await upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=raw_source_file, layer=layer)
 
     return JSONResponse(status_code=200, content=layer.to_json_response())
