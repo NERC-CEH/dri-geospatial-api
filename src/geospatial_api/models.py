@@ -69,6 +69,7 @@ class Layer(BaseModel):
     source_type: SourceType
     colour_source_id: Optional[str]
     raw_source_id: Optional[str]
+    layer_id: Optional[str]
     data_format: IDModel
     data_category: DataCategory
     legend: Optional[dict[str, Any]]
