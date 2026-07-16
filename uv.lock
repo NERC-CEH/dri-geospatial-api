@@ -550,8 +550,8 @@ wheels = [
 
 [[package]]
 name = "dri-database-models"
-version = "0.0.22"
-source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-1085-wms-layer-name#86582e13206368730b1e1332b2007aeb767ab16b" }
+version = "0.0.23"
+source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main#96a7c0562f9f7efaf02f4530e63eab4553e67878" }
 dependencies = [
     { name = "alembic" },
     { name = "autosemver" },
@@ -791,7 +791,7 @@ requires-dist = [
     { name = "aiocache" },
     { name = "autosemver" },
     { name = "boto3", specifier = ">=1.36.24" },
-    { name = "dri-database-models", git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-1085-wms-layer-name" },
+    { name = "dri-database-models", git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main" },
     { name = "dri-utils", git = "https://github.com/NERC-CEH/dri-utils.git" },
     { name = "fastapi" },
     { name = "fastapi", extras = ["standard"] },
