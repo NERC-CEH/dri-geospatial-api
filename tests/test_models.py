@@ -95,6 +95,7 @@ class TestLayer:
             source_type=source_type,
             colour_source_id="colour_raster.tif",
             raw_source_id="greyscale_raster.tif",
+            layer_id=None,
             data_format=data_format,
             data_category=data_category,
             legend={
@@ -133,6 +134,7 @@ class TestLayer:
                 "object_key": "category_1",
                 "data_category_group": {"id": 1, "name": "Category group 1", "object_key": "group_1"},
             },
+            "layer_id": None,
             "legend": {
                 "type": "range",
                 "values": [
@@ -226,6 +228,7 @@ class TestLayer:
             source_type=source_type,
             colour_source_id="colour_raster.tif",
             raw_source_id="greyscale_raster.tif",
+            layer_id=None,
             data_format=data_format,
             data_category=data_category,
             legend={
@@ -324,6 +327,7 @@ class TestLayer:
                 "id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains."
                 "hasGeometry.*"
             ),
+            layer_id="wms",
             data_format=data_format,
             data_category=data_category,
             legend={

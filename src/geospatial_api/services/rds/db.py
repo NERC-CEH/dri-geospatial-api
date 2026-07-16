@@ -190,6 +190,7 @@ class LayerRegistryInterface:
         end_date: str | None = None,
         raw_source_id: str | None = None,
         colour_source_id: str | None = None,
+        layer_id: str | None = None,
         legend: dict[str, Any] | None = None,
         boundary: dict[str, Any] | None = None,
         field_metadata: dict[str, Any] | None = None,
@@ -210,6 +211,7 @@ class LayerRegistryInterface:
                 formatted raster). If not provided then a colour_source_id value is expected . Defaults to None.
             colour_source_id: S3 key or similar linking to the colourised data source (e.g. geojson file, single band
                 COG formatted raster). If not provided then a raw_source_id value is expected . Defaults to None.
+            layer_id: The name of the WMS layer to load. Only required for WMS sources. Defaults to None.
             legend: JSON string for the legend information. Defaults to None.
             boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
                 Defaults to None.
@@ -257,6 +259,7 @@ class LayerRegistryInterface:
                 location=location.id,
                 raw_source_id=raw_source_id,
                 colour_source_id=colour_source_id,
+                layer_id=layer_id,
                 legend=legend,
                 boundary=boundary_wkt,
                 bbox=bbox_wkt,
@@ -283,6 +286,7 @@ class LayerRegistryInterface:
         location_key: str | None = None,
         raw_source_id: str | None = None,
         colour_source_id: str | None = None,
+        layer_id: str | None = None,
         legend: dict[str, Any] | None = None,
         boundary: dict[str, Any] | None = None,
         field_metadata: dict[str, Any] | None = None,
@@ -303,6 +307,7 @@ class LayerRegistryInterface:
                 formatted raster). If not provided then a colour_source_id value is expected . Defaults to None.
             colour_source_id: S3 key or similar linking to the colourised data source (e.g. geojson file, single band
                 COG formatted raster). If not provided then a raw_source_id value is expected . Defaults to None.
+            layer_id: The name of the WMS layer to load. Only required for WMS sources. Defaults to None.
             legend: JSON string for the legend information. Defaults to None.
             boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
                 Defaults to None.
@@ -321,6 +326,7 @@ class LayerRegistryInterface:
         layer.end_date = end_date if end_date is not None else layer.end_date
         layer.raw_source_id = raw_source_id if raw_source_id is not None else layer.raw_source_id
         layer.colour_source_id = colour_source_id if colour_source_id is not None else layer.colour_source_id
+        layer.layer_id = layer_id if layer_id is not None else layer.layer_id
         layer.legend = legend if legend is not None else layer.legend
         layer.field_metadata = field_metadata if field_metadata is not None else layer.field_metadata
 
@@ -396,6 +402,7 @@ class LayerRegistryInterface:
             source_type=source_type,
             colour_source_id=db_layer.colour_source_id,
             raw_source_id=db_layer.raw_source_id,
+            layer_id=db_layer.layer_id,
             data_format=LayerRegistryInterface.get_instance(
                 session=session,
                 model_id=db_layer.data_format,

@@ -550,8 +550,8 @@ wheels = [
 
 [[package]]
 name = "dri-database-models"
-version = "0.0.21"
-source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main#f83654866c06a311f57cb01f9933738b644ae2ee" }
+version = "0.0.23"
+source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main#96a7c0562f9f7efaf02f4530e63eab4553e67878" }
 dependencies = [
     { name = "alembic" },
     { name = "autosemver" },
