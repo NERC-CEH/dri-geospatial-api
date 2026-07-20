@@ -22,10 +22,14 @@ class MetadataTransformer(TransformerABC):
     def get_field_value(field_data: dict[str | Any], field_key_mappings: dict[str | Any]) -> Any:
         field_value = deepcopy(field_data)
         for field_key_mapping in field_key_mappings:
+            # If None has been reached for the field value then the field is missing from the response
+            if field_value is None:
+                return field_value
+
             field_value = field_value.get(field_key_mapping["key"])
             field_type = field_key_mapping["type"]
 
-            if field_type == "list":
+            if field_type == "list" and isinstance(field_value, list):
                 field_value = field_value[field_key_mapping["index"]]
             elif field_type == "wkt_list":
                 field_value = MetadataTransformer.get_geometry_from_wkt_list(field_value)
