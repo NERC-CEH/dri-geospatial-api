@@ -216,3 +216,227 @@ class TestVector:
 
             assert response.status_code == 200
             assert response.json() == expected_json
+
+    def test_vector_from_metadata_api_missing_fields(self) -> None:
+        response_json = {
+            "meta": {
+                "@id": (
+                    "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.json?_projection=contains.label,"
+                    "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                    "contains.altitude"
+                ),
+                "publisher": "UK Centre for Ecology & Hydrology",
+                "license": "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+                "licenseName": "OGL 3",
+                "comment": "",
+                "version": "1.0.0",
+                "hasFormat": [
+                    (
+                        "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.rdf?_projection=contains.label,"
+                        "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                        "contains.altitude"
+                    ),
+                    (
+                        "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.csv?_projection=contains.label,"
+                        "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                        "contains.altitude"
+                    ),
+                    (
+                        "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.geojson?_projection=contains.label,"
+                        "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                        "contains.altitude"
+                    ),
+                    (
+                        "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.json?_projection=contains.label,"
+                        "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                        "contains.altitude"
+                    ),
+                    (
+                        "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.ttl?_projection=contains.label,"
+                        "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                        "contains.altitude"
+                    ),
+                    (
+                        "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.html?_projection=contains.label,"
+                        "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                        "contains.altitude"
+                    ),
+                ],
+            },
+            "items": [
+                {
+                    "@id": "http://fdri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period",
+                    "contains": [
+                        {
+                            "@id": "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_sev-7",
+                            "label": ["Hore D2X"],
+                            "comment": [
+                                (
+                                    "Installed as part of a network of 39 gauges for an Institute of Hydrology Study "
+                                    "on domain theory. The characters D2X correspond to the altitude, slope and aspect "
+                                    "of the gauge location respectively. The gauge is a ground level gauge."
+                                )
+                            ],
+                            "identifier": ["internal_database_id|507", "gauge_code|sev-7"],
+                            "hasGeometry": [
+                                {
+                                    "@id": (
+                                        "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_sev-7#"
+                                        "geometry.eastingnorthing"
+                                    ),
+                                    "asWKT": (
+                                        "\u003chttp://www.opengis.net/def/crs/EPSG/0/27700\u003e "
+                                        "POINT(281960.0 288340.0)"
+                                    ),
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                                {
+                                    "@id": (
+                                        "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_sev-7#geometry.latlong"
+                                    ),
+                                    "asWKT": "POINT(-3.739537 52.480178)",
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                            ],
+                            "operatingPeriod": {
+                                "@id": "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_sev-7#operating-period",
+                                "@type": [{"@id": "http://purl.org/dc/terms/PeriodOfTime"}],
+                                "startDate": "1969-01-17",
+                            },
+                            "altitude": 668,
+                        },
+                        {
+                            "@id": "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_hafod-cadwgan",
+                            "label": ["Hafod Cadwgan"],
+                            "identifier": ["gauge_code|hafod-cadwgan", "internal_database_id|577"],
+                            "hasGeometry": [
+                                {
+                                    "@id": (
+                                        "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_hafod-cadwgan#"
+                                        "geometry.eastingnorthing"
+                                    ),
+                                    "asWKT": (
+                                        "\u003chttp://www.opengis.net/def/crs/EPSG/0/27700\u003e "
+                                        "POINT(285900.0 290550.0)"
+                                    ),
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                                {
+                                    "@id": (
+                                        "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_hafod-cadwgan#"
+                                        "geometry.latlong"
+                                    ),
+                                    "asWKT": "POINT(-3.68231 52.50088)",
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                            ],
+                            "operatingPeriod": {
+                                "@id": (
+                                    "http://fdri.ceh.ac.uk/id/site/plynlimon-pre-fdri-period_hafod-cadwgan#"
+                                    "operating-period"
+                                ),
+                                "@type": [{"@id": "http://purl.org/dc/terms/PeriodOfTime"}],
+                                "startDate": "1969-01-17",
+                            },
+                            "altitude": 366,
+                        },
+                    ],
+                }
+            ],
+        }
+
+        with (
+            patch("requests.Session.get") as mock_get,
+            patch.object(LayerRegistryInterface, "get_single_layer") as mock_get_layer,
+        ):
+            mock_request = Request(method="get", url="http://test_url.com")
+            mock_response = Response(200, json=response_json, request=mock_request)
+            mock_get.return_value = mock_response
+
+            mock_get_layer.return_value = pydantic_models.Layer.model_construct(
+                source_type=pydantic_models.SourceType.model_construct(object_key="metadata_api"),
+                field_metadata=[
+                    {
+                        "display_label": "Name",
+                        "key": "name",
+                        "field_keys": [{"key": "label", "type": "list", "index": 0}],
+                        "data_type": "string",
+                    },
+                    {
+                        "display_label": "Description",
+                        "key": "description",
+                        "field_keys": [{"key": "comment", "type": "list", "index": 0}],
+                        "data_type": "string",
+                    },
+                    {
+                        "display_label": "Altitude",
+                        "key": "altitude",
+                        "field_keys": [{"key": "altitude", "type": "value"}],
+                        "data_type": "float",
+                    },
+                    {
+                        "display_label": "Start Date",
+                        "key": "start_date",
+                        "field_keys": [
+                            {"key": "operatingPeriod", "type": "value"},
+                            {"key": "startDate", "type": "value"},
+                        ],
+                        "data_type": "date",
+                    },
+                    {
+                        "display_label": "End date",
+                        "key": "end_date",
+                        "field_keys": [
+                            {"key": "operatingPeriod", "type": "value"},
+                            {"key": "endDate", "type": "value"},
+                        ],
+                        "data_type": "date",
+                    },
+                    {
+                        "display_label": "Location",
+                        "key": "geometry",
+                        "field_keys": [{"key": "hasGeometry", "type": "wkt_list", "index": None}],
+                        "data_type": "string",
+                    },
+                ],
+            )
+
+            expected_json = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {"type": "Point", "coordinates": [-3.739537, 52.480178]},
+                        "properties": {
+                            "name": "Hore D2X",
+                            "description": (
+                                "Installed as part of a network of 39 gauges for an Institute of Hydrology Study on "
+                                "domain theory. The characters D2X correspond to the altitude, slope and aspect of the "
+                                "gauge location respectively. The gauge is a ground level gauge."
+                            ),
+                            "altitude": 668,
+                            "start_date": "1969-01-17",
+                            "end_date": None,
+                        },
+                    },
+                    {
+                        "type": "Feature",
+                        "geometry": {"type": "Point", "coordinates": [-3.68231, 52.50088]},
+                        "properties": {
+                            "name": "Hafod Cadwgan",
+                            "description": None,
+                            "altitude": 366,
+                            "start_date": "1969-01-17",
+                            "end_date": None,
+                        },
+                    },
+                ],
+            }
+
+            response = client.get(
+                "/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.json?"
+                "_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*&layer_id=1"
+            )
+
+            assert response.status_code == 200
+            assert response.json() == expected_json
