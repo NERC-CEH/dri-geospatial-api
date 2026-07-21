@@ -21,7 +21,7 @@ setup_logger(service_name=config.service_name)
 # Initialise API
 app = FastAPI(docs_url=None)
 
-# Add middleware
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

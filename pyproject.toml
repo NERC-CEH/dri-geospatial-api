@@ -57,6 +57,11 @@ filterwarnings = [
 [tool.coverage.run]
 omit = ["*__init__.py", "src/geospatial_api/__main__.py"]
 
+disable_warnings = [
+    "ignore::DeprecationWarning:autosemver.*:",
+    "ignore::DeprecationWarning:pkg_resources.*:",
+]
+
 [tool.ruff]
 line-length = 120
 

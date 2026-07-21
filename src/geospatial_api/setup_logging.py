@@ -23,11 +23,6 @@ class _InterceptHandler(logging.Handler):
         Translates the stdlib level name to a loguru level.
         Falls back to the numeric level if loguru doesn't recognise the name.
 
-        A fixed depth doesn't work here: stdlib methods like `Logger.exception`
-        wrap `Logger.error` and add an extra stack frame, so the depth needed to
-        reach the true call site varies by which method was called. Walk up from
-        this frame, past the stdlib logging internals, to find it instead.
-
         Args:
             record: the stdlib log record to forward.
         """
