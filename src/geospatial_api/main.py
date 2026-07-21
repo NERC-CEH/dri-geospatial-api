@@ -9,11 +9,11 @@ from .routers import healthcheck, layer_management, titiler_main, vector_main
 from .routers import main as main_router
 from .setup_logging import setup_logger, setup_request_middleware
 
-# Setup logging
-setup_logger(service_name="geospatial_api")
-
-# Setup Metadata
+# Setup config
 config = setup_config()
+
+# Setup logging
+setup_logger(service_name=config.service_name)
 
 # Setup the base application
 # --------------------------

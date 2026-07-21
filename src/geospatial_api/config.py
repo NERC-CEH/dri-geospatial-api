@@ -26,6 +26,7 @@ class BaseConfig(BaseSettings):
     contact_url: str
     geospatial_data_bucket: str
     metadata_url: str
+    service_name: str
 
     db_user_name: str
     db_host: str
