@@ -4,9 +4,10 @@ from unittest import mock
 
 import pytest
 from fastapi.testclient import TestClient
+from starlette.responses import Response
+
 from geospatial_api.main import app
 from geospatial_api.routers.cached_titiler import TilerFactory
-from starlette.responses import Response
 
 client = TestClient(app)
 

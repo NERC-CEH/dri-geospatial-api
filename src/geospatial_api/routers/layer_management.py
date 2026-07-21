@@ -7,6 +7,9 @@ import geojson
 from dri_database_models import geospatial as db_models
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
+from mypy_boto3_s3 import S3Client
+from sqlalchemy.orm import Session
+
 from geospatial_api import models as py_models
 from geospatial_api.config import setup_config
 from geospatial_api.services.rds.db import (
@@ -17,8 +20,6 @@ from geospatial_api.services.rds.db import (
     SourceTypeModelInterface,
 )
 from geospatial_api.utils.utils import get_db, get_s3_client, upload_file_to_s3_for_layer
-from mypy_boto3_s3 import S3Client
-from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["Layer Management"])
 

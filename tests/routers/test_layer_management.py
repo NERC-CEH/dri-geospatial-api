@@ -4,10 +4,11 @@ from unittest.mock import patch
 import dri_database_models.geospatial as db_models
 import pytest
 from fastapi.testclient import TestClient
+from httpx import Request, Response
+
 from geospatial_api.main import app
 from geospatial_api.models import IDModel, SourceType
 from geospatial_api.services.rds.db import DataCategoryModelInterface, IDModelInterface, SourceTypeModelInterface
-from httpx import Request, Response
 
 client = TestClient(app)
 

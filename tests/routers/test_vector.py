@@ -3,12 +3,13 @@ from typing import Any
 from unittest.mock import patch
 
 import geojson
-import geospatial_api.models as pydantic_models
 import pytest
 from fastapi.testclient import TestClient
+from httpx import Request, Response
+
+import geospatial_api.models as pydantic_models
 from geospatial_api.main import app
 from geospatial_api.services.rds.db import LayerRegistryInterface
-from httpx import Request, Response
 
 client = TestClient(app)
 

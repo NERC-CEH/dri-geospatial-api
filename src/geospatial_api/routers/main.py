@@ -3,10 +3,11 @@ from typing import Annotated, Any
 import geojson
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+
 from geospatial_api.config import setup_config
 from geospatial_api.services.rds.db import LayerRegistryInterface, LocationModelInterface
 from geospatial_api.utils.utils import get_db, get_s3_client
-from sqlalchemy.orm import Session
 
 router = APIRouter()
 

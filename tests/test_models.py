@@ -1,6 +1,7 @@
 from datetime import date
 
 import shapely
+
 from geospatial_api.models import DataCategory, IDModel, Layer, Location, SourceType
 
 

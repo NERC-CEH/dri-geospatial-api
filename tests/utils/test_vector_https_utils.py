@@ -2,10 +2,11 @@ from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
+from httpx import HTTPError, Request, Response
+
 from geospatial_api.main import app
 from geospatial_api.models import Layer, SourceType
 from geospatial_api.utils.vector_https_utils import fetch_data, fetch_vector_data_from_https
-from httpx import HTTPError, Request, Response
 
 client = TestClient(app)
 

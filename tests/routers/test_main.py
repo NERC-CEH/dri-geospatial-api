@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from geospatial_api.main import app
 from geospatial_api.utils.utils import get_db
 
