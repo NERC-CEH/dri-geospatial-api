@@ -1,19 +1,16 @@
-import logging
-
-from driutils.logger import setup_logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 from .cache import setup_cache
 from .config import setup_config
 from .metrics import Metrics
 from .routers import healthcheck, layer_management, titiler_main, vector_main
 from .routers import main as main_router
-
-logger = logging.getLogger(__name__)
+from .setup_logging import setup_logger, setup_request_middleware
 
 # Setup logging
-setup_logging()
+setup_logger(service_name="geospatial_api")
 
 # Setup Metadata
 config = setup_config()
@@ -31,6 +28,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add middleware to log request details
+setup_request_middleware(app)
 
 # Initialise the cache
 app.add_event_handler("startup", setup_cache)

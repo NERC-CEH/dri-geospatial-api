@@ -3,9 +3,8 @@ from typing import Any
 
 import requests
 from dri_database_models import geospatial as db_models
-from httpx import HTTPError
-
 from geospatial_api.utils.transformers import MetadataTransformer
+from httpx import HTTPError
 
 logger = logging.getLogger(__name__)
 

@@ -4,11 +4,10 @@ from typing import Any, Union
 import shapely
 from dri_database_models import geospatial as db_models
 from geoalchemy2.shape import to_shape
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
-
 from geospatial_api import models
 from geospatial_api.config import setup_config
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

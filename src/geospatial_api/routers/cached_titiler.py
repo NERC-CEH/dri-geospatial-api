@@ -6,6 +6,7 @@ from typing import Callable, Literal, Type
 
 import rasterio
 from fastapi import Depends, HTTPException, Path
+from geospatial_api.cache import CachedTiles
 from pydantic import Field
 from rio_tiler.errors import TileOutsideBounds
 from rio_tiler.io import BaseReader, Reader
@@ -16,8 +17,6 @@ from titiler.core.factory import TilerFactory as TiTilerFactory
 from titiler.core.factory import img_endpoint_params
 from titiler.core.resources.enums import ImageType
 from typing_extensions import Annotated
-
-from geospatial_api.cache import CachedTiles
 
 logger = logging.getLogger(__name__)
 

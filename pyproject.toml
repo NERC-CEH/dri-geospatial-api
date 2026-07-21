@@ -9,6 +9,7 @@ dependencies = [
     "aiocache",
     "dri-database-models @ git+https://github.com/NERC-CEH/dri-database-models.git@main",
     "dri-utils @ git+https://github.com/NERC-CEH/dri-utils.git",
+    "loguru",
     "fastapi",
     "fastapi[standard]",
     "geoalchemy2",

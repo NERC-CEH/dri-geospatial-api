@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-
 from geospatial_api.utils.utils import get_file_path, get_s3_client
 
 

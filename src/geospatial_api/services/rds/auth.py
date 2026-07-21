@@ -1,12 +1,11 @@
 import logging
 
 import boto3
+from geospatial_api.config import BaseConfig, LocalConfig
 from sqlalchemy import Dialect, create_engine, event
 from sqlalchemy.engine import URL
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import ConnectionPoolEntry
-
-from geospatial_api.config import BaseConfig, LocalConfig
 
 logger = logging.getLogger(__name__)
 

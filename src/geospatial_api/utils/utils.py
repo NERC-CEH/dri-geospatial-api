@@ -6,12 +6,11 @@ import boto3
 import boto3.session
 from botocore.client import Config
 from fastapi import UploadFile
-from mypy_boto3_s3 import S3Client
-from sqlalchemy.orm import Session
-
 from geospatial_api.config import LocalConfig, setup_config
 from geospatial_api.models import Layer
 from geospatial_api.services.rds.auth import RDSLogin
+from mypy_boto3_s3 import S3Client
+from sqlalchemy.orm import Session
 
 boto3_config = Config(max_pool_connections=100)
 

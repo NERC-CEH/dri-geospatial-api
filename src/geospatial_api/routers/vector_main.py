@@ -3,12 +3,11 @@ from urllib.parse import urlparse
 
 import geojson
 from fastapi import APIRouter, Depends, HTTPException
-from mypy_boto3_s3 import S3Client
-from sqlalchemy.orm import Session
-
 from geospatial_api.services.rds.db import LayerRegistryInterface
 from geospatial_api.utils.utils import get_db, get_file_path, get_s3_client
 from geospatial_api.utils.vector_https_utils import fetch_vector_data_from_https
+from mypy_boto3_s3 import S3Client
+from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["Vector Data"])
 s3 = get_s3_client()
