@@ -140,6 +140,8 @@ class MetadataTransformer(TransformerABC):
                     return True
 
                 return False
+        else:
+            raise ValueError(f"The filter config type `{filter_config['type']}` is not supported.")
 
     def transform_response(
         self,

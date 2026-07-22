@@ -315,7 +315,7 @@ class LayerRegistryInterface:
             boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
                 Defaults to None.
             field_metadata: JSON string containing metadata for displaying field information from the vector in the UI
-            field_metadata: JSON string containing metadata for filtering entries from the metadata api
+            filter_metadata: JSON string containing metadata for filtering entries from the metadata api
 
         Returns:
             Layer instance
