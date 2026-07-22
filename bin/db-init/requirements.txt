@@ -1,4 +1,4 @@
-git+https://x-access-token:${GH_TOKEN}@github.com/NERC-CEH/dri-database-models.git@main#egg=dri-database-models
+git+https://x-access-token:${GH_TOKEN}@github.com/NERC-CEH/dri-database-models.git@feature/FPM-1192-filter-metadata#egg=dri-database-models
 psycopg2-binary>=2.9.10
 sqlalchemy>=2.0.42
 GeoAlchemy2>=0.18.4

@@ -194,6 +194,7 @@ class LayerRegistryInterface:
         legend: dict[str, Any] | None = None,
         boundary: dict[str, Any] | None = None,
         field_metadata: dict[str, Any] | None = None,
+        filter_metadata: dict[str, Any] | None = None,
     ) -> db_models.Layer:
         """Adds a new Layer instance to the database.
 
@@ -264,6 +265,7 @@ class LayerRegistryInterface:
                 boundary=boundary_wkt,
                 bbox=bbox_wkt,
                 field_metadata=field_metadata,
+                filter_metadata=filter_metadata,
             ),
         )
 
@@ -290,6 +292,7 @@ class LayerRegistryInterface:
         legend: dict[str, Any] | None = None,
         boundary: dict[str, Any] | None = None,
         field_metadata: dict[str, Any] | None = None,
+        filter_metadata: dict[str, Any] | None = None,
     ) -> db_models.Layer:
         """Adds a new Layer instance to the database.
 
@@ -312,6 +315,7 @@ class LayerRegistryInterface:
             boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
                 Defaults to None.
             field_metadata: JSON string containing metadata for displaying field information from the vector in the UI
+            field_metadata: JSON string containing metadata for filtering entries from the metadata api
 
         Returns:
             Layer instance
@@ -329,6 +333,7 @@ class LayerRegistryInterface:
         layer.layer_id = layer_id if layer_id is not None else layer.layer_id
         layer.legend = legend if legend is not None else layer.legend
         layer.field_metadata = field_metadata if field_metadata is not None else layer.field_metadata
+        layer.filter_metadata = filter_metadata if filter_metadata is not None else layer.filter_metadata
 
         if project_key is not None:
             project = get_db_object_by_key(session=session, db_model=db_models.Project, object_key=project_key)
@@ -435,6 +440,7 @@ class LayerRegistryInterface:
                 pydantic_model=models.Location,
             ),
             field_metadata=db_layer.field_metadata,
+            filter_metadata=db_layer.filter_metadata,
         )
 
         return layer
