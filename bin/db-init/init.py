@@ -129,6 +129,7 @@ def intialise_db() -> None:
             "date": "2026-03-20",
             "source_type": "s3",
             "colour_source_id": "clipped_tweed_dsm_3857_colourised_cog.tif",
+            "raw_source_id": "clipped_tweed_dsm_3857_greyscale_cog.tif",
             "data_format": "raster",
             "data_category": "dsm",
             "processing_level": "processed",
