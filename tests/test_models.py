@@ -116,6 +116,7 @@ class TestLayer:
             processing_level=processing_level,
             location=location,
             field_metadata=None,
+            filter_metadata=None,
         )
 
         expected_response = {
@@ -159,6 +160,7 @@ class TestLayer:
                 "centroid": {"x": 0.5, "y": 0.5},
             },
             "field_metadata": None,
+            "filter_metadata": None,
             "map_center": [0.5, 0.5],
             "colour_source_url": "s3://geospatial_s3_bucket/project=project_1/location_type=location_type_1/location=location_1/data_category=category_1/processing_level=raw/date=2026-01-01/colour_raster.tif",
             "raw_source_url": "s3://geospatial_s3_bucket/project=project_1/location_type=location_type_1/location=location_1/data_category=category_1/processing_level=raw/date=2026-01-01/greyscale_raster.tif",
@@ -249,6 +251,7 @@ class TestLayer:
             processing_level=processing_level,
             location=location,
             field_metadata=None,
+            filter_metadata=None,
         )
 
         expected_source_url = (
@@ -348,6 +351,7 @@ class TestLayer:
             processing_level=processing_level,
             location=location,
             field_metadata=None,
+            filter_metadata=None,
         )
 
         expected_source_url = (

@@ -176,6 +176,7 @@ class TestVector:
                         "data_type": "string",
                     },
                 ],
+                filter_metadata=None,
             )
 
             expected_json = {
@@ -399,6 +400,7 @@ class TestVector:
                         "data_type": "string",
                     },
                 ],
+                filter_metadata=None,
             )
 
             expected_json = {
@@ -436,6 +438,194 @@ class TestVector:
             response = client.get(
                 "/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.json?"
                 "_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*&layer_id=1"
+            )
+
+            assert response.status_code == 200
+            assert response.json() == expected_json
+
+    def test_vector_from_metadata_api_apply_filtering(self) -> None:
+        response_json = {
+            "meta": {},
+            "items": [
+                {
+                    "@id": "http://fdri.ceh.ac.uk/id/network/ea-flow",
+                    "contains": [
+                        {
+                            "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_030001",
+                            "label": ["Claypole"],
+                            "hasAnnotation": [
+                                {
+                                    "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_030001#annotation-isChess-0",
+                                    "property": {"@id": "http://fdri.ceh.ac.uk/ref/common/annotation/isChess"},
+                                    "hasValue": {
+                                        "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_030001#annotation-isChess-0-value",
+                                        "value": [False],
+                                    },
+                                    "@type": [{"@id": "http://fdri.ceh.ac.uk/vocab/metadata/Annotation"}],
+                                }
+                            ],
+                            "identifier": [
+                                "nrfaStationID|30001",
+                                "notation|6dd5d77f-6994-40fe-be0e-815f7febde94",
+                                "RLOIid|6057",
+                                "wiskiID|030001",
+                            ],
+                            "hasGeometry": [
+                                {
+                                    "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_030001#geometry.latlong",
+                                    "asWKT": "POINT(-0.746155 53.02231)",
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                                {
+                                    "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_030001#geometry.eastingnorthing",
+                                    "asWKT": (
+                                        "\u003chttp://www.opengis.net/def/crs/EPSG/0/27700\u003e "
+                                        "POINT(484201.0 347959.0)"
+                                    ),
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                            ],
+                            "operatingPeriod": {
+                                "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_030001#operating-period",
+                                "@type": [{"@id": "http://purl.org/dc/terms/PeriodOfTime"}],
+                                "startDate": "1959-05-01",
+                            },
+                        },
+                        {
+                            "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_2879_w1th",
+                            "label": ["Denham Lodge Main"],
+                            "hasAnnotation": [
+                                {
+                                    "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_2879_w1th#annotation-isChess-0",
+                                    "property": {"@id": "http://fdri.ceh.ac.uk/ref/common/annotation/isChess"},
+                                    "hasValue": {
+                                        "@id": (
+                                            "http://fdri.ceh.ac.uk/id/site/ea-flow_2879_w1th#annotation-isChess-0-value"
+                                        ),
+                                        "value": [True],
+                                    },
+                                    "@type": [{"@id": "http://fdri.ceh.ac.uk/vocab/metadata/Annotation"}],
+                                }
+                            ],
+                            "identifier": [
+                                "notation|0ee042cb-d2b3-497b-9305-2ac0a8960696",
+                                "wiskiID|2879_w1TH",
+                                "RLOIid|7407",
+                                "stationReference|2879_w1TH",
+                            ],
+                            "hasGeometry": [
+                                {
+                                    "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_2879_w1th#geometry.latlong",
+                                    "asWKT": "POINT(-0.49112 51.567599)",
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                                {
+                                    "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_2879_w1th#geometry.eastingnorthing",
+                                    "asWKT": (
+                                        "\u003chttp://www.opengis.net/def/crs/EPSG/0/27700\u003e "
+                                        "POINT(504677.0 186492.0)"
+                                    ),
+                                    "@type": [{"@id": "http://www.opengis.net/ont/geosparql#Geometry"}],
+                                },
+                            ],
+                            "operatingPeriod": {
+                                "@id": "http://fdri.ceh.ac.uk/id/site/ea-flow_2879_w1th#operating-period",
+                                "@type": [{"@id": "http://purl.org/dc/terms/PeriodOfTime"}],
+                                "startDate": "1986-11-01",
+                            },
+                        },
+                    ],
+                },
+            ],
+        }
+
+        with (
+            patch("requests.Session.get") as mock_get,
+            patch.object(LayerRegistryInterface, "get_single_layer") as mock_get_layer,
+        ):
+            mock_request = Request(method="get", url="http://test_url.com")
+            mock_response = Response(200, json=response_json, request=mock_request)
+            mock_get.return_value = mock_response
+
+            mock_get_layer.return_value = pydantic_models.Layer.model_construct(
+                source_type=pydantic_models.SourceType.model_construct(object_key="metadata_api"),
+                field_metadata=[
+                    {
+                        "display_label": "Name",
+                        "key": "name",
+                        "field_keys": [{"key": "label", "type": "list", "index": 0}],
+                        "data_type": "string",
+                    },
+                    {
+                        "display_label": "Description",
+                        "key": "description",
+                        "field_keys": [{"key": "comment", "type": "list", "index": 0}],
+                        "data_type": "string",
+                    },
+                    {
+                        "display_label": "Altitude",
+                        "key": "altitude",
+                        "field_keys": [{"key": "altitude", "type": "value"}],
+                        "data_type": "float",
+                    },
+                    {
+                        "display_label": "Start Date",
+                        "key": "start_date",
+                        "field_keys": [
+                            {"key": "operatingPeriod", "type": "value"},
+                            {"key": "startDate", "type": "value"},
+                        ],
+                        "data_type": "date",
+                    },
+                    {
+                        "display_label": "End date",
+                        "key": "end_date",
+                        "field_keys": [
+                            {"key": "operatingPeriod", "type": "value"},
+                            {"key": "endDate", "type": "value"},
+                        ],
+                        "data_type": "date",
+                    },
+                    {
+                        "display_label": "Location",
+                        "key": "geometry",
+                        "field_keys": [{"key": "hasGeometry", "type": "wkt_list", "index": None}],
+                        "data_type": "string",
+                    },
+                ],
+                filter_metadata=[
+                    {
+                        "type": "list",
+                        "list_field": "hasAnnotation",
+                        "id_field_keys": [{"key": "property", "type": "value"}, {"key": "@id", "type": "value"}],
+                        "value_field_keys": [
+                            {"key": "hasValue", "type": "value"},
+                            {"key": "value", "type": "list", "index": 0},
+                        ],
+                        "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation/isChess",
+                        "expected_value": True,
+                    }
+                ],
+            )
+
+            expected_json = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {"type": "Point", "coordinates": [-0.49112, 51.567599]},
+                        "properties": {
+                            "name": "Denham Lodge Main",
+                            "description": None,
+                            "altitude": None,
+                            "start_date": "1986-11-01",
+                            "end_date": None,
+                        },
+                    }
+                ],
+            }
+            response = client.get(
+                "/api/vector?url=https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView&layer_id=1"
             )
 
             assert response.status_code == 200
