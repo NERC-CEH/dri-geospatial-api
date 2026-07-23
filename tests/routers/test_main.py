@@ -43,10 +43,10 @@ class TestAvailableData:
                 "layer_id": None,
                 "data_format": {"id": 1, "name": "Raster", "object_key": "raster"},
                 "data_category": {
-                    "id": 2,
-                    "name": "Digital Surface Model",
+                    "id": 19,
+                    "name": "Digital surface model",
                     "object_key": "dsm",
-                    "data_category_group": {"id": 1, "name": "Topography and Remote Sensing", "object_key": "topo_rs"},
+                    "data_category_group": {"id": 6, "name": "Topography and remote sensing", "object_key": "topo_rs"},
                 },
                 "legend": {
                     "type": "range",
@@ -100,12 +100,9 @@ class TestAvailableData:
                     "centroid": {"x": -3.4173733172561627, "y": 55.51054843676313},
                 },
                 "field_metadata": None,
+                "filter_metadata": None,
                 "map_center": [-3.417368, 55.510546],
-                "colour_source_url": (
-                    "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/"
-                    "data_category=dsm/processing_level=processed/date=2026-03-20/"
-                    "clipped_tweed_dsm_3857_colourised_cog.tif"
-                ),
+                "colour_source_url": "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/clipped_tweed_dsm_3857_colourised_cog.tif",
                 "raw_source_url": None,
             },
             {
@@ -120,15 +117,15 @@ class TestAvailableData:
                     "id": 2,
                     "name": "Metadata API",
                     "object_key": "metadata_api",
-                    "base_url": "https://dri-metadata-api.dri.ceh.ac.uk",
+                    "base_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk",
                 },
                 "layer_id": None,
                 "data_format": {"id": 2, "name": "Vector", "object_key": "vector"},
                 "data_category": {
-                    "id": 3,
-                    "name": "Soil Moisture",
+                    "id": 5,
+                    "name": "Soil moisture",
                     "object_key": "soil_moisture",
-                    "data_category_group": {"id": 2, "name": "Geology and Soils", "object_key": "geology_soils"},
+                    "data_category_group": {"id": 2, "name": "Soils", "object_key": "soils"},
                 },
                 "legend": None,
                 "bbox": {"min_x": -7.291954, "max_x": 1.034231, "min_y": 50.03266, "max_y": 56.914403},
@@ -185,13 +182,10 @@ class TestAvailableData:
                         "data_type": "string",
                     },
                 ],
+                "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": (
-                    "https://dri-metadata-api.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,"
-                    "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
-                    "contains.altitude"
-                ),
+                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude",
             },
             {
                 "id": 3,
@@ -205,15 +199,15 @@ class TestAvailableData:
                     "id": 2,
                     "name": "Metadata API",
                     "object_key": "metadata_api",
-                    "base_url": "https://dri-metadata-api.dri.ceh.ac.uk",
+                    "base_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk",
                 },
                 "layer_id": None,
                 "data_format": {"id": 2, "name": "Vector", "object_key": "vector"},
                 "data_category": {
-                    "id": 4,
-                    "name": "Flow Monitoring",
+                    "id": 11,
+                    "name": "Flow monitoring",
                     "object_key": "flow_monitoring",
-                    "data_category_group": {"id": 3, "name": "Hydrology", "object_key": "hydrology"},
+                    "data_category_group": {"id": 4, "name": "Hydrology", "object_key": "hydrology"},
                 },
                 "legend": None,
                 "bbox": {"min_x": -7.291954, "max_x": 1.034231, "min_y": 50.03266, "max_y": 56.914403},
@@ -240,13 +234,10 @@ class TestAvailableData:
                         "data_type": "string",
                     },
                 ],
+                "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": (
-                    "https://dri-metadata-api.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection=contains.label,"
-                    "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
-                    "contains.altitude"
-                ),
+                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude",
             },
             {
                 "id": 4,
@@ -265,12 +256,37 @@ class TestAvailableData:
                 "layer_id": "wms",
                 "data_format": {"id": 3, "name": "Web Map Services", "object_key": "wms"},
                 "data_category": {
-                    "id": 4,
-                    "name": "Flow Monitoring",
-                    "object_key": "flow_monitoring",
-                    "data_category_group": {"id": 3, "name": "Hydrology", "object_key": "hydrology"},
+                    "id": 23,
+                    "name": "Land cover",
+                    "object_key": "land_cover",
+                    "data_category_group": {"id": 8, "name": "Land cover", "object_key": "land_cover"},
                 },
-                "legend": None,
+                "legend": {
+                    "type": "category",
+                    "values": [
+                        {"label": "Suburban", "colour": [128, 128, 128]},
+                        {"label": "Urban", "colour": [0, 0, 0]},
+                        {"label": "Saltmarsh", "colour": [128, 128, 255]},
+                        {"label": "Littoral sediment", "colour": [255, 255, 128]},
+                        {"label": "Littoral rock", "colour": [255, 255, 128]},
+                        {"label": "Supra-littoral sediment", "colour": [204, 179, 0]},
+                        {"label": "Supra-littoral rock", "colour": [152, 125, 183]},
+                        {"label": "Freshwater", "colour": [0, 0, 255]},
+                        {"label": "Saltwater", "colour": [0, 0, 92]},
+                        {"label": "Inland rock", "colour": [210, 210, 255]},
+                        {"label": "Bog", "colour": [205, 29, 181]},
+                        {"label": "Heather grassland", "colour": [230, 140, 166]},
+                        {"label": "Heather", "colour": [128, 26, 128]},
+                        {"label": "Fen, marsh and swamp", "colour": [253, 123, 238]},
+                        {"label": "Acid grassland", "colour": [178, 145, 0]},
+                        {"label": "Calcareous grassland", "colour": [255, 192, 55]},
+                        {"label": "Neutral grassland", "colour": [220, 153, 9]},
+                        {"label": "Improved grassland", "colour": [1, 255, 124]},
+                        {"label": "Arable and horticulture", "colour": [240, 228, 66]},
+                        {"label": "Coniferous woodland", "colour": [0, 80, 0]},
+                        {"label": "Broadleaved, mixed and yew woodland", "colour": [51, 160, 44]},
+                    ],
+                },
                 "bbox": {"min_x": -7.291954, "max_x": 1.034231, "min_y": 50.03266, "max_y": 56.914403},
                 "processing_level": {"id": 2, "name": "Raw", "object_key": "raw"},
                 "location": {
@@ -282,17 +298,18 @@ class TestAvailableData:
                     "centroid": {"x": -3.1288614999999993, "y": 53.4735315},
                 },
                 "field_metadata": None,
+                "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": "https://catalogue.ceh.ac.uk/maps/76405b92-17ec-4ed2-ac7f-17caeb2d14f6",
             },
             {
                 "id": 5,
-                "name": "rivers",
+                "name": "UKCEH river network",
                 "description": None,
                 "project": {"id": 1, "name": "FDRI", "object_key": "fdri"},
                 "date": None,
-                "start_date": "2024-01-01",
+                "start_date": "1975-01-01",
                 "end_date": None,
                 "source_type": {
                     "id": 4,
@@ -303,14 +320,14 @@ class TestAvailableData:
                 "layer_id": "river_vectors%3AIRN_riverLine",
                 "data_format": {"id": 3, "name": "Web Map Services", "object_key": "wms"},
                 "data_category": {
-                    "id": 4,
-                    "name": "Flow Monitoring",
-                    "object_key": "flow_monitoring",
-                    "data_category_group": {"id": 3, "name": "Hydrology", "object_key": "hydrology"},
+                    "id": 13,
+                    "name": "River network",
+                    "object_key": "river_network",
+                    "data_category_group": {"id": 4, "name": "Hydrology", "object_key": "hydrology"},
                 },
                 "legend": None,
                 "bbox": {"min_x": -7.291954, "max_x": 1.034231, "min_y": 50.03266, "max_y": 56.914403},
-                "processing_level": {"id": 2, "name": "Raw", "object_key": "raw"},
+                "processing_level": {"id": 1, "name": "Processed", "object_key": "processed"},
                 "location": {
                     "id": 1,
                     "name": "UK",
@@ -320,12 +337,106 @@ class TestAvailableData:
                     "centroid": {"x": -3.1288614999999993, "y": 53.4735315},
                 },
                 "field_metadata": None,
+                "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": "https://hydrologygeoserver.ceh.ac.uk/geoserver/wms/river_vectors",
             },
+            {
+                "id": 6,
+                "name": "EA river flow stations",
+                "description": "EA river flow stations in the area of the Chess",
+                "project": {"id": 1, "name": "FDRI", "object_key": "fdri"},
+                "date": None,
+                "start_date": "1934-02-28",
+                "end_date": None,
+                "source_type": {
+                    "id": 2,
+                    "name": "Metadata API",
+                    "object_key": "metadata_api",
+                    "base_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk",
+                },
+                "layer_id": None,
+                "data_format": {"id": 2, "name": "Vector", "object_key": "vector"},
+                "data_category": {
+                    "id": 9,
+                    "name": "River flow",
+                    "object_key": "river_flow",
+                    "data_category_group": {"id": 4, "name": "Hydrology", "object_key": "hydrology"},
+                },
+                "legend": None,
+                "bbox": {"min_x": -7.291954, "max_x": 1.034231, "min_y": 50.03266, "max_y": 56.914403},
+                "processing_level": {"id": 1, "name": "Processed", "object_key": "processed"},
+                "location": {
+                    "id": 1,
+                    "name": "UK",
+                    "object_key": "uk",
+                    "location_type": {"id": 1, "name": "National", "object_key": "national"},
+                    "bbox": {"min_x": -7.291954, "max_x": 1.034231, "min_y": 50.03266, "max_y": 56.914403},
+                    "centroid": {"x": -3.1288614999999993, "y": 53.4735315},
+                },
+                "field_metadata": [
+                    {
+                        "display_label": "Name",
+                        "key": "name",
+                        "field_keys": [{"key": "label", "type": "list", "index": 0}],
+                        "data_type": "string",
+                    },
+                    {
+                        "display_label": "Description",
+                        "key": "description",
+                        "field_keys": [{"key": "comment", "type": "list", "index": 0}],
+                        "data_type": "string",
+                    },
+                    {
+                        "display_label": "Altitude",
+                        "key": "altitude",
+                        "field_keys": [{"key": "altitude", "type": "value"}],
+                        "data_type": "float",
+                    },
+                    {
+                        "display_label": "Start Date",
+                        "key": "start_date",
+                        "field_keys": [
+                            {"key": "operatingPeriod", "type": "value"},
+                            {"key": "startDate", "type": "value"},
+                        ],
+                        "data_type": "date",
+                    },
+                    {
+                        "display_label": "End date",
+                        "key": "end_date",
+                        "field_keys": [
+                            {"key": "operatingPeriod", "type": "value"},
+                            {"key": "endDate", "type": "value"},
+                        ],
+                        "data_type": "date",
+                    },
+                    {
+                        "display_label": "Location",
+                        "key": "geometry",
+                        "field_keys": [{"key": "hasGeometry", "type": "wkt_list", "index": None}],
+                        "data_type": "string",
+                    },
+                ],
+                "filter_metadata": [
+                    {
+                        "type": "list",
+                        "list_field": "hasAnnotation",
+                        "id_field_keys": [{"key": "property", "type": "value"}, {"key": "@id", "type": "value"}],
+                        "value_field_keys": [
+                            {"key": "hasValue", "type": "value"},
+                            {"key": "value", "type": "list", "index": 0},
+                        ],
+                        "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation/isChess",
+                        "expected_value": True,
+                    }
+                ],
+                "map_center": [-3.1288614999999993, 53.4735315],
+                "colour_source_url": None,
+                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView",
+            },
         ]
-
         response = client.get("/api/available_data")
 
         assert response.status_code == 200
