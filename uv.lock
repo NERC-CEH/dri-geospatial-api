@@ -550,8 +550,8 @@ wheels = [
 
 [[package]]
 name = "dri-database-models"
-version = "0.0.16"
-source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main#4607ed9829c6d69bbd410582272ad0faf4e8ea7c" }
+version = "0.0.25"
+source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main#6a4aad448d0ca580ca76c2f2d562cdfb5af4784d" }
 dependencies = [
     { name = "alembic" },
     { name = "autosemver" },
@@ -563,8 +563,8 @@ dependencies = [
 
 [[package]]
 name = "dri-utils"
-version = "0.0.24"
-source = { git = "https://github.com/NERC-CEH/dri-utils.git#13c162e5bc4fbcbbc518f57ed6677551c6f61623" }
+version = "0.0.30"
+source = { git = "https://github.com/NERC-CEH/dri-utils.git#b3660104c72104902be687a9a5a407aa2455d822" }
 dependencies = [
     { name = "autosemver" },
     { name = "boto3" },
@@ -754,6 +754,7 @@ dependencies = [
     { name = "geoalchemy2" },
     { name = "geojson" },
     { name = "httpx" },
+    { name = "loguru" },
     { name = "mypy-boto3-s3" },
     { name = "pre-commit" },
     { name = "prometheus-fastapi-instrumentator" },
@@ -798,6 +799,7 @@ requires-dist = [
     { name = "geoalchemy2" },
     { name = "geojson" },
     { name = "httpx" },
+    { name = "loguru" },
     { name = "mypy-boto3-s3" },
     { name = "pre-commit" },
     { name = "prometheus-fastapi-instrumentator" },

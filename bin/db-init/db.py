@@ -11,7 +11,9 @@ logger = logging.getLogger(__name__)
 class GeospatialDatabase:
     def __init__(self, user: str, password: str, host: str, port: int, db_name: str, schema: str, echo: bool = True):
         self.database_url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
-        self.engine = create_engine(self.database_url, connect_args={"options": f"-csearch_path={schema}"}, echo=echo)
+        self.engine = create_engine(
+            self.database_url, connect_args={"options": f"-csearch_path=public,{schema}"}, echo=echo
+        )
         self.session_factory = sessionmaker(bind=self.engine)
 
     def create_tables(self) -> None:
