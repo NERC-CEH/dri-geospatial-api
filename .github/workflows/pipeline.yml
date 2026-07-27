@@ -36,7 +36,7 @@ jobs:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN_STAGING }}
       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-
+  
   build-test-deploy-docker-production:
     if: ${{ github.ref_name == 'production' || github.base_ref == 'production' }}
     needs: [test-python]
