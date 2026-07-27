@@ -33,7 +33,7 @@ class Location(IDModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     location_type: IDModel
-    boundary: shapely.Polygon
+    boundary: shapely.Polygon | shapely.MultiPolygon
 
     def to_json_response(self) -> dict[str, Any]:
         response = super().to_json_response()
@@ -69,14 +69,16 @@ class Layer(BaseModel):
     source_type: SourceType
     colour_source_id: Optional[str]
     raw_source_id: Optional[str]
+    layer_id: Optional[str]
     data_format: IDModel
     data_category: DataCategory
     legend: Optional[dict[str, Any]]
-    boundary: Optional[shapely.Polygon]
+    boundary: Optional[shapely.Polygon | shapely.MultiPolygon]
     bbox: shapely.Polygon
     processing_level: IDModel
     location: Location
     field_metadata: Optional[list[dict[str, Any]]]
+    filter_metadata: Optional[list[dict[str, Any]]]
 
     def to_json_response(self) -> dict[str, Any]:
         """Convert the Layer model instance to a dictionary able to be easily converted to a JSONResponse object
@@ -124,6 +126,36 @@ class Layer(BaseModel):
 
         return response
 
+    def get_s3_key(self, source_id: str) -> str:
+        """
+        Construct the S3 key for the raw or colour source ID. It is assumed that the S3 bucket structure is constant
+
+        Args:
+            source_id: The file name to use for the final part of the s3 key
+
+        Returns:
+            S3 key, excluding the source bucket
+
+        """
+        if self.date:
+            date_str = self.date.date()
+        else:
+            end_date_str = ""
+            if self.end_date:
+                end_date_str = f"-{self.end_date.date()}"
+            date_str = f"{self.start_date.date()}{end_date_str}"
+
+        bucket_keys = (
+            f"project={self.project.object_key}/"
+            f"location_type={self.location.location_type.object_key}/"
+            f"location={self.location.object_key}/"
+            f"data_category={self.data_category.object_key}/"
+            f"processing_level={self.processing_level.object_key}/"
+            f"date={date_str}"
+        )
+
+        return f"{bucket_keys}/{source_id}"
+
     def get_source_url(self, source_id: str) -> str:
         """Construct the source url for the raw or colour source id.
 
@@ -131,24 +163,9 @@ class Layer(BaseModel):
 
         """
         if self.source_type.object_key.lower() == "s3":
-            if self.date:
-                date_str = self.date.date()
-            else:
-                end_date_str = ""
-                if self.end_date:
-                    end_date_str = f"-{self.end_date.date()}"
-                date_str = f"{self.start_date.date()}{end_date_str}"
+            s3_key = self.get_s3_key(source_id=source_id)
 
-            bucket_keys = (
-                f"project={self.project.object_key}/"
-                f"location_type={self.location.location_type.object_key}/"
-                f"location={self.location.object_key}/"
-                f"data_category={self.data_category.object_key}/"
-                f"processing_level={self.processing_level.object_key}/"
-                f"date={date_str}"
-            )
-
-            source_url = f"{self.source_type.base_url}/{bucket_keys}/{source_id}"
+            source_url = f"{self.source_type.base_url}/{s3_key}"
             return source_url
 
         # The provided base url may already have the joining /. If this is the case, set the joining character to ""

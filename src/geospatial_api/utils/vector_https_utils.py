@@ -30,9 +30,13 @@ def fetch_data(url: str) -> dict[str | Any]:
 def fetch_vector_data_from_https(url: str, layer: db_models.Layer) -> dict[str | Any]:
     response_data = fetch_data(url)
 
-    transformer = TRANSFORMER_MAPPING.get(layer.source_type.object_key)
-    if transformer is None:
+    transformer_class = TRANSFORMER_MAPPING.get(layer.source_type.object_key)
+    if transformer_class is None:
         raise ValueError("The source type of the layer is not supported")
 
-    geojson_data = transformer.transform_response(response_data=response_data, field_metadata=layer.field_metadata)
+    transformer = transformer_class()
+
+    geojson_data = transformer.transform_response(
+        response_data=response_data, field_metadata=layer.field_metadata, filter_metadata=layer.filter_metadata
+    )
     return geojson_data

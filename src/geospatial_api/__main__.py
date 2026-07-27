@@ -19,13 +19,11 @@ def start_server(local: bool) -> None:
             "geospatial_api.main:app",
             reload=True,
             reload_includes="*.env",
-            log_config="src/geospatial_api/__assets__/log_config.yaml",
+            log_config=None,
             log_level="debug",
         )
     else:
-        uvicorn.run(
-            "geospatial_api.main:app", log_config="src/geospatial_api/__assets__/log_config.yaml", log_level="debug"
-        )
+        uvicorn.run("geospatial_api.main:app", log_config=None, log_level="debug")
 
 
 if __name__ == "__main__":

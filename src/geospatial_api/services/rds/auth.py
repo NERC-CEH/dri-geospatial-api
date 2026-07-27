@@ -67,7 +67,7 @@ class RDSLogin:
         )
         engine = create_engine(
             db_url_object,
-            connect_args={"options": f"-csearch_path={config.db_schema}"},
+            connect_args={"options": f"-csearch_path=public,{config.db_schema}"},
             echo=False,  # Set to True to do SQL debugging
             pool_size=10,  # The number of persistent connections to keep in the pool. Defaults to 5.
             pool_recycle=TOKEN_REFRESH_TIME,  # Recycle the pool (and connection tokens) after x seconds.
