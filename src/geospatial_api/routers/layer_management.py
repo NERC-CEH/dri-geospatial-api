@@ -17,10 +17,12 @@ from geospatial_api.services.rds.db import (
     IDModelInterface,
     LayerRegistryInterface,
     LocationModelInterface,
+    SourceTypeModelInterface,
 )
-from geospatial_api.utils.utils import get_db, get_s3_client
+from geospatial_api.utils.utils import get_db, get_s3_client, upload_file_to_s3_for_layer
 
 router = APIRouter(tags=["Layer Management"])
+
 s3 = get_s3_client()
 config = setup_config()
 
@@ -28,9 +30,6 @@ ModelMap = namedtuple("ModelMap", ["db_model", "model_interface", "pydantic_mode
 
 MODEL_MAPPING = {
     "project": ModelMap(db_model=db_models.Project, model_interface=IDModelInterface, pydantic_model=py_models.IDModel),
-    "source_type": ModelMap(
-        db_model=db_models.SourceType, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
-    ),
     "data_format": ModelMap(
         db_model=db_models.DataFormat, model_interface=IDModelInterface, pydantic_model=py_models.IDModel
     ),
@@ -50,6 +49,9 @@ MODEL_MAPPING = {
     ),
     "location": ModelMap(
         db_model=db_models.Location, model_interface=LocationModelInterface, pydantic_model=py_models.Location
+    ),
+    "source_type": ModelMap(
+        db_model=db_models.SourceType, model_interface=SourceTypeModelInterface, pydantic_model=py_models.IDModel
     ),
 }
 
@@ -79,6 +81,64 @@ def add_model(db: Annotated[Session, Depends(get_db)], model_name: str, name: st
     return JSONResponse(status_code=200, content=f"Successfully created {model_name} {new_model.name}")
 
 
+@router.post("/update_model")
+def update_model(
+    db: Annotated[Session, Depends(get_db)],
+    model_name: str,
+    model_id: int,
+    name: str | None = None,
+    object_key: str | None = None,
+) -> JSONResponse:
+    model_mapping = MODEL_MAPPING.get(model_name)
+    if not model_mapping:
+        raise HTTPException(f"The model {model_name} is not supported")
+
+    new_db_item = model_mapping.model_interface.update_model_entry(
+        session=db, db_model=model_mapping.db_model, model_id=model_id, name=name, object_key=object_key
+    )
+    updated_model_item = model_mapping.model_interface.convert_to_pydantic_model(new_db_item)
+
+    return JSONResponse(status_code=200, content=updated_model_item.to_json_response())
+
+
+@router.post("/add_source_type")
+def add_source_type(
+    db: Annotated[Session, Depends(get_db)],
+    name: str,
+    object_key: str,
+    base_url: str,
+) -> JSONResponse:
+    new_db_item = SourceTypeModelInterface.add_new_entry(
+        session=db,
+        name=name,
+        object_key=object_key,
+        base_url=base_url,
+    )
+
+    return JSONResponse(status_code=200, content=f"Successfully created new source type {new_db_item.name}")
+
+
+@router.post("/update_source_type")
+def update_source_type(
+    db: Annotated[Session, Depends(get_db)],
+    model_id: int,
+    name: str | None = None,
+    object_key: str | None = None,
+    base_url: str | None = None,
+) -> JSONResponse:
+    updated_db_item = SourceTypeModelInterface.update_entry(
+        session=db,
+        model_id=model_id,
+        name=name,
+        object_key=object_key,
+        base_url=base_url,
+    )
+
+    source_type = SourceTypeModelInterface.convert_to_pydantic_model(db_item=updated_db_item)
+
+    return JSONResponse(status_code=200, content=source_type.to_json_response())
+
+
 @router.post("/add_data_category")
 def add_data_category(
     db: Annotated[Session, Depends(get_db)],
@@ -94,6 +154,27 @@ def add_data_category(
     )
 
     return JSONResponse(status_code=200, content=f"Successfully created new data category {new_db_item.name}")
+
+
+@router.post("/update_data_category")
+def update_data_category(
+    db: Annotated[Session, Depends(get_db)],
+    model_id: int,
+    name: str | None = None,
+    object_key: str | None = None,
+    category_group_key: str | None = None,
+) -> JSONResponse:
+    updated_db_item = DataCategoryModelInterface.update_entry(
+        session=db,
+        model_id=model_id,
+        name=name,
+        object_key=object_key,
+        data_category_group_key=category_group_key,
+    )
+
+    data_category = DataCategoryModelInterface.convert_db_item_to_pydantic_model(session=db, db_item=updated_db_item)
+
+    return JSONResponse(status_code=200, content=data_category.to_json_response())
 
 
 @router.post("/add_location")
@@ -115,6 +196,32 @@ def add_location(
     return JSONResponse(status_code=200, content=f"Successfully created new location {new_db_item.name}")
 
 
+@router.post("/update_location")
+def update_location(
+    db: Annotated[Session, Depends(get_db)],
+    model_id: int,
+    name: str | None = None,
+    object_key: str | None = None,
+    location_type_key: str | None = None,
+    boundary: UploadFile | None = None,
+) -> JSONResponse:
+    if boundary is not None:
+        boundary = geojson.load(boundary.file)
+
+    updated_db_item = LocationModelInterface.update_entry(
+        session=db,
+        model_id=model_id,
+        name=name,
+        object_key=object_key,
+        location_type_key=location_type_key,
+        boundary=boundary,
+    )
+
+    location = LocationModelInterface.convert_db_item_to_pydantic_model(session=db, db_item=updated_db_item)
+
+    return JSONResponse(status_code=200, content=location.to_json_response())
+
+
 @router.post("/add_layer")
 async def add_layer(
     db: Annotated[Session, Depends(get_db)],
@@ -129,6 +236,7 @@ async def add_layer(
     date: str | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
+    layer_id: str | None = None,
     colour_source_id: str | None = None,
     colour_source_file: UploadFile | None = None,
     raw_source_id: str | None = None,
@@ -136,6 +244,7 @@ async def add_layer(
     legend: UploadFile | None = None,
     boundary: UploadFile | None = None,
     field_metadata: UploadFile | None = None,
+    filter_metadata: UploadFile | None = None,
     s3_client: S3Client = Depends(lambda: s3),
 ) -> JSONResponse:
     if not colour_source_id and not colour_source_file and not raw_source_id and not raw_source_file:
@@ -179,28 +288,96 @@ async def add_layer(
         data_format_key=data_format,
         data_category_key=data_category,
         processing_level_key=processing_level,
-        area_name_key=location,
+        location_key=location,
+        layer_id=layer_id,
         colour_source_id=colour_source_file.filename if colour_source_file else colour_source_id,
         raw_source_id=raw_source_file.filename if raw_source_file else raw_source_id,
         legend=json.load(legend.file) if legend else None,
         boundary=geojson.load(boundary.file) if boundary else None,
+        field_metadata=json.load(field_metadata.file) if field_metadata else None,
+        filter_metadata=json.load(field_metadata.file) if field_metadata else None,
     )
 
     layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)
 
     # If the source type is S3 and a source_file has been provided, upload the data to S3 in the appropriate bucket
-    if colour_source_file:
-        destination_key = layer.get_source_url(source_id=colour_source_file.filename).replace(
-            f"s3://{config.geospatial_data_bucket}/", ""
-        )
-        content = await colour_source_file.read()
-        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+    if colour_source_file is not None:
+        await upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=colour_source_file, layer=layer)
 
-    if raw_source_file:
-        destination_key = layer.get_source_url(source_id=raw_source_file.filename).replace(
-            f"s3://{config.geospatial_data_bucket}/", ""
-        )
-        content = await raw_source_file.read()
-        s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+    if raw_source_file is not None:
+        await upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=raw_source_file, layer=layer)
 
     return JSONResponse(status_code=200, content=f"Successfully created layer {layer.name}")
+
+
+@router.post("/update_layer")
+async def update_layer(
+    db: Annotated[Session, Depends(get_db)],
+    model_id: str,
+    name: str | None = None,
+    project: str | None = None,
+    source_type: str | None = None,
+    data_format: str | None = None,
+    data_category: str | None = None,
+    processing_level: str | None = None,
+    location: str | None = None,
+    description: str | None = None,
+    date: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    layer_id: str | None = None,
+    colour_source_id: str | None = None,
+    colour_source_file: UploadFile | None = None,
+    raw_source_id: str | None = None,
+    raw_source_file: UploadFile | None = None,
+    legend: UploadFile | None = None,
+    boundary: UploadFile | None = None,
+    field_metadata: UploadFile | None = None,
+    filter_metadata: UploadFile | None = None,
+    s3_client: S3Client = Depends(lambda: s3),
+) -> JSONResponse:
+    # Ensure the provided legend file is a json
+    if legend and not legend.filename.lower().endswith(".json"):
+        raise HTTPException("The legend must be provided as a .json file.")
+
+    # Ensure the provided field metadata file is a json
+    if field_metadata and not field_metadata.filename.lower().endswith(".json"):
+        raise HTTPException("Field metadata must be provided as a .json file.")
+
+    # Ensure the provided boundary file is a geojson
+    if boundary and not boundary.filename.lower().endswith(".geojson"):
+        raise HTTPException("The boundary must be provided as a .geojson file.")
+
+    new_layer = LayerRegistryInterface.update_layer(
+        session=db,
+        model_id=model_id,
+        name=name,
+        description=description,
+        project_key=project,
+        date=datetime.strptime(date, "%Y-%m-%d") if date else None,
+        start_date=datetime.strptime(start_date, "%Y-%m-%d") if start_date else None,
+        end_date=datetime.strptime(end_date, "%Y-%m-%d") if end_date else None,
+        source_type_key=source_type,
+        data_format_key=data_format,
+        data_category_key=data_category,
+        processing_level_key=processing_level,
+        location_key=location,
+        layer_id=layer_id,
+        colour_source_id=colour_source_file.filename if colour_source_file else colour_source_id,
+        raw_source_id=raw_source_file.filename if raw_source_file else raw_source_id,
+        legend=json.load(legend.file) if legend else None,
+        boundary=geojson.load(boundary.file) if boundary else None,
+        field_metadata=json.load(field_metadata.file) if field_metadata else None,
+        filter_metadata=json.load(field_metadata.file) if field_metadata else None,
+    )
+
+    layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)
+
+    # If the source type is S3 and a source_file has been provided, upload the data to S3 in the appropriate bucket
+    if colour_source_file is not None:
+        await upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=colour_source_file, layer=layer)
+
+    if raw_source_file is not None:
+        await upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=raw_source_file, layer=layer)
+
+    return JSONResponse(status_code=200, content=layer.to_json_response())
