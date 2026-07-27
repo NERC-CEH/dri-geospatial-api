@@ -95,6 +95,7 @@ class TestLayer:
             source_type=source_type,
             colour_source_id="colour_raster.tif",
             raw_source_id="greyscale_raster.tif",
+            layer_id=None,
             data_format=data_format,
             data_category=data_category,
             legend={
@@ -115,6 +116,7 @@ class TestLayer:
             processing_level=processing_level,
             location=location,
             field_metadata=None,
+            filter_metadata=None,
         )
 
         expected_response = {
@@ -133,6 +135,7 @@ class TestLayer:
                 "object_key": "category_1",
                 "data_category_group": {"id": 1, "name": "Category group 1", "object_key": "group_1"},
             },
+            "layer_id": None,
             "legend": {
                 "type": "range",
                 "values": [
@@ -157,6 +160,7 @@ class TestLayer:
                 "centroid": {"x": 0.5, "y": 0.5},
             },
             "field_metadata": None,
+            "filter_metadata": None,
             "map_center": [0.5, 0.5],
             "colour_source_url": "s3://geospatial_s3_bucket/project=project_1/location_type=location_type_1/location=location_1/data_category=category_1/processing_level=raw/date=2026-01-01/colour_raster.tif",
             "raw_source_url": "s3://geospatial_s3_bucket/project=project_1/location_type=location_type_1/location=location_1/data_category=category_1/processing_level=raw/date=2026-01-01/greyscale_raster.tif",
@@ -226,6 +230,7 @@ class TestLayer:
             source_type=source_type,
             colour_source_id="colour_raster.tif",
             raw_source_id="greyscale_raster.tif",
+            layer_id=None,
             data_format=data_format,
             data_category=data_category,
             legend={
@@ -246,6 +251,7 @@ class TestLayer:
             processing_level=processing_level,
             location=location,
             field_metadata=None,
+            filter_metadata=None,
         )
 
         expected_source_url = (
@@ -324,6 +330,7 @@ class TestLayer:
                 "id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains."
                 "hasGeometry.*"
             ),
+            layer_id="wms",
             data_format=data_format,
             data_category=data_category,
             legend={
@@ -344,6 +351,7 @@ class TestLayer:
             processing_level=processing_level,
             location=location,
             field_metadata=None,
+            filter_metadata=None,
         )
 
         expected_source_url = (
