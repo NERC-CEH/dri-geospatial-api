@@ -39,4 +39,4 @@ ENV PATH="/app/.venv/bin:$PATH" VIRTUAL_ENV="/app/.venv"
 # Unsetting entrypoint from parent image
 ENTRYPOINT []
 
-CMD ["python", "-m", "uvicorn", "geospatial_api.main:app", "--host", "0.0.0.0", "--proxy-headers", "--log-config", "/app/src/geospatial_api/__assets__/log_config.yaml"]
+CMD ["python", "-m", "uvicorn", "geospatial_api.main:app", "--host", "0.0.0.0", "--proxy-headers"]
