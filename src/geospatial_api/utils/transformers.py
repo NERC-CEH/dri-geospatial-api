@@ -49,6 +49,8 @@ class MetadataTransformer(TransformerABC):
             if field_type == "list" and isinstance(field_value, list):
                 field_value = field_value[field_key_mapping["index"]]
             elif field_type == "wkt_list":
+                if field_value is None:
+                    return
                 field_value = self.get_geometry_from_wkt_list(field_value)
 
         return field_value

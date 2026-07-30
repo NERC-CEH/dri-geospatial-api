@@ -102,12 +102,12 @@ class TestLayer:
                 "type": "range",
                 "values": [
                     {
-                        "min": {"label": 289.97, "colour": [51, 51, 153]},
-                        "max": {"label": 291.61, "colour": [14, 126, 228]},
+                        "min": {"value": 289.97, "colour": [51, 51, 153]},
+                        "max": {"value": 291.61, "colour": [14, 126, 228]},
                     },
                     {
-                        "min": {"label": 291.61, "colour": [14, 126, 228]},
-                        "max": {"label": 293.25, "colour": [1, 188, 148]},
+                        "min": {"value": 291.61, "colour": [14, 126, 228]},
+                        "max": {"value": 293.25, "colour": [1, 188, 148]},
                     },
                 ],
             },
@@ -140,12 +140,12 @@ class TestLayer:
                 "type": "range",
                 "values": [
                     {
-                        "min": {"label": 289.97, "colour": [51, 51, 153]},
-                        "max": {"label": 291.61, "colour": [14, 126, 228]},
+                        "min": {"value": 289.97, "colour": [51, 51, 153]},
+                        "max": {"value": 291.61, "colour": [14, 126, 228]},
                     },
                     {
-                        "min": {"label": 291.61, "colour": [14, 126, 228]},
-                        "max": {"label": 293.25, "colour": [1, 188, 148]},
+                        "min": {"value": 291.61, "colour": [14, 126, 228]},
+                        "max": {"value": 293.25, "colour": [1, 188, 148]},
                     },
                 ],
             },
@@ -237,12 +237,12 @@ class TestLayer:
                 "type": "range",
                 "values": [
                     {
-                        "min": {"label": 289.97, "colour": [51, 51, 153]},
-                        "max": {"label": 291.61, "colour": [14, 126, 228]},
+                        "min": {"value": 289.97, "colour": [51, 51, 153]},
+                        "max": {"value": 291.61, "colour": [14, 126, 228]},
                     },
                     {
-                        "min": {"label": 291.61, "colour": [14, 126, 228]},
-                        "max": {"label": 293.25, "colour": [1, 188, 148]},
+                        "min": {"value": 291.61, "colour": [14, 126, 228]},
+                        "max": {"value": 293.25, "colour": [1, 188, 148]},
                     },
                 ],
             },
@@ -337,12 +337,12 @@ class TestLayer:
                 "type": "range",
                 "values": [
                     {
-                        "min": {"label": 289.97, "colour": [51, 51, 153]},
-                        "max": {"label": 291.61, "colour": [14, 126, 228]},
+                        "min": {"value": 289.97, "colour": [51, 51, 153]},
+                        "max": {"value": 291.61, "colour": [14, 126, 228]},
                     },
                     {
-                        "min": {"label": 291.61, "colour": [14, 126, 228]},
-                        "max": {"label": 293.25, "colour": [1, 188, 148]},
+                        "min": {"value": 291.61, "colour": [14, 126, 228]},
+                        "max": {"value": 293.25, "colour": [1, 188, 148]},
                     },
                 ],
             },
