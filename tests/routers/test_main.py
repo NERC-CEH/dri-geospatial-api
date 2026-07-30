@@ -102,8 +102,16 @@ class TestAvailableData:
                 "field_metadata": None,
                 "filter_metadata": None,
                 "map_center": [-3.417368, 55.510546],
-                "colour_source_url": "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/clipped_tweed_dsm_3857_colourised_cog.tif",
-                "raw_source_url": None,
+                "colour_source_url": (
+                    "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/"
+                    "data_category=dsm/processing_level=processed/date=2026-03-20/"
+                    "clipped_tweed_dsm_3857_colourised_cog.tif"
+                ),
+                "raw_source_url": (
+                    "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/"
+                    "data_category=dsm/processing_level=processed/date=2026-03-20/"
+                    "clipped_tweed_dsm_3857_greyscale_cog.tif"
+                ),
             },
             {
                 "id": 2,
@@ -185,7 +193,11 @@ class TestAvailableData:
                 "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude",
+                "raw_source_url": (
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,"
+                    "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                    "contains.altitude"
+                ),
             },
             {
                 "id": 3,
@@ -237,7 +249,11 @@ class TestAvailableData:
                 "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude",
+                "raw_source_url": (
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection="
+                    "contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
+                    "contains.operatingPeriod.*,contains.altitude"
+                ),
             },
             {
                 "id": 4,
@@ -434,7 +450,11 @@ class TestAvailableData:
                 ],
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView",
+                "raw_source_url": (
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended"
+                    "&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
+                    "contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView"
+                ),
             },
         ]
         response = client.get("/api/available_data")

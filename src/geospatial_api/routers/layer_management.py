@@ -53,6 +53,7 @@ MODEL_MAPPING = {
     "source_type": ModelMap(
         db_model=db_models.SourceType, model_interface=SourceTypeModelInterface, pydantic_model=py_models.IDModel
     ),
+    "layer": ModelMap(db_model=db_models.Layer, model_interface=LayerRegistryInterface, pydantic_model=py_models.Layer),
 }
 
 
@@ -62,7 +63,15 @@ def get_model(model_name: str, db: Annotated[Session, Depends(get_db)]) -> JSONR
     if not model_mapping:
         raise HTTPException(f"The model {model_name} is not supported")
 
-    model_items = model_mapping.model_interface.get_db_entries(session=db, db_model=model_mapping.db_model)
+    model_items = model_mapping.model_interface.get_db_entries(
+        session=db, db_model=model_mapping.db_model, raw_output=True
+    )
+
+    # Use a shorthand version of the layer for the response (id and title only) to allow identification of layers
+    # but bypassing any possible issues with the pydantic model (e.g. incorrect legend formatting causing an error)
+    # This then allows manual updating of the layer (by knowing the correct layer id)
+    if model_name == "layer":
+        return JSONResponse([{"id": item.id, "name": item.name} for item in model_items])
 
     return JSONResponse([item.to_json_response() for item in model_items])
 
