@@ -52,40 +52,40 @@ class TestAvailableData:
                     "type": "range",
                     "values": [
                         {
-                            "min": {"label": 289.97, "colour": [51, 51, 153]},
-                            "max": {"label": 291.61, "colour": [14, 126, 228]},
+                            "min": {"value": 289.97, "colour": [51, 51, 153]},
+                            "max": {"value": 291.61, "colour": [14, 126, 228]},
                         },
                         {
-                            "min": {"label": 291.61, "colour": [14, 126, 228]},
-                            "max": {"label": 293.25, "colour": [1, 188, 148]},
+                            "min": {"value": 291.61, "colour": [14, 126, 228]},
+                            "max": {"value": 293.25, "colour": [1, 188, 148]},
                         },
                         {
-                            "min": {"label": 293.25, "colour": [1, 188, 148]},
-                            "max": {"label": 294.9, "colour": [85, 221, 119]},
+                            "min": {"value": 293.25, "colour": [1, 188, 148]},
+                            "max": {"value": 294.9, "colour": [85, 221, 119]},
                         },
                         {
-                            "min": {"label": 294.9, "colour": [85, 221, 119]},
-                            "max": {"label": 296.54, "colour": [197, 243, 141]},
+                            "min": {"value": 294.9, "colour": [85, 221, 119]},
+                            "max": {"value": 296.54, "colour": [197, 243, 141]},
                         },
                         {
-                            "min": {"label": 296.54, "colour": [197, 243, 141]},
-                            "max": {"label": 298.18, "colour": [226, 218, 137]},
+                            "min": {"value": 296.54, "colour": [197, 243, 141]},
+                            "max": {"value": 298.18, "colour": [226, 218, 137]},
                         },
                         {
-                            "min": {"label": 298.18, "colour": [226, 218, 137]},
-                            "max": {"label": 299.83, "colour": [170, 146, 107]},
+                            "min": {"value": 298.18, "colour": [226, 218, 137]},
+                            "max": {"value": 299.83, "colour": [170, 146, 107]},
                         },
                         {
-                            "min": {"label": 299.83, "colour": [170, 146, 107]},
-                            "max": {"label": 301.47, "colour": [143, 112, 105]},
+                            "min": {"value": 299.83, "colour": [170, 146, 107]},
+                            "max": {"value": 301.47, "colour": [143, 112, 105]},
                         },
                         {
-                            "min": {"label": 301.47, "colour": [143, 112, 105]},
-                            "max": {"label": 303.11, "colour": [199, 183, 180]},
+                            "min": {"value": 301.47, "colour": [143, 112, 105]},
+                            "max": {"value": 303.11, "colour": [199, 183, 180]},
                         },
                         {
-                            "min": {"label": 303.11, "colour": [199, 183, 180]},
-                            "max": {"label": 304.76, "colour": [199, 195, 195]},
+                            "min": {"value": 303.11, "colour": [199, 183, 180]},
+                            "max": {"value": 304.76, "colour": [199, 195, 195]},
                         },
                     ],
                 },
@@ -102,8 +102,16 @@ class TestAvailableData:
                 "field_metadata": None,
                 "filter_metadata": None,
                 "map_center": [-3.417368, 55.510546],
-                "colour_source_url": "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/clipped_tweed_dsm_3857_colourised_cog.tif",
-                "raw_source_url": None,
+                "colour_source_url": (
+                    "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/"
+                    "data_category=dsm/processing_level=processed/date=2026-03-20/"
+                    "clipped_tweed_dsm_3857_colourised_cog.tif"
+                ),
+                "raw_source_url": (
+                    "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/"
+                    "data_category=dsm/processing_level=processed/date=2026-03-20/"
+                    "clipped_tweed_dsm_3857_greyscale_cog.tif"
+                ),
             },
             {
                 "id": 2,
@@ -185,7 +193,11 @@ class TestAvailableData:
                 "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude",
+                "raw_source_url": (
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,"
+                    "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
+                    "contains.altitude"
+                ),
             },
             {
                 "id": 3,
@@ -237,7 +249,11 @@ class TestAvailableData:
                 "filter_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude",
+                "raw_source_url": (
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection="
+                    "contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
+                    "contains.operatingPeriod.*,contains.altitude"
+                ),
             },
             {
                 "id": 4,
@@ -264,27 +280,27 @@ class TestAvailableData:
                 "legend": {
                     "type": "category",
                     "values": [
-                        {"label": "Suburban", "colour": [128, 128, 128]},
-                        {"label": "Urban", "colour": [0, 0, 0]},
-                        {"label": "Saltmarsh", "colour": [128, 128, 255]},
-                        {"label": "Littoral sediment", "colour": [255, 255, 128]},
-                        {"label": "Littoral rock", "colour": [255, 255, 128]},
-                        {"label": "Supra-littoral sediment", "colour": [204, 179, 0]},
-                        {"label": "Supra-littoral rock", "colour": [152, 125, 183]},
-                        {"label": "Freshwater", "colour": [0, 0, 255]},
-                        {"label": "Saltwater", "colour": [0, 0, 92]},
-                        {"label": "Inland rock", "colour": [210, 210, 255]},
-                        {"label": "Bog", "colour": [205, 29, 181]},
-                        {"label": "Heather grassland", "colour": [230, 140, 166]},
-                        {"label": "Heather", "colour": [128, 26, 128]},
-                        {"label": "Fen, marsh and swamp", "colour": [253, 123, 238]},
-                        {"label": "Acid grassland", "colour": [178, 145, 0]},
-                        {"label": "Calcareous grassland", "colour": [255, 192, 55]},
-                        {"label": "Neutral grassland", "colour": [220, 153, 9]},
-                        {"label": "Improved grassland", "colour": [1, 255, 124]},
-                        {"label": "Arable and horticulture", "colour": [240, 228, 66]},
-                        {"label": "Coniferous woodland", "colour": [0, 80, 0]},
-                        {"label": "Broadleaved, mixed and yew woodland", "colour": [51, 160, 44]},
+                        {"value": "Suburban", "colour": [128, 128, 128]},
+                        {"value": "Urban", "colour": [0, 0, 0]},
+                        {"value": "Saltmarsh", "colour": [128, 128, 255]},
+                        {"value": "Littoral sediment", "colour": [255, 255, 128]},
+                        {"value": "Littoral rock", "colour": [255, 255, 128]},
+                        {"value": "Supra-littoral sediment", "colour": [204, 179, 0]},
+                        {"value": "Supra-littoral rock", "colour": [152, 125, 183]},
+                        {"value": "Freshwater", "colour": [0, 0, 255]},
+                        {"value": "Saltwater", "colour": [0, 0, 92]},
+                        {"value": "Inland rock", "colour": [210, 210, 255]},
+                        {"value": "Bog", "colour": [205, 29, 181]},
+                        {"value": "Heather grassland", "colour": [230, 140, 166]},
+                        {"value": "Heather", "colour": [128, 26, 128]},
+                        {"value": "Fen, marsh and swamp", "colour": [253, 123, 238]},
+                        {"value": "Acid grassland", "colour": [178, 145, 0]},
+                        {"value": "Calcareous grassland", "colour": [255, 192, 55]},
+                        {"value": "Neutral grassland", "colour": [220, 153, 9]},
+                        {"value": "Improved grassland", "colour": [1, 255, 124]},
+                        {"value": "Arable and horticulture", "colour": [240, 228, 66]},
+                        {"value": "Coniferous woodland", "colour": [0, 80, 0]},
+                        {"value": "Broadleaved, mixed and yew woodland", "colour": [51, 160, 44]},
                     ],
                 },
                 "bbox": {"min_x": -7.291954, "max_x": 1.034231, "min_y": 50.03266, "max_y": 56.914403},
@@ -434,7 +450,11 @@ class TestAvailableData:
                 ],
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
-                "raw_source_url": "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView",
+                "raw_source_url": (
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended"
+                    "&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
+                    "contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView"
+                ),
             },
         ]
         response = client.get("/api/available_data")
