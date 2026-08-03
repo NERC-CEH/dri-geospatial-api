@@ -224,7 +224,7 @@ def intialise_db() -> None:
             "source_type": "metadata_api",
             "raw_source_id": (
                 "id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,"
-                "contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude"
+                "contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.identifier"
             ),
             "data_format": "vector",
             "data_category": "soil_moisture",
@@ -243,6 +243,12 @@ def intialise_db() -> None:
                     "display_label": "Name",
                     "key": "name",
                     "field_keys": [{"key": "label", "type": "list", "index": 0}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "ID",
+                    "key": "id",
+                    "field_keys": [{"key": "identifier", "type": "list", "index": 0}],
                     "data_type": "string",
                 },
                 {
@@ -277,6 +283,14 @@ def intialise_db() -> None:
                     ],
                     "data_type": "string",
                 },
+            ],
+            "resource_metadata": [
+                {
+                    "level": "feature",
+                    "url": "https://dri-ui.staging.dri.ceh.ac.uk/fdri/timeseries?network=cosmos&site={site_id}",
+                    "url_mapping": {"site_id": "id"},
+                    "label": "timeseries data",
+                }
             ],
         },
         {
@@ -321,6 +335,7 @@ def intialise_db() -> None:
         {
             "name": "Landcover map",
             "project": "fdri",
+            "description": "2024 Landcover map (GB)",
             "start_date": "2024-01-01",
             "end_date": None,
             "source_type": "eidc_wms",
@@ -365,6 +380,9 @@ def intialise_db() -> None:
                     {"value": "Broadleaved, mixed and yew woodland", "colour": [51, 160, 44]},
                 ],
             },
+            "resource_metadata": [
+                {"level": "layer", "url": "https://catalogue.ceh.ac.uk/", "url_mapping": {}, "label": "EIDC catalogue"}
+            ],
         },
         {
             "name": "UKCEH river network",

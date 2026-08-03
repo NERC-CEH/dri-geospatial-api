@@ -37,6 +37,9 @@ def fetch_vector_data_from_https(url: str, layer: db_models.Layer) -> dict[str |
     transformer = transformer_class()
 
     geojson_data = transformer.transform_response(
-        response_data=response_data, field_metadata=layer.field_metadata, filter_metadata=layer.filter_metadata
+        response_data=response_data,
+        field_metadata=layer.field_metadata,
+        filter_metadata=layer.filter_metadata,
+        resource_metadata=layer.resource_metadata,
     )
     return geojson_data
