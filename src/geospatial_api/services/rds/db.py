@@ -100,12 +100,15 @@ class LayerRegistryInterface:
         return LayerRegistryInterface.convert_layer_to_pydantic_model(session=session, db_layer=db_item)
 
     @staticmethod
-    def get_db_entries(session: Session) -> list[models.Layer]:
+    def get_db_entries(session: Session, raw_output: bool = False, *_, **__) -> list[models.Layer]:
         """Fetch all entries for the Layer model, converted to the corresponding pydantic model."""
         layers = []
         query = session.query(db_models.Layer)
         for item in query:
-            layers.append(LayerRegistryInterface.convert_layer_to_pydantic_model(session=session, db_layer=item))
+            if raw_output:
+                layers.append(item)
+            else:
+                layers.append(LayerRegistryInterface.convert_layer_to_pydantic_model(session=session, db_layer=item))
 
         return layers
 
@@ -448,7 +451,7 @@ class LayerRegistryInterface:
 
 class IDModelInterface:
     @staticmethod
-    def get_db_entries(session: Session, db_model: object) -> list:
+    def get_db_entries(session: Session, db_model: object, *_, **__) -> list:
         """Fetch all items for any database model that fits within the pydantic IDModel baseclass."""
         query = session.query(db_model)
 
