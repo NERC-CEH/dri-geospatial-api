@@ -47,7 +47,7 @@ api = FastAPI(
 )
 
 # metrics
-metrics = Metrics(service_name="geospatial_api")
+metrics = Metrics()
 metrics.setup_metrics(service=api)
 
 # state
