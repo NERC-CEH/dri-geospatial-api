@@ -7,14 +7,6 @@ from prometheus_fastapi_instrumentator import Instrumentator
 class Metrics:
     """Configuring the prometheus metrics for the Geospatial API."""
 
-    def __init__(self, service_name: str) -> None:
-        """Initialise custom metrics.
-
-        Args:
-            service_name: The service being metricked.
-        """
-        self.service_name = service_name
-
     def setup_metrics(self, service: FastAPI) -> None:
         """Setup metrics for FastAPI services.
 
@@ -26,7 +18,7 @@ class Metrics:
         """
         # Start instrumentation and add the default metrics
         instrumentator = Instrumentator(excluded_handlers=["/openapi.json"])
-        instrumentator.instrument(service, metric_namespace=self.service_name)
+        instrumentator.instrument(service)
 
         # Set new registry
         self.registry = CollectorRegistry()
