@@ -274,17 +274,6 @@ async def add_layer(
     if boundary and not boundary.filename.lower().endswith(".geojson"):
         raise HTTPException("The boundary must be provided as a .geojson file.")
 
-    # Ensure either a single date, or a combination of start date and end date have been provided
-    if (
-        (not date and not start_date and not end_date)
-        or (date and (start_date or end_date))
-        or (end_date and not date and not start_date)
-    ):
-        raise HTTPException(
-            "Either a single date or a start and end date combination need to be provided. "
-            "If the dataset is ongoing, leave the end date blank"
-        )
-
     new_layer = LayerRegistryInterface.add_new_layer(
         session=db,
         name=name,

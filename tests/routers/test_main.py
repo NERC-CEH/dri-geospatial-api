@@ -325,7 +325,7 @@ class TestAvailableData:
                 "description": None,
                 "project": {"id": 1, "name": "FDRI", "object_key": "fdri"},
                 "date": None,
-                "start_date": "1975-01-01",
+                "start_date": None,
                 "end_date": None,
                 "source_type": {
                     "id": 4,
