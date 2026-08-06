@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from geospatial_api import models
 from geospatial_api.config import setup_config
+from geospatial_api.constants import OPTIONAL_LAYER_FIELDS
 
 logger = logging.getLogger(__name__)
 
@@ -378,6 +379,17 @@ class LayerRegistryInterface:
 
             layer.boundary = boundary_wkt
             layer.bbox = bbox_wkt
+
+        session.commit()
+        return layer
+
+    @staticmethod
+    def clear_layer_field(session: Session, model_id: int, field_name: str) -> db_models.Layer:
+        if field_name not in OPTIONAL_LAYER_FIELDS:
+            raise ValueError(f"{field_name} is not an optional field in the Layer model.")
+
+        layer = get_db_object_by_primary_key(session=session, db_model=db_models.Layer, primary_key=model_id)
+        setattr(layer, field_name, None)
 
         session.commit()
         return layer

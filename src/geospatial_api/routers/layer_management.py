@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from geospatial_api import models as py_models
 from geospatial_api.config import setup_config
+from geospatial_api.constants import OPTIONAL_LAYER_FIELDS
 from geospatial_api.services.rds.db import (
     DataCategoryModelInterface,
     IDModelInterface,
@@ -377,5 +378,25 @@ async def update_layer(
 
     if raw_source_file is not None:
         await upload_file_to_s3_for_layer(s3_client=s3_client, upload_file=raw_source_file, layer=layer)
+
+    return JSONResponse(status_code=200, content=layer.to_json_response())
+
+
+@router.post("/clear_layer_field")
+async def clear_layer_field(
+    db: Annotated[Session, Depends(get_db)],
+    model_id: str,
+    field_name: str,
+) -> JSONResponse:
+    if field_name not in OPTIONAL_LAYER_FIELDS:
+        raise HTTPException(f"{field_name} is not an optional field in the Layer model.")
+
+    updated_layer = LayerRegistryInterface.clear_layer_field(
+        session=db,
+        model_id=model_id,
+        field_name=field_name,
+    )
+
+    layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=updated_layer)
 
     return JSONResponse(status_code=200, content=layer.to_json_response())
