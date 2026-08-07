@@ -138,9 +138,10 @@ class Layer(BaseModel):
             S3 key, excluding the source bucket
 
         """
+        date_str = "None"
         if self.date:
             date_str = self.date.date()
-        else:
+        elif self.start_date:
             end_date_str = ""
             if self.end_date:
                 end_date_str = f"-{self.end_date.date()}"

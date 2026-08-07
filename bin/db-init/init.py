@@ -387,7 +387,8 @@ def intialise_db() -> None:
         {
             "name": "UKCEH river network",
             "project": "fdri",
-            "start_date": "1975-01-01",
+            "date": None,
+            "start_date": None,
             "end_date": None,
             "source_type": "hydrology_geoserver",
             "raw_source_id": "river_vectors",
