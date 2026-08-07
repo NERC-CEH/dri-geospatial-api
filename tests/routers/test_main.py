@@ -101,6 +101,7 @@ class TestAvailableData:
                 },
                 "field_metadata": None,
                 "filter_metadata": None,
+                "resource_metadata": None,
                 "map_center": [-3.417368, 55.510546],
                 "colour_source_url": (
                     "s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=catchment/location=tweed/"
@@ -154,6 +155,12 @@ class TestAvailableData:
                         "data_type": "string",
                     },
                     {
+                        "display_label": "ID",
+                        "key": "id",
+                        "field_keys": [{"key": "identifier", "type": "list", "index": 0}],
+                        "data_type": "string",
+                    },
+                    {
                         "display_label": "Description",
                         "key": "description",
                         "field_keys": [{"key": "comment", "type": "list", "index": 0}],
@@ -191,6 +198,14 @@ class TestAvailableData:
                     },
                 ],
                 "filter_metadata": None,
+                "resource_metadata": [
+                    {
+                        "level": "feature",
+                        "url": "https://dri-ui.staging.dri.ceh.ac.uk/fdri/timeseries?network=cosmos&site={site_id}",
+                        "url_mapping": {"site_id": "id"},
+                        "label": "timeseries data",
+                    }
+                ],
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": (
@@ -247,6 +262,7 @@ class TestAvailableData:
                     },
                 ],
                 "filter_metadata": None,
+                "resource_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": (
@@ -258,7 +274,7 @@ class TestAvailableData:
             {
                 "id": 4,
                 "name": "Landcover map",
-                "description": None,
+                "description": "2024 Landcover map (GB)",
                 "project": {"id": 1, "name": "FDRI", "object_key": "fdri"},
                 "date": None,
                 "start_date": "2024-01-01",
@@ -315,6 +331,14 @@ class TestAvailableData:
                 },
                 "field_metadata": None,
                 "filter_metadata": None,
+                "resource_metadata": [
+                    {
+                        "level": "layer",
+                        "url": "https://catalogue.ceh.ac.uk/",
+                        "url_mapping": {},
+                        "label": "EIDC catalogue",
+                    }
+                ],
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": "https://catalogue.ceh.ac.uk/maps/76405b92-17ec-4ed2-ac7f-17caeb2d14f6",
@@ -354,6 +378,7 @@ class TestAvailableData:
                 },
                 "field_metadata": None,
                 "filter_metadata": None,
+                "resource_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": "https://hydrologygeoserver.ceh.ac.uk/geoserver/wms/river_vectors",
@@ -448,11 +473,12 @@ class TestAvailableData:
                         "expected_value": True,
                     }
                 ],
+                "resource_metadata": None,
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": (
-                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended"
-                    "&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection"
+                    "=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
                     "contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView"
                 ),
             },

@@ -79,6 +79,7 @@ class Layer(BaseModel):
     location: Location
     field_metadata: Optional[list[dict[str, Any]]]
     filter_metadata: Optional[list[dict[str, Any]]]
+    resource_metadata: Optional[list[dict[str, Any]]]
 
     def to_json_response(self) -> dict[str, Any]:
         """Convert the Layer model instance to a dictionary able to be easily converted to a JSONResponse object

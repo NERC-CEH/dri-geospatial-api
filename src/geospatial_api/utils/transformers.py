@@ -148,8 +148,9 @@ class MetadataTransformer(TransformerABC):
     def transform_response(
         self,
         response_data: dict[str, Any],
-        field_metadata: dict[str, Any],
-        filter_metadata: dict[str, Any] | None = None,
+        field_metadata: list[dict[str, Any]],
+        filter_metadata: list[dict[str, Any]] | None = None,
+        resource_metadata: list[dict[str, Any]] | None = None,
     ) -> geojson.FeatureCollection:
         """
         Transforms the metadata response into a geojson FeatureCollection object ready to be rendered by the UI.
@@ -158,8 +159,9 @@ class MetadataTransformer(TransformerABC):
             response_data: Metadata response dictionary to be decoded
             field_metadata: Configuration information denoting how to decode individual fields from the metadata
                 response, including the key they will be stored under in the geojson feature's properties.
-            filter_metadata: Optional set of configurations to filter the metadata response on if required.
+            filter_metadata: Optional list of configurations to filter the metadata response on if required.
                 Defaults to None.
+            resource_metadata: Optional list of configurations describing additional resources the UI should link to
 
         Raises:
             ValueError: No field metadata is provided, or it is not a list
@@ -191,6 +193,26 @@ class MetadataTransformer(TransformerABC):
             for field in field_metadata:
                 field_value = self.get_field_value(deepcopy(item), field["field_keys"])
                 decoded_item[field["key"]] = field_value
+
+            # Build dictionary of urls and their labels to be used in the UI
+            if resource_metadata:
+                urls = []
+                for resource_config in resource_metadata:
+                    if resource_config["level"] == "layer":
+                        continue
+
+                    urls.append(
+                        {
+                            "label": resource_config["label"],
+                            "url": resource_config["url"].format(
+                                **{
+                                    key: decoded_item.get(value)
+                                    for (key, value) in resource_config["url_mapping"].items()
+                                }
+                            ),
+                        }
+                    )
+                decoded_item["urls"] = urls
 
             # Convert to geojson feature
             geometry = decoded_item.get("geometry")
