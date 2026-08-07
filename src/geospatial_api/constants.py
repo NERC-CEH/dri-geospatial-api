@@ -9,5 +9,5 @@ OPTIONAL_LAYER_FIELDS = [
     "legend",
     "field_metadata",
     "filter_metadata",
-    # "resource_metadata",
+    "resource_metadata",
 ]
