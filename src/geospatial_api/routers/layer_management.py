@@ -254,6 +254,7 @@ async def add_layer(
     boundary: UploadFile | None = None,
     field_metadata: UploadFile | None = None,
     filter_metadata: UploadFile | None = None,
+    resource_metadata: UploadFile | None = None,
     s3_client: S3Client = Depends(lambda: s3),
 ) -> JSONResponse:
     if not colour_source_id and not colour_source_file and not raw_source_id and not raw_source_file:
@@ -305,6 +306,7 @@ async def add_layer(
         boundary=geojson.load(boundary.file) if boundary else None,
         field_metadata=json.load(field_metadata.file) if field_metadata else None,
         filter_metadata=json.load(filter_metadata.file) if filter_metadata else None,
+        resource_metadata=json.load(resource_metadata.file) if resource_metadata else None,
     )
 
     layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)
@@ -343,6 +345,7 @@ async def update_layer(
     boundary: UploadFile | None = None,
     field_metadata: UploadFile | None = None,
     filter_metadata: UploadFile | None = None,
+    resource_metadata: UploadFile | None = None,
     s3_client: S3Client = Depends(lambda: s3),
 ) -> JSONResponse:
     # Ensure the provided legend file is a json
@@ -378,6 +381,7 @@ async def update_layer(
         boundary=geojson.load(boundary.file) if boundary else None,
         field_metadata=json.load(field_metadata.file) if field_metadata else None,
         filter_metadata=json.load(filter_metadata.file) if filter_metadata else None,
+        resource_metadata=json.load(resource_metadata.file) if resource_metadata else None,
     )
 
     layer = LayerRegistryInterface.convert_layer_to_pydantic_model(session=db, db_layer=new_layer)

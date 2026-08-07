@@ -198,6 +198,7 @@ class LayerRegistryInterface:
         boundary: dict[str, Any] | None = None,
         field_metadata: dict[str, Any] | None = None,
         filter_metadata: dict[str, Any] | None = None,
+        resource_metadata: dict[str, Any] | None = None,
     ) -> db_models.Layer:
         """Adds a new Layer instance to the database.
 
@@ -220,6 +221,8 @@ class LayerRegistryInterface:
             boundary: WKT string for the boundary. This should be in WGS84 and simplified wherever possible.
                 Defaults to None.
             field_metadata: JSON string containing metadata for displaying field information from the vector in the UI
+            resource_metadata: JSON list detailing metadata for linking to extra resources such as the timeseries
+                explorer or EIDC catalogue
 
         Returns:
             Layer instance
@@ -269,6 +272,7 @@ class LayerRegistryInterface:
                 bbox=bbox_wkt,
                 field_metadata=field_metadata,
                 filter_metadata=filter_metadata,
+                resource_metadata=resource_metadata,
             ),
         )
 
@@ -296,6 +300,7 @@ class LayerRegistryInterface:
         boundary: dict[str, Any] | None = None,
         field_metadata: dict[str, Any] | None = None,
         filter_metadata: dict[str, Any] | None = None,
+        resource_metadata: dict[str, Any] | None = None,
     ) -> db_models.Layer:
         """Adds a new Layer instance to the database.
 
@@ -319,6 +324,8 @@ class LayerRegistryInterface:
                 Defaults to None.
             field_metadata: JSON string containing metadata for displaying field information from the vector in the UI
             filter_metadata: JSON string containing metadata for filtering entries from the metadata api
+            resource_metadata: JSON list detailing metadata for linking to extra resources such as the timeseries
+                explorer or EIDC catalogue
 
         Returns:
             Layer instance
@@ -337,6 +344,7 @@ class LayerRegistryInterface:
         layer.legend = legend if legend is not None else layer.legend
         layer.field_metadata = field_metadata if field_metadata is not None else layer.field_metadata
         layer.filter_metadata = filter_metadata if filter_metadata is not None else layer.filter_metadata
+        layer.resource_metadata = resource_metadata if resource_metadata is not None else layer.resource_metadata
 
         if project_key is not None:
             project = get_db_object_by_key(session=session, db_model=db_models.Project, object_key=project_key)
@@ -444,6 +452,7 @@ class LayerRegistryInterface:
             ),
             field_metadata=db_layer.field_metadata,
             filter_metadata=db_layer.filter_metadata,
+            resource_metadata=db_layer.resource_metadata,
         )
 
         return layer
