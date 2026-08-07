@@ -211,7 +211,7 @@ class TestAvailableData:
                 "raw_source_url": (
                     "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/cosmos?_projection=contains.label,"
                     "contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,"
-                    "contains.altitude,contains.identifier"
+                    "contains.altitude"
                 ),
             },
             {

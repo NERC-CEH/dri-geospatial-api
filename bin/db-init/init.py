@@ -224,7 +224,7 @@ def intialise_db() -> None:
             "source_type": "metadata_api",
             "raw_source_id": (
                 "id/network/cosmos?_projection=contains.label,contains.comment,contains.identifier,"
-                "contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.identifier"
+                "contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude"
             ),
             "data_format": "vector",
             "data_category": "soil_moisture",

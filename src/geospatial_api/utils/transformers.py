@@ -148,9 +148,9 @@ class MetadataTransformer(TransformerABC):
     def transform_response(
         self,
         response_data: dict[str, Any],
-        field_metadata: dict[str, Any],
-        filter_metadata: dict[str, Any] | None = None,
-        resource_metadata: dict[str, Any] | None = None,
+        field_metadata: list[dict[str, Any]],
+        filter_metadata: list[dict[str, Any]] | None = None,
+        resource_metadata: list[dict[str, Any]] | None = None,
     ) -> geojson.FeatureCollection:
         """
         Transforms the metadata response into a geojson FeatureCollection object ready to be rendered by the UI.
