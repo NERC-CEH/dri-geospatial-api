@@ -551,7 +551,7 @@ wheels = [
 [[package]]
 name = "dri-database-models"
 version = "0.0.26"
-source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-1200-resources#e9900570d3607e14427cf81cf5ebf985627f2305" }
+source = { git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main#0ef1be2833abe52c60bee71c067a4a1d832495ba" }
 dependencies = [
     { name = "alembic" },
     { name = "autosemver" },
@@ -792,7 +792,7 @@ requires-dist = [
     { name = "aiocache" },
     { name = "autosemver" },
     { name = "boto3", specifier = ">=1.36.24" },
-    { name = "dri-database-models", git = "https://github.com/NERC-CEH/dri-database-models.git?rev=feature%2FFPM-1200-resources" },
+    { name = "dri-database-models", git = "https://github.com/NERC-CEH/dri-database-models.git?rev=main" },
     { name = "dri-utils", git = "https://github.com/NERC-CEH/dri-utils.git" },
     { name = "fastapi" },
     { name = "fastapi", extras = ["standard"] },
