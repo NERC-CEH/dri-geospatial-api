@@ -32,7 +32,7 @@ class TestListModel:
                 IDModel(id=1, name="FDRI", object_key="fdri", last_updated=date(2026, 1, 1))
             ]
 
-            response = client.get("/api/list_model?model_name=project")
+            response = client.get("private/api/list_model?model_name=project")
 
         assert response.status_code == 200
         assert response.json() == expected_json
@@ -52,7 +52,7 @@ class TestListModel:
                 )
             ]
 
-            response = client.get("/api/list_model?model_name=source_type")
+            response = client.get("private/api/list_model?model_name=source_type")
 
         assert response.status_code == 200
         assert response.json() == expected_json
@@ -68,7 +68,7 @@ class TestListModel:
             mock_get.return_value = mock_response
             mock_db_interface.return_value = [Layer.model_construct(id=1, name="Layer 1", raw_source_id="raster.tif")]
 
-            response = client.get("/api/list_model?model_name=layer")
+            response = client.get("private/api/list_model?model_name=layer")
 
         assert response.status_code == 200
         assert response.json() == expected_json
@@ -82,7 +82,7 @@ class TestListModel:
             mock_get.return_value = mock_response
 
             with pytest.raises(ValueError):
-                client.get("/api/list_model?model_name=invalid_model")
+                client.get("private/api/list_model?model_name=invalid_model")
 
 
 class TestAddModel:
@@ -102,7 +102,7 @@ class TestAddModel:
             )
 
             response = client.post(
-                "/api/add_model?model_name=data_format&name=GeoJSON&object_key=geojson",
+                "private/api/add_model?model_name=data_format&name=GeoJSON&object_key=geojson",
             )
 
         assert response.status_code == 200
@@ -118,7 +118,7 @@ class TestAddModel:
 
             with pytest.raises(ValueError):
                 client.post(
-                    "/api/add_model?model_name=invalid_model&name=GeoJSON&object_key=geojson",
+                    "private/api/add_model?model_name=invalid_model&name=GeoJSON&object_key=geojson",
                 )
 
 
@@ -136,7 +136,7 @@ class TestAddDataCategory:
             )
 
             response = client.post(
-                "/api/add_data_category?name=Category 1&object_key=category_1&category_group_key=1",
+                "private/api/add_data_category?name=Category 1&object_key=category_1&category_group_key=1",
             )
 
         assert response.status_code == 200

@@ -27,7 +27,7 @@ class TestVector:
     def test_vector_from_s3(self, expected_geojson: dict[str, Any]) -> None:
         """Test the vector endpoint returns valid geojson from s3."""
         response = client.get(
-            "/api/vector?url=s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=national/location=uk/"
+            "private/api/vector?url=s3://ukceh-fdri-staging-geospatial/project=fdri/location_type=national/location=uk/"
             "data_category=soil_moisture/processing_level=processed/date=2026-03-20-2026-05-01/cosmos_sites.geojson"
         )
         assert response.status_code == 200
@@ -36,7 +36,7 @@ class TestVector:
     def test_vector_from_file_url(self, data_dir: Path, expected_geojson: dict[str, Any]) -> None:
         """Test the vector endpoint returns valid geojson from a file:// url."""
         geojson_path = data_dir.joinpath("cosmos_sites.geojson")
-        response = client.get(f"/api/vector?url=file:///{geojson_path}")
+        response = client.get(f"private/api/vector?url=file:///{geojson_path}")
         assert response.status_code == 200
         assert response.json() == expected_geojson
 
@@ -213,7 +213,7 @@ class TestVector:
             }
 
             response = client.get(
-                "/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/cosmos.json?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*&layer_id=1"
+                "private/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/cosmos.json?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*&layer_id=1"
             )
 
             assert response.status_code == 200
@@ -438,7 +438,7 @@ class TestVector:
             }
 
             response = client.get(
-                "/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.json?"
+                "private/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/plynlimon-pre-fdri-period.json?"
                 "_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*&layer_id=1"
             )
 
@@ -628,7 +628,7 @@ class TestVector:
                 ],
             }
             response = client.get(
-                "/api/vector?url=https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView&layer_id=1"
+                "private/api/vector?url=https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView&layer_id=1"
             )
 
             assert response.status_code == 200
@@ -840,7 +840,7 @@ class TestVector:
             }
 
             response = client.get(
-                "/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/cosmos.json?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*&layer_id=1"
+                "private/api/vector?url=https://dri-metadata-api.dri.ceh.ac.uk/id/network/cosmos.json?_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*&layer_id=1"
             )
 
             assert response.status_code == 200
