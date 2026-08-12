@@ -483,7 +483,7 @@ class TestAvailableData:
                 ),
             },
         ]
-        response = client.get("/api/available_data")
+        response = client.get("public/api/available_data")
 
         assert response.status_code == 200
         assert response.json() == expected_json
