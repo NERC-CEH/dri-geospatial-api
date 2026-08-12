@@ -22,7 +22,7 @@ from geospatial_api.services.rds.db import (
 )
 from geospatial_api.utils.utils import get_db, get_s3_client, upload_file_to_s3_for_layer
 
-router = APIRouter(tags=["Layer Management"])
+router = APIRouter(tags=["Private", "Layer Management"])
 
 s3 = get_s3_client()
 config = setup_config()

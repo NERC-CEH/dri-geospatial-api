@@ -1,7 +1,7 @@
 from typing import Annotated, Any
 
 import geojson
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -26,6 +26,15 @@ LAYER_CENTRES = {
     "chess": (51.71587, -0.58875),
     "test": (54.008128, -2.774925),
 }
+
+
+def serves_private_view(request: Request) -> bool:
+    """Whether the current route tree serves the full (private) view.
+
+    Returns:
+        ``True`` when the request is served by the private tree, else ``False``.
+    """
+    return request.app.state.serves_private_view
 
 
 @router.get("/available_data")

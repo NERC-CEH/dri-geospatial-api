@@ -35,7 +35,7 @@ class TestTitiler:
         monkeypatch.setenv("AIOCACHE_DISABLE", 1)
 
         response = client.get(
-            "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+            "public/api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
             "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
             "clipped_tweed_dsm_3857_colourised_cog.tif"
         )
@@ -48,7 +48,7 @@ class TestTitiler:
         monkeypatch.setenv("AIOCACHE_DISABLE", 1)
 
         raster_path = data_dir.joinpath("clipped_tweed_dsm_3857_colourised_cog.tif")
-        response = client.get(f"api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=file:///{raster_path}")
+        response = client.get(f"public/api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=file:///{raster_path}")
 
         assert response.status_code == 200
         check_image_response(response)
@@ -60,7 +60,7 @@ class TestCachedTitiler:
 
         # Call the raster tile endpoint once initially to store the tile in the cache
         response_1 = client.get(
-            "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+            "public/api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
             "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
             "clipped_tweed_dsm_3857_colourised_cog.tif"
         )
@@ -70,7 +70,7 @@ class TestCachedTitiler:
 
         with mock.patch.object(TilerFactory, "tile") as mock_tile:
             response_2 = client.get(
-                "api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+                "public/api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
                 "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
                 "clipped_tweed_dsm_3857_colourised_cog.tif"
             )
