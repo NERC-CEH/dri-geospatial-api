@@ -349,7 +349,7 @@ class LayerRegistryInterface:
 
         if project_key is not None:
             project = get_db_object_by_key(session=session, db_model=db_models.Project, object_key=project_key)
-            layer.project = project
+            layer.project = project.id
 
         if source_type_key is not None:
             source_type = get_db_object_by_key(
