@@ -52,6 +52,9 @@ class MetadataTransformer(TransformerABC):
                 if field_value is None:
                     return
                 field_value = self.get_geometry_from_wkt_list(field_value)
+            elif field_type == "id_dict":
+                id_components = dict(site.split(field_key_mapping["separator"]) for site in field_value)
+                field_value = id_components.get(field_key_mapping["id_field"])
 
         return field_value
 
