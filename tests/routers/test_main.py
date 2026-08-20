@@ -266,8 +266,8 @@ class TestAvailableData:
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": (
-                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-manual-sites?_projection="
-                    "contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-manual-flow?"
+                    "_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
                     "contains.operatingPeriod.*,contains.altitude"
                 ),
             },
@@ -424,6 +424,14 @@ class TestAvailableData:
                         "data_type": "string",
                     },
                     {
+                        "display_label": "ID",
+                        "key": "id",
+                        "field_keys": [
+                            {"key": "identifier", "type": "id_dict", "id_field": "wiskiID", "separator": "|"}
+                        ],
+                        "data_type": "string",
+                    },
+                    {
                         "display_label": "Description",
                         "key": "description",
                         "field_keys": [{"key": "comment", "type": "list", "index": 0}],
@@ -469,7 +477,7 @@ class TestAvailableData:
                             {"key": "hasValue", "type": "value"},
                             {"key": "value", "type": "list", "index": 0},
                         ],
-                        "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation/isChess",
+                        "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation-property/isChess",
                         "expected_value": True,
                     }
                 ],
@@ -477,8 +485,8 @@ class TestAvailableData:
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": (
-                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&_projection"
-                    "=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
+                    "https://dri-metadata-api.staging.dri.ceh.ac.uk/id/network/ea-flow.json?_view=extended&"
+                    "_projection=contains.label,contains.comment,contains.identifier,contains.hasGeometry.*,"
                     "contains.operatingPeriod.*,contains.altitude,contains.hasAnnotation.*&_withView"
                 ),
             },

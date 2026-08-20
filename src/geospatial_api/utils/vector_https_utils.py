@@ -42,4 +42,5 @@ def fetch_vector_data_from_https(url: str, layer: db_models.Layer) -> dict[str |
         filter_metadata=layer.filter_metadata,
         resource_metadata=layer.resource_metadata,
     )
+
     return geojson_data

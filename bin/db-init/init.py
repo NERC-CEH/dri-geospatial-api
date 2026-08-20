@@ -300,7 +300,7 @@ def intialise_db() -> None:
             "end_date": None,
             "source_type": "metadata_api",
             "raw_source_id": (
-                "id/network/ea-manual-sites?_projection=contains.label,contains.comment,contains.identifier,"
+                "id/network/ea-manual-flow?_projection=contains.label,contains.comment,contains.identifier,"
                 "contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude"
             ),
             "data_format": "vector",
@@ -439,6 +439,12 @@ def intialise_db() -> None:
                     "data_type": "string",
                 },
                 {
+                    "display_label": "ID",
+                    "key": "id",
+                    "field_keys": [{"key": "identifier", "type": "id_dict", "id_field": "wiskiID", "separator": "|"}],
+                    "data_type": "string",
+                },
+                {
                     "display_label": "Description",
                     "key": "description",
                     "field_keys": [{"key": "comment", "type": "list", "index": 0}],
@@ -465,9 +471,7 @@ def intialise_db() -> None:
                 {
                     "display_label": "Location",
                     "key": "geometry",
-                    "field_keys": [
-                        {"key": "hasGeometry", "type": "wkt_list", "index": None},
-                    ],
+                    "field_keys": [{"key": "hasGeometry", "type": "wkt_list", "index": None}],
                     "data_type": "string",
                 },
             ],
@@ -480,7 +484,7 @@ def intialise_db() -> None:
                         {"key": "hasValue", "type": "value"},
                         {"key": "value", "type": "list", "index": 0},
                     ],
-                    "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation/isChess",
+                    "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation-property/isChess",
                     "expected_value": True,
                 }
             ],
