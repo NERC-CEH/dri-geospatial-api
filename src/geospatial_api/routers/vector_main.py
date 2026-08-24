@@ -27,6 +27,28 @@ def read_index(
     if url_parts.scheme.lower() == "s3":
         response = s3_client.get_object(Bucket=url_parts.netloc, Key=url_parts.path.lstrip("/"))
         geojson_data = geojson.load(response["Body"])
+
+        # Add on feature specific URLs if configured
+        if layer and layer.resource_metadata:
+            for feature in geojson_data.features:
+                urls = []
+                for resource_config in layer.resource_metadata:
+                    if resource_config["level"] == "layer":
+                        continue
+
+                    urls.append(
+                        {
+                            "label": resource_config["label"],
+                            "url": resource_config["url"].format(
+                                **{
+                                    key: feature.properties.get(value)
+                                    for (key, value) in resource_config["url_mapping"].items()
+                                }
+                            ),
+                        }
+                    )
+                feature.properties["urls"] = urls
+
     elif url_parts.scheme.lower() in {"https", "http"}:
         if layer_id is None:
             raise HTTPException(
