@@ -55,6 +55,10 @@ class MetadataTransformer(TransformerABC):
             elif field_type == "id_dict":
                 id_components = dict(site.split(field_key_mapping["separator"]) for site in field_value)
                 field_value = id_components.get(field_key_mapping["id_field"])
+            elif field_type == "annotation":
+                for item in field_value:
+                    if item["property"]["@id"] == field_key_mapping["id_value"]:
+                        field_value = item["hasValue"]["value"]
 
         return field_value
 
