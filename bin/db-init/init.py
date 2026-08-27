@@ -439,7 +439,7 @@ def intialise_db() -> None:
                     "data_type": "string",
                 },
                 {
-                    "display_label": "ID",
+                    "display_label": None,
                     "key": "id",
                     "field_keys": [{"key": "identifier", "type": "id_dict", "id_field": "wiskiID", "separator": "|"}],
                     "data_type": "string",
@@ -469,7 +469,7 @@ def intialise_db() -> None:
                     "data_type": "date",
                 },
                 {
-                    "display_label": "Location",
+                    "display_label": None,
                     "key": "geometry",
                     "field_keys": [{"key": "hasGeometry", "type": "wkt_list", "index": None}],
                     "data_type": "string",
@@ -487,6 +487,111 @@ def intialise_db() -> None:
                     "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation-property/isChess",
                     "expected_value": True,
                 }
+            ],
+        },
+        {
+            "name": "Plynlimon monthly rain gauges",
+            "project": "fdri",
+            "description": "",
+            "start_date": "1934-02-28",
+            "end_date": None,
+            "source_type": "metadata_api",
+            "raw_source_id": (
+                "id/network/plynlimon-pre-fdri-period.json?_view=extended&_projection=contains.label,contains.comment,"
+                "contains.identifier,contains.hasGeometry.*,contains.operatingPeriod.*,contains.altitude,"
+                "contains.hasAnnotation.*&_withView"
+            ),
+            "data_format": "vector",
+            "data_category": "rainfall",
+            "processing_level": "processed",
+            "location": "uk",
+            "boundary": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+            "bbox": (
+                "POLYGON ((-7.291954 50.03266, 1.034231 50.03266, 1.034231 56.914403, -7.291954 56.914403, "
+                "-7.291954 50.03266))"
+            ),
+            "field_metadata": [
+                {
+                    "display_label": "Name",
+                    "key": "name",
+                    "field_keys": [{"key": "label", "type": "list", "index": 0}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": None,
+                    "key": "id",
+                    "field_keys": [{"key": "identifier", "type": "id_dict", "id_field": "wiskiID", "separator": "|"}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "Description",
+                    "key": "description",
+                    "field_keys": [{"key": "comment", "type": "list", "index": 0}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "Altitude",
+                    "key": "altitude",
+                    "field_keys": [{"key": "altitude", "type": "value"}],
+                    "data_type": "float",
+                },
+                {
+                    "display_label": "Start Date",
+                    "key": "start_date",
+                    "field_keys": [{"key": "operatingPeriod", "type": "value"}, {"key": "startDate", "type": "value"}],
+                    "data_type": "date",
+                },
+                {
+                    "display_label": "End date",
+                    "key": "end_date",
+                    "field_keys": [{"key": "operatingPeriod", "type": "value"}, {"key": "endDate", "type": "value"}],
+                    "data_type": "date",
+                },
+                {
+                    "display_label": None,
+                    "key": "geometry",
+                    "field_keys": [{"key": "hasGeometry", "type": "wkt_list", "index": None}],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "Aspect",
+                    "key": "aspect",
+                    "field_keys": [
+                        {
+                            "key": "hasAnnotation",
+                            "type": "annotation",
+                            "id_value": "http://fdri.ceh.ac.uk/ref/common/annotation-property/aspect",
+                        }
+                    ],
+                    "data_type": "float",
+                },
+                {
+                    "display_label": "Gauge Type",
+                    "key": "gauge_type",
+                    "field_keys": [
+                        {
+                            "key": "hasAnnotation",
+                            "type": "annotation",
+                            "id_value": "http://fdri.ceh.ac.uk/ref/common/annotation-property/gauge_type",
+                        }
+                    ],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": "Slope",
+                    "key": "slope",
+                    "field_keys": [
+                        {
+                            "key": "hasAnnotation",
+                            "type": "annotation",
+                            "id_value": "http://fdri.ceh.ac.uk/ref/common/annotation-property/slope",
+                        }
+                    ],
+                    "data_type": "float",
+                },
             ],
         },
     ]
