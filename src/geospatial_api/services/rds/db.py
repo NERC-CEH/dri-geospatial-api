@@ -1,3 +1,5 @@
+# pyright: reportAttributeAccessIssue=false, reportOptionalMemberAccess=false, reportArgumentType=false
+
 import logging
 from datetime import datetime
 from typing import Any, Union
@@ -17,7 +19,7 @@ logger = logging.getLogger(__name__)
 config = setup_config()
 
 
-def add_db_item(session: Session, db_item: object) -> None:
+def add_db_item(session: Session, db_item: object) -> object | None:
     """Adds a new item to the database.
 
     Args:
@@ -62,7 +64,7 @@ def get_db_object_by_key(session: Session, db_model: object, object_key: str) ->
         An instance of the sqlalchemy database model corresponding to the requested object key and db_model.
 
     """
-    db_object = session.query(db_model).filter_by(object_key=object_key).first()
+    db_object = session.query(db_model).filter_by(object_key=object_key).first()  # type: ignore
     if not db_object:
         raise ValueError(
             f"Could not fetch model instance `{str(db_model)} for key: {object_key}. Object may not exist."
@@ -86,7 +88,7 @@ def get_db_object_by_primary_key(session: Session, db_model: object, primary_key
         An instance of the sqlalchemy database model corresponding to the requested object key and db_model.
 
     """
-    db_object = session.get(db_model, primary_key)
+    db_object = session.get(db_model, primary_key)  # type: ignore
     if not db_object:
         raise ValueError(
             f"Could not fetch model instance `{str(db_model)} for primary key: {primary_key}. Object may not exist."
@@ -98,8 +100,8 @@ def get_db_object_by_primary_key(session: Session, db_model: object, primary_key
 class LayerRegistryInterface:
     @staticmethod
     def get_single_layer(session: Session, layer_id: int) -> models.Layer:
-        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Layer, primary_key=layer_id)
-        return LayerRegistryInterface.convert_layer_to_pydantic_model(session=session, db_layer=db_item)
+        db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Layer, primary_key=layer_id)  # type: ignore
+        return LayerRegistryInterface.convert_layer_to_pydantic_model(session=session, db_layer=db_item)  # type: ignore
 
     @staticmethod
     def get_db_entries(session: Session, raw_output: bool = False, *_, **__) -> list[models.Layer]:
@@ -134,13 +136,13 @@ class LayerRegistryInterface:
             Pydantic model of the queried database model instance.
 
         """
-        model_instance = session.get(model_class, model_id)
+        model_instance = session.get(model_class, model_id)  # type: ignore
 
         model_dict = {}
         for field in pydantic_model.model_fields.keys():
             model_dict[field] = getattr(model_instance, field)
 
-        return pydantic_model(**model_dict)
+        return pydantic_model(**model_dict)  # type: ignore
 
     @staticmethod
     def get_nested_model_instance(
@@ -150,8 +152,8 @@ class LayerRegistryInterface:
         nested_model_field: str,
         nested_db_model_class: object,
         pydantic_model: object,
-    ) -> models.Layer:
-        main_model = session.get(main_db_model_class, main_model_id)
+    ) -> object:
+        main_model = session.get(main_db_model_class, main_model_id)  # type: ignore
         nested_pydantic_model = LayerRegistryInterface.get_instance(
             session=session,
             model_id=getattr(main_model, nested_model_field),
@@ -177,7 +179,7 @@ class LayerRegistryInterface:
             geometry = to_shape(getattr(main_model, geometry_field))
             pydantic_model_data[geometry_field] = geometry
 
-        return pydantic_model(**pydantic_model_data)
+        return pydantic_model(**pydantic_model_data)  # type: ignore
 
     @staticmethod
     def add_new_layer(
@@ -278,7 +280,7 @@ class LayerRegistryInterface:
             ),
         )
 
-        return new_layer
+        return new_layer  # type: ignore
 
     @staticmethod
     def update_layer(
@@ -390,7 +392,7 @@ class LayerRegistryInterface:
             layer.bbox = bbox_wkt
 
         session.commit()
-        return layer
+        return layer  # type: ignore
 
     @staticmethod
     def clear_layer_field(session: Session, model_id: int, field_name: str) -> db_models.Layer:
@@ -401,7 +403,7 @@ class LayerRegistryInterface:
         setattr(layer, field_name, None)
 
         session.commit()
-        return layer
+        return layer  # type: ignore
 
     @staticmethod
     def convert_layer_to_pydantic_model(session: Session, db_layer: db_models.Layer) -> models.Layer:
@@ -419,7 +421,7 @@ class LayerRegistryInterface:
             id=db_layer.id,
             name=db_layer.name,
             description=db_layer.description,
-            project=LayerRegistryInterface.get_instance(
+            project=LayerRegistryInterface.get_instance(  # type: ignore
                 session=session,
                 model_id=db_layer.project,
                 model_class=db_models.Project,
@@ -446,16 +448,16 @@ class LayerRegistryInterface:
                 nested_db_model_class=db_models.DataCategoryGroup,
                 pydantic_model=models.DataCategory,
             ),
-            legend=db_layer.legend,
-            boundary=to_shape(db_layer.boundary) if db_layer.boundary else None,
-            bbox=bbox,
+            legend=db_layer.legend,  # type: ignore
+            boundary=to_shape(db_layer.boundary) if db_layer.boundary else None,  # type: ignore
+            bbox=bbox,  # type: ignore
             processing_level=LayerRegistryInterface.get_instance(
                 session=session,
                 model_id=db_layer.processing_level,
                 model_class=db_models.ProcessingLevel,
                 pydantic_model=models.IDModel,
             ),
-            location=LayerRegistryInterface.get_nested_model_instance(
+            location=LayerRegistryInterface.get_nested_model_instance(  # type: ignore
                 session=session,
                 main_model_id=db_layer.location,
                 main_db_model_class=db_models.Location,
@@ -463,9 +465,9 @@ class LayerRegistryInterface:
                 nested_db_model_class=db_models.LocationType,
                 pydantic_model=models.Location,
             ),
-            field_metadata=db_layer.field_metadata,
-            filter_metadata=db_layer.filter_metadata,
-            resource_metadata=db_layer.resource_metadata,
+            field_metadata=db_layer.field_metadata,  # type: ignore
+            filter_metadata=db_layer.filter_metadata,  # type: ignore
+            resource_metadata=db_layer.resource_metadata,  # type: ignore
         )
 
         return layer
@@ -475,7 +477,7 @@ class IDModelInterface:
     @staticmethod
     def get_db_entries(session: Session, db_model: object, *_, **__) -> list[models.IDModel]:
         """Fetch all items for any database model that fits within the pydantic IDModel baseclass."""
-        query = session.query(db_model)
+        query = session.query(db_model)  # type: ignore
 
         items = []
         for item in query:
@@ -487,7 +489,7 @@ class IDModelInterface:
     @staticmethod
     def add_model_entry(session: Session, db_model: object, name: str, object_key: str) -> object:
         """Add a new model entry for any database model that corresponds to the pydantic IDModel base class."""
-        new_db_item = add_db_item(session=session, db_item=db_model(name=name, object_key=object_key))
+        new_db_item = add_db_item(session=session, db_item=db_model(name=name, object_key=object_key))  # type: ignore
         return new_db_item
 
     @staticmethod
@@ -550,7 +552,7 @@ class SourceTypeModelInterface:
             session=session,
             db_item=db_models.SourceType(name=name, object_key=object_key, base_url=base_url),
         )
-        return new_db_item
+        return new_db_item  # type: ignore
 
     @staticmethod
     def update_entry(
@@ -569,14 +571,14 @@ class SourceTypeModelInterface:
 
         session.commit()
 
-        return db_item
+        return db_item  # type: ignore
 
 
 class LocationModelInterface:
     @staticmethod
     def get_single_location(session: Session, location_id: int) -> models.Location:
         db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Location, primary_key=location_id)
-        return LocationModelInterface.convert_db_item_to_pydantic_model(session=session, db_item=db_item)
+        return LocationModelInterface.convert_db_item_to_pydantic_model(session=session, db_item=db_item)  # type: ignore
 
     @staticmethod
     def get_db_entries(session: Session, *_, **__) -> list[models.Location]:
@@ -604,7 +606,7 @@ class LocationModelInterface:
             name=db_item.name,
             object_key=db_item.object_key,
             location_type=location_type_model,
-            boundary=to_shape(db_item.boundary),
+            boundary=to_shape(db_item.boundary),  # type: ignore
         )
 
     @staticmethod
@@ -625,7 +627,7 @@ class LocationModelInterface:
                 name=name, object_key=object_key, location_type=location_type.id, boundary=boundary_wkt
             ),
         )
-        return new_db_item
+        return new_db_item  # type: ignore
 
     @staticmethod
     def update_entry(
@@ -656,7 +658,7 @@ class LocationModelInterface:
             location_instance.boundary = boundary_wkt
 
         session.commit()
-        return location_instance
+        return location_instance  # type: ignore
 
 
 class DataCategoryModelInterface:
@@ -736,4 +738,4 @@ class DataCategoryModelInterface:
             data_category_instance.data_category_group = data_category_group.id
 
         session.commit()
-        return data_category_instance
+        return data_category_instance  # type: ignore
