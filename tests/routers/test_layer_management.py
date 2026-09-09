@@ -2,7 +2,6 @@ from datetime import date
 from unittest.mock import patch
 
 import dri_database_models.geospatial as db_models
-import pytest
 from fastapi.testclient import TestClient
 from httpx import Request, Response
 
@@ -81,8 +80,9 @@ class TestListModel:
             mock_response = Response(status_code=504, request=mock_request)
             mock_get.return_value = mock_response
 
-            with pytest.raises(ValueError):
-                client.get("private/api/list_model?model_name=invalid_model")
+            response = client.get("private/api/list_model?model_name=invalid_model")
+
+        assert response.status_code == 500
 
 
 class TestAddModel:
@@ -116,10 +116,11 @@ class TestAddModel:
             mock_response = Response(status_code=504, request=mock_request)
             mock_get.return_value = mock_response
 
-            with pytest.raises(ValueError):
-                client.post(
-                    "private/api/add_model?model_name=invalid_model&name=GeoJSON&object_key=geojson",
-                )
+            response = client.post(
+                "private/api/add_model?model_name=invalid_model&name=GeoJSON&object_key=geojson",
+            )
+
+        assert response.status_code == 500
 
 
 class TestAddDataCategory:

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Any, Union
 
 import shapely
@@ -96,7 +97,7 @@ def get_db_object_by_primary_key(session: Session, db_model: object, primary_key
 
 class LayerRegistryInterface:
     @staticmethod
-    def get_single_layer(session: Session, layer_id: int) -> models.Location:
+    def get_single_layer(session: Session, layer_id: int) -> models.Layer:
         db_item = get_db_object_by_primary_key(session=session, db_model=db_models.Layer, primary_key=layer_id)
         return LayerRegistryInterface.convert_layer_to_pydantic_model(session=session, db_layer=db_item)
 
@@ -119,7 +120,7 @@ class LayerRegistryInterface:
         model_id: int,
         model_class: object,
         pydantic_model: object,
-    ) -> object:
+    ) -> db_models.Layer:
         """Fetch a single db item, converted to the corresponding pydantic model. Note that it is assumed there are
         no sub-dependent models - each field maps directly to a single value.
 
@@ -149,7 +150,7 @@ class LayerRegistryInterface:
         nested_model_field: str,
         nested_db_model_class: object,
         pydantic_model: object,
-    ) -> models.Location:
+    ) -> models.Layer:
         main_model = session.get(main_db_model_class, main_model_id)
         nested_pydantic_model = LayerRegistryInterface.get_instance(
             session=session,
@@ -189,9 +190,9 @@ class LayerRegistryInterface:
         processing_level_key: str,
         location_key: str,
         description: str | None = None,
-        date: str | None = None,
-        start_date: str | None = None,
-        end_date: str | None = None,
+        date: datetime | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         raw_source_id: str | None = None,
         colour_source_id: str | None = None,
         layer_id: str | None = None,
@@ -286,9 +287,9 @@ class LayerRegistryInterface:
         name: str | None = None,
         description: str | None = None,
         project_key: str | None = None,
-        date: str | None = None,
-        start_date: str | None = None,
-        end_date: str | None = None,
+        date: datetime | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         source_type_key: str | None = None,
         data_format_key: str | None = None,
         data_category_key: str | None = None,
@@ -472,7 +473,7 @@ class LayerRegistryInterface:
 
 class IDModelInterface:
     @staticmethod
-    def get_db_entries(session: Session, db_model: object, *_, **__) -> list:
+    def get_db_entries(session: Session, db_model: object, *_, **__) -> list[models.IDModel]:
         """Fetch all items for any database model that fits within the pydantic IDModel baseclass."""
         query = session.query(db_model)
 
@@ -515,7 +516,7 @@ class IDModelInterface:
 
 class SourceTypeModelInterface:
     @staticmethod
-    def get_db_entries(session: Session, *_, **__) -> list:
+    def get_db_entries(session: Session, *_, **__) -> list[models.SourceType]:
         """Fetch all items for the SourceType database model."""
         query = session.query(db_models.SourceType)
 
@@ -525,7 +526,7 @@ class SourceTypeModelInterface:
         return items
 
     @staticmethod
-    def convert_to_pydantic_model(db_item: object) -> models.SourceType:
+    def convert_to_pydantic_model(db_item: db_models.SourceType) -> models.SourceType:
         """Convert the db instance to a pydantic SourceType."""
         source_type = models.SourceType(
             id=db_item.id,
@@ -543,7 +544,7 @@ class SourceTypeModelInterface:
         name: str,
         object_key: str,
         base_url: str,
-    ) -> object:
+    ) -> db_models.SourceType:
         """Add a new SourceType entry to the database."""
         new_db_item = add_db_item(
             session=session,
@@ -558,7 +559,7 @@ class SourceTypeModelInterface:
         name: str | None = None,
         object_key: str | None = None,
         base_url: str | None = None,
-    ) -> object:
+    ) -> db_models.SourceType:
         """Update an existing SourceType model entry."""
         db_item = get_db_object_by_primary_key(session=session, db_model=db_models.SourceType, primary_key=model_id)
 
@@ -609,7 +610,7 @@ class LocationModelInterface:
     @staticmethod
     def add_new_entry(
         session: Session, name: str, object_key: str, location_type_key: str, boundary: dict[str, Any]
-    ) -> object:
+    ) -> db_models.Location:
         """Add a new Location entry to the database."""
         location_type = get_db_object_by_key(
             session=session, db_model=db_models.LocationType, object_key=location_type_key
@@ -634,7 +635,7 @@ class LocationModelInterface:
         object_key: str | None = None,
         location_type_key: str | None = None,
         boundary: dict[str, Any] | None = None,
-    ) -> object:
+    ) -> db_models.Location:
         """Add a new Location entry to the database."""
         location_instance = get_db_object_by_primary_key(
             session=session, db_model=db_models.Location, primary_key=model_id
@@ -660,7 +661,7 @@ class LocationModelInterface:
 
 class DataCategoryModelInterface:
     @staticmethod
-    def get_db_entries(session: Session, *_, **__) -> list[models.Location]:
+    def get_db_entries(session: Session, *_, **__) -> list[models.DataCategory]:
         """List all entries within the DataCategory database table."""
         query = session.query(db_models.DataCategory)
 
@@ -718,8 +719,8 @@ class DataCategoryModelInterface:
 
     @staticmethod
     def update_entry(
-        session: Session, model_id: int, name: str, object_key: str, data_category_group_key: str
-    ) -> object:
+        session: Session, model_id: int, name: str | None, object_key: str | None, data_category_group_key: str | None
+    ) -> db_models.DataCategory:
         """Add a new DataCategory entry to the database."""
         data_category_instance = get_db_object_by_primary_key(
             session=session, db_model=db_models.DataCategory, primary_key=model_id

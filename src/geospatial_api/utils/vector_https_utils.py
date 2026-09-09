@@ -2,9 +2,9 @@ import logging
 from typing import Any
 
 import requests
-from dri_database_models import geospatial as db_models
 from httpx import HTTPError
 
+from geospatial_api.models import Layer
 from geospatial_api.utils.transformers import MetadataTransformer
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def fetch_data(url: str) -> dict[str | Any]:
         raise
 
 
-def fetch_vector_data_from_https(url: str, layer: db_models.Layer) -> dict[str | Any]:
+def fetch_vector_data_from_https(url: str, layer: Layer) -> dict[str | Any]:
     response_data = fetch_data(url)
 
     transformer_class = TRANSFORMER_MAPPING.get(layer.source_type.object_key)
