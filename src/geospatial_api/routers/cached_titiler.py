@@ -8,7 +8,8 @@ import rasterio
 from fastapi import Depends, HTTPException, Path
 from pydantic import Field
 from rio_tiler.errors import TileOutsideBounds
-from rio_tiler.io import BaseReader, Reader
+from rio_tiler.io.base import BaseReader
+from rio_tiler.io.rasterio import Reader
 from rio_tiler.utils import CRS_to_uri
 from starlette.responses import Response
 from titiler.core.dependencies import BidxExprParams, DatasetParams, DefaultDependency, ImageRenderingParams, TileParams

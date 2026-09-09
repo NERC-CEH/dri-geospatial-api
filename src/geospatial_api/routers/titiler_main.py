@@ -2,7 +2,9 @@ import logging
 
 from fastapi import Depends
 from mypy_boto3_s3 import S3Client
-from titiler.extensions import cogValidateExtension, cogViewerExtension, wmsExtension
+from titiler.extensions.cogeo import cogValidateExtension
+from titiler.extensions.viewer import cogViewerExtension
+from titiler.extensions.wms import wmsExtension
 
 from geospatial_api.routers.cached_titiler import TilerFactory
 from geospatial_api.utils.utils import get_file_path, get_s3_client

@@ -80,6 +80,9 @@ def get_file_path(url: str | Path, s3_client: S3Client) -> str:
         check_path_exists(file_path)
         return file_path
 
+    # Theoretically this should never be reached, but if it does raise an error
+    raise ValueError(f"Unable to get file path for url: {url}")
+
 
 def check_path_exists(path: str | Path) -> None:
     """

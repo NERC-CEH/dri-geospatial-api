@@ -52,7 +52,11 @@ def read_index(
     elif url_parts.scheme.lower() in {"https", "http"}:
         if layer_id is None:
             raise HTTPException(
-                "A layer id must be provided when sourcing vector data from https. No transformation schema available"
+                status_code=500,
+                detail=(
+                    "A layer id must be provided when sourcing vector data from https. No transformation "
+                    "schema available"
+                ),
             )
         geojson_data = fetch_vector_data_from_https(url=url, layer=layer)
 

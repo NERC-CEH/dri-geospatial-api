@@ -18,7 +18,7 @@ class TestLocation:
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
         expected_json = {
             "id": 1,
@@ -74,7 +74,7 @@ class TestLayer:
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
 
         processing_level = IDModel(
@@ -111,8 +111,8 @@ class TestLayer:
                     },
                 ],
             },
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
-            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
+            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
             processing_level=processing_level,
             location=location,
             field_metadata=None,
@@ -211,7 +211,7 @@ class TestLayer:
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
 
         processing_level = IDModel(
@@ -248,8 +248,8 @@ class TestLayer:
                     },
                 ],
             },
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
-            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
+            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
             processing_level=processing_level,
             location=location,
             field_metadata=None,
@@ -309,7 +309,7 @@ class TestLayer:
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
 
         processing_level = IDModel(
@@ -349,8 +349,8 @@ class TestLayer:
                     },
                 ],
             },
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
-            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
+            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
             processing_level=processing_level,
             location=location,
             field_metadata=None,

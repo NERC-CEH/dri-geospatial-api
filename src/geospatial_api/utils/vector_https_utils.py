@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 TRANSFORMER_MAPPING = {"metadata_api": MetadataTransformer}
 
 
-def fetch_data(url: str) -> dict[str | Any]:
+def fetch_data(url: str) -> dict[str, Any]:
     session = requests.Session()
 
     try:
@@ -27,7 +27,7 @@ def fetch_data(url: str) -> dict[str | Any]:
         raise
 
 
-def fetch_vector_data_from_https(url: str, layer: Layer) -> dict[str | Any]:
+def fetch_vector_data_from_https(url: str, layer: Layer) -> dict[str, Any]:
     response_data = fetch_data(url)
 
     transformer_class = TRANSFORMER_MAPPING.get(layer.source_type.object_key)
