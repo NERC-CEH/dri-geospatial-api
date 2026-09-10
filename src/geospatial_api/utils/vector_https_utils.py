@@ -34,6 +34,9 @@ def fetch_vector_data_from_https(url: str, layer: Layer) -> dict[str, Any]:
     if transformer_class is None:
         raise ValueError("The source type of the layer is not supported")
 
+    if layer.field_metadata is None:
+        raise ValueError("Field metadata information is required to construct the geojson data.")
+
     transformer = transformer_class()
 
     geojson_data = transformer.transform_response(

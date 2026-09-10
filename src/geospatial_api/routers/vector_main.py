@@ -58,7 +58,7 @@ def read_index(
                     "schema available"
                 ),
             )
-        geojson_data = fetch_vector_data_from_https(url=url, layer=layer)
+        geojson_data = fetch_vector_data_from_https(url=url, layer=layer)  # type:ignore
 
     else:
         file_path = get_file_path(url, s3_client)

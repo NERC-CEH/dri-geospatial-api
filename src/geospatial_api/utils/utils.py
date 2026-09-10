@@ -33,7 +33,7 @@ def get_s3_client() -> S3Client:
     else:
         s3 = boto3.client("s3", config=boto3_config)
 
-    return s3
+    return s3  # type:ignore
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -112,6 +112,6 @@ async def upload_file_to_s3_for_layer(s3_client: S3Client, upload_file: UploadFi
         layer: Layer object associated with the file to be uploaded.
 
     """
-    destination_key = layer.get_s3_key(source_id=upload_file.filename)
+    destination_key = layer.get_s3_key(source_id=upload_file.filename)  # type:ignore
     content = await upload_file.read()
     s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
