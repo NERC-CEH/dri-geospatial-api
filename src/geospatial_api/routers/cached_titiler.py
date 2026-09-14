@@ -87,7 +87,7 @@ class TilerFactory(TiTilerFactory):
                 ),
             ],
             tileMatrixSetId: Annotated[
-                Literal[tuple(self.supported_tms.list())],
+                Literal[tuple(self.supported_tms.list())],  # type:ignore
                 Path(description="Identifier selecting one of the TileMatrixSetId supported."),
             ],
             scale: Annotated[
