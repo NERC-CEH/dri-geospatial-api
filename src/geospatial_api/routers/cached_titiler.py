@@ -7,14 +7,24 @@ from typing import Callable, Literal, Type
 import rasterio
 from fastapi import Depends, HTTPException, Path
 from pydantic import Field
+from rio_tiler.constants import WGS84_CRS
 from rio_tiler.errors import TileOutsideBounds
 from rio_tiler.io import BaseReader, Reader
 from rio_tiler.utils import CRS_to_uri
 from starlette.responses import Response
-from titiler.core.dependencies import BidxExprParams, DatasetParams, DefaultDependency, ImageRenderingParams, TileParams
+from titiler.core.dependencies import (
+    BidxExprParams,
+    CoordCRSParams,
+    DatasetParams,
+    DefaultDependency,
+    ImageRenderingParams,
+    TileParams,
+)
 from titiler.core.factory import TilerFactory as TiTilerFactory
 from titiler.core.factory import img_endpoint_params
+from titiler.core.models.responses import Point
 from titiler.core.resources.enums import ImageType
+from titiler.core.resources.responses import JSONResponse
 from typing_extensions import Annotated
 
 from geospatial_api.cache import CachedTiles
@@ -168,3 +178,38 @@ class TilerFactory(TiTilerFactory):
                 headers["Content-Crs"] = f"<{uri}>"
 
             return Response(content, media_type=media_type, headers=headers)
+
+        @self.router.get(
+            "/point/{lon},{lat}",
+            response_model=Point,
+            response_class=JSONResponse,
+            responses={200: {"description": "Return a value for a point"}},
+            operation_id=f"{self.operation_prefix}getDataForPoint",
+        )
+        def point(
+            lon: Annotated[float, Path(description="Longitude")],
+            lat: Annotated[float, Path(description="Latitude")],
+            src_path: str = Depends(self.path_dependency),
+            reader_params: DefaultDependency = Depends(self.reader_dependency),
+            coord_crs: str = Depends(CoordCRSParams),
+            layer_params: DefaultDependency = Depends(self.layer_dependency),
+            dataset_params: DefaultDependency = Depends(self.dataset_dependency),
+            env: Callable[..., dict] = Depends(self.environment_dependency),
+        ) -> dict:
+            """Get Point value for a dataset."""
+            with rasterio.Env(**env):
+                logger.info(f"opening data with reader: {self.reader}")
+                with self.reader(src_path, **reader_params.as_dict()) as src_dst:
+                    pts = src_dst.point(
+                        lon,
+                        lat,
+                        coord_crs=coord_crs or WGS84_CRS,
+                        **layer_params.as_dict(),
+                        **dataset_params.as_dict(),
+                    )
+
+            return {
+                "coordinates": [lon, lat],
+                "values": pts.array.tolist(),
+                "band_names": pts.band_names,
+            }

@@ -53,6 +53,38 @@ class TestTitiler:
         assert response.status_code == 200
         check_image_response(response)
 
+    def test_tile_outside_bounds(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # Disable the cache to ensure that we are testing the core raster fetching logic
+        monkeypatch.setenv("AIOCACHE_DISABLE", 1)
+
+        response = client.get(
+            "public/api/maps/tiles/WebMercatorQuad/14/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+            "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+            "clipped_tweed_dsm_3857_colourised_cog.tif"
+        )
+
+        assert response.status_code == 500
+        assert response.text == '{"detail":"Requested tile is outside of the raster bounds."}'
+
+    def test_raster_point_from_s3_url(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # Disable the cache to ensure that we are testing the core raster fetching logic
+        monkeypatch.setenv("AIOCACHE_DISABLE", 1)
+
+        expected_response = {
+            "coordinates": [-3.41739073, 55.51054225],
+            "values": [237.0312042236328],
+            "band_names": ["b1"],
+        }
+
+        response = client.get(
+            "public/api/maps/point/-3.41739073,55.51054225?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
+            "/location_type=catchment/location=tweed/data_category=dsm/processing_level=processed/date=2026-03-20/"
+            "clipped_tweed_dsm_3857_greyscale_cog.tif"
+        )
+
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
 
 class TestCachedTitiler:
     def test_cached_raster(self) -> None:
