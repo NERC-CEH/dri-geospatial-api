@@ -62,7 +62,7 @@ MODEL_MAPPING = {
 def get_model(model_name: str, db: Annotated[Session, Depends(get_db)]) -> JSONResponse:
     model_mapping = MODEL_MAPPING.get(model_name)
     if not model_mapping:
-        raise HTTPException(f"The model {model_name} is not supported")
+        raise HTTPException(status_code=500, detail="The model {model_name} is not supported")
 
     model_items = model_mapping.model_interface.get_db_entries(
         session=db, db_model=model_mapping.db_model, raw_output=True
@@ -81,7 +81,7 @@ def get_model(model_name: str, db: Annotated[Session, Depends(get_db)]) -> JSONR
 def add_model(db: Annotated[Session, Depends(get_db)], model_name: str, name: str, object_key: str) -> JSONResponse:
     model_mapping = MODEL_MAPPING.get(model_name)
     if not model_mapping:
-        raise HTTPException(f"The model {model_name} is not supported")
+        raise HTTPException(status_code=500, detail=f"The model {model_name} is not supported")
 
     new_db_item = model_mapping.model_interface.add_model_entry(
         session=db, db_model=model_mapping.db_model, name=name, object_key=object_key
@@ -101,7 +101,7 @@ def update_model(
 ) -> JSONResponse:
     model_mapping = MODEL_MAPPING.get(model_name)
     if not model_mapping:
-        raise HTTPException(f"The model {model_name} is not supported")
+        raise HTTPException(status_code=500, detail=f"The model {model_name} is not supported")
 
     new_db_item = model_mapping.model_interface.update_model_entry(
         session=db, db_model=model_mapping.db_model, model_id=model_id, name=name, object_key=object_key
@@ -125,7 +125,7 @@ def add_source_type(
         base_url=base_url,
     )
 
-    return JSONResponse(status_code=200, content=f"Successfully created new source type {new_db_item.name}")
+    return JSONResponse(status_code=200, content=f"Successfully created new source type {getattr(new_db_item, 'name')}")
 
 
 @router.post("/update_source_type")
@@ -163,7 +163,9 @@ def add_data_category(
         data_category_group_key=category_group_key,
     )
 
-    return JSONResponse(status_code=200, content=f"Successfully created new data category {new_db_item.name}")
+    return JSONResponse(
+        status_code=200, content=f"Successfully created new data category {getattr(new_db_item, 'name')}"
+    )
 
 
 @router.post("/update_data_category")
@@ -215,8 +217,9 @@ def update_location(
     location_type_key: str | None = None,
     boundary: UploadFile | None = None,
 ) -> JSONResponse:
+    boundary_data = None
     if boundary is not None:
-        boundary = geojson.load(boundary.file)
+        boundary_data = geojson.load(boundary.file)
 
     updated_db_item = LocationModelInterface.update_entry(
         session=db,
@@ -224,7 +227,7 @@ def update_location(
         name=name,
         object_key=object_key,
         location_type_key=location_type_key,
-        boundary=boundary,
+        boundary=boundary_data,
     )
 
     location = LocationModelInterface.convert_db_item_to_pydantic_model(session=db, db_item=updated_db_item)
@@ -260,21 +263,24 @@ async def add_layer(
 ) -> JSONResponse:
     if not colour_source_id and not colour_source_file and not raw_source_id and not raw_source_file:
         raise HTTPException(
-            "Either the source_id or the source_file should be provided for one or more of the raw or colour source "
-            "options"
+            status_code=500,
+            detail=(
+                "Either the source_id or the source_file should be provided for one or more of the raw or "
+                "colour source options"
+            ),
         )
 
     # Ensure the provided legend file is a json
-    if legend and not legend.filename.lower().endswith(".json"):
-        raise HTTPException("The legend must be provided as a .json file.")
+    if legend is not None and not str(legend.filename).lower().endswith(".json"):
+        raise HTTPException(status_code=500, detail="The legend must be provided as a .json file.")
 
     # Ensure the provided field metadata file is a json
-    if field_metadata and not field_metadata.filename.lower().endswith(".json"):
-        raise HTTPException("Field metadata must be provided as a .json file.")
+    if field_metadata is not None and not str(field_metadata.filename).lower().endswith(".json"):
+        raise HTTPException(status_code=500, detail="Field metadata must be provided as a .json file.")
 
     # Ensure the provided boundary file is a geojson
-    if boundary and not boundary.filename.lower().endswith(".geojson"):
-        raise HTTPException("The boundary must be provided as a .geojson file.")
+    if boundary is not None and not str(boundary.filename).lower().endswith(".geojson"):
+        raise HTTPException(status_code=500, detail="The boundary must be provided as a .geojson file.")
 
     new_layer = LayerRegistryInterface.add_new_layer(
         session=db,
@@ -339,20 +345,20 @@ async def update_layer(
     s3_client: S3Client = Depends(lambda: s3),
 ) -> JSONResponse:
     # Ensure the provided legend file is a json
-    if legend and not legend.filename.lower().endswith(".json"):
-        raise HTTPException("The legend must be provided as a .json file.")
+    if legend and not str(legend.filename).lower().endswith(".json"):
+        raise HTTPException(status_code=500, detail="The legend must be provided as a .json file.")
 
     # Ensure the provided field metadata file is a json
-    if field_metadata and not field_metadata.filename.lower().endswith(".json"):
-        raise HTTPException("Field metadata must be provided as a .json file.")
+    if field_metadata and not str(field_metadata.filename).lower().endswith(".json"):
+        raise HTTPException(status_code=500, detail="Field metadata must be provided as a .json file.")
 
     # Ensure the provided boundary file is a geojson
-    if boundary and not boundary.filename.lower().endswith(".geojson"):
-        raise HTTPException("The boundary must be provided as a .geojson file.")
+    if boundary and not str(boundary.filename).lower().endswith(".geojson"):
+        raise HTTPException(status_code=500, detail="The boundary must be provided as a .geojson file.")
 
     new_layer = LayerRegistryInterface.update_layer(
         session=db,
-        model_id=model_id,
+        model_id=int(model_id),
         name=name,
         description=description,
         project_key=project,
@@ -393,11 +399,11 @@ async def clear_layer_field(
     field_name: str,
 ) -> JSONResponse:
     if field_name not in OPTIONAL_LAYER_FIELDS:
-        raise HTTPException(f"{field_name} is not an optional field in the Layer model.")
+        raise HTTPException(status_code=500, detail=f"{field_name} is not an optional field in the Layer model.")
 
     updated_layer = LayerRegistryInterface.clear_layer_field(
         session=db,
-        model_id=model_id,
+        model_id=int(model_id),
         field_name=field_name,
     )
 

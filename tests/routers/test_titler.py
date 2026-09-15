@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 from fastapi.testclient import TestClient
-from starlette.responses import Response
+from httpx import Response
 
 from geospatial_api.main import app
 from geospatial_api.routers.cached_titiler import TilerFactory
@@ -32,7 +32,7 @@ def check_image_response(response: Response) -> None:
 class TestTitiler:
     def test_raster_from_s3_url(self, monkeypatch: pytest.MonkeyPatch) -> None:
         # Disable the cache to ensure that we are testing the core raster fetching logic
-        monkeypatch.setenv("AIOCACHE_DISABLE", 1)
+        monkeypatch.setenv("AIOCACHE_DISABLE", "1")
 
         response = client.get(
             "public/api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=s3://ukceh-fdri-staging-geospatial/project=fdri"
@@ -45,7 +45,7 @@ class TestTitiler:
 
     def test_raster_from_file_url(self, monkeypatch: pytest.MonkeyPatch, data_dir: Path) -> None:
         # Disable the cache to ensure that we are testing the core raster fetching logic
-        monkeypatch.setenv("AIOCACHE_DISABLE", 1)
+        monkeypatch.setenv("AIOCACHE_DISABLE", "1")
 
         raster_path = data_dir.joinpath("clipped_tweed_dsm_3857_colourised_cog.tif")
         response = client.get(f"public/api/maps/tiles/WebMercatorQuad/15/16072/10282.png?url=file:///{raster_path}")

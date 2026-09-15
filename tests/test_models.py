@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime
 
 import shapely
 
@@ -9,16 +9,16 @@ class TestLocation:
     def test_to_json_response(self) -> None:
         location = Location(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Location 1",
             object_key="location_1",
             location_type=IDModel(
                 id=1,
-                last_updated=date(2026, 1, 1),
+                last_updated=datetime(2026, 1, 1),
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
         expected_json = {
             "id": 1,
@@ -38,48 +38,48 @@ class TestLayer:
     def test_to_json_response(self) -> None:
         project = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Project 1",
             object_key="project_1",
         )
         source_type = SourceType(
-            id=1, last_updated=date(2026, 1, 1), name="S3", object_key="s3", base_url="s3://geospatial_s3_bucket"
+            id=1, last_updated=datetime(2026, 1, 1), name="S3", object_key="s3", base_url="s3://geospatial_s3_bucket"
         )
 
         data_format = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Raster",
             object_key="raster",
         )
 
         data_category = DataCategory(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Category 1",
             object_key="category_1",
             data_category_group=IDModel(
-                id=1, last_updated=date(2026, 1, 1), name="Category group 1", object_key="group_1"
+                id=1, last_updated=datetime(2026, 1, 1), name="Category group 1", object_key="group_1"
             ),
         )
 
         location = Location(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Location 1",
             object_key="location_1",
             location_type=IDModel(
                 id=1,
-                last_updated=date(2026, 1, 1),
+                last_updated=datetime(2026, 1, 1),
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
 
         processing_level = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Raw",
             object_key="raw",
         )
@@ -89,7 +89,7 @@ class TestLayer:
             name="Layer 1",
             description="Add description here",
             project=project,
-            date=date(2026, 1, 1),
+            date=datetime(2026, 1, 1),
             start_date=None,
             end_date=None,
             source_type=source_type,
@@ -111,8 +111,8 @@ class TestLayer:
                     },
                 ],
             },
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
-            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
+            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
             processing_level=processing_level,
             location=location,
             field_metadata=None,
@@ -172,51 +172,51 @@ class TestLayer:
 
         assert json_response == expected_response
 
-    def test_get_source_url_start_and_end_date(self) -> None:
+    def test_get_source_url_start_and_end_datetime(self) -> None:
         project = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Project 1",
             object_key="project_1",
         )
         source_type = SourceType(
-            id=1, last_updated=date(2026, 1, 1), name="S3", object_key="s3", base_url="s3://geospatial_s3_bucket"
+            id=1, last_updated=datetime(2026, 1, 1), name="S3", object_key="s3", base_url="s3://geospatial_s3_bucket"
         )
 
         data_format = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Raster",
             object_key="raster",
         )
 
         data_category = DataCategory(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Category 1",
             object_key="category_1",
             data_category_group=IDModel(
-                id=1, last_updated=date(2026, 1, 1), name="Category group 1", object_key="group_1"
+                id=1, last_updated=datetime(2026, 1, 1), name="Category group 1", object_key="group_1"
             ),
         )
 
         location = Location(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Location 1",
             object_key="location_1",
             location_type=IDModel(
                 id=1,
-                last_updated=date(2026, 1, 1),
+                last_updated=datetime(2026, 1, 1),
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
 
         processing_level = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Raw",
             object_key="raw",
         )
@@ -227,8 +227,8 @@ class TestLayer:
             description="Add description here",
             project=project,
             date=None,
-            start_date=date(2025, 1, 1),
-            end_date=date(2026, 1, 1),
+            start_date=datetime(2025, 1, 1),
+            end_date=datetime(2026, 1, 1),
             source_type=source_type,
             colour_source_id="colour_raster.tif",
             raw_source_id="greyscale_raster.tif",
@@ -248,8 +248,8 @@ class TestLayer:
                     },
                 ],
             },
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
-            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
+            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
             processing_level=processing_level,
             location=location,
             field_metadata=None,
@@ -269,13 +269,13 @@ class TestLayer:
     def test_get_source_url_not_s3_source(self) -> None:
         project = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Project 1",
             object_key="project_1",
         )
         source_type = SourceType(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Metadata API",
             object_key="metadata_api",
             base_url="https://dri-metadata-api.dri.ceh.ac.uk",
@@ -283,38 +283,38 @@ class TestLayer:
 
         data_format = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Raster",
             object_key="raster",
         )
 
         data_category = DataCategory(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Category 1",
             object_key="category_1",
             data_category_group=IDModel(
-                id=1, last_updated=date(2026, 1, 1), name="Category group 1", object_key="group_1"
+                id=1, last_updated=datetime(2026, 1, 1), name="Category group 1", object_key="group_1"
             ),
         )
 
         location = Location(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Location 1",
             object_key="location_1",
             location_type=IDModel(
                 id=1,
-                last_updated=date(2026, 1, 1),
+                last_updated=datetime(2026, 1, 1),
                 name="Location Type 1",
                 object_key="location_type_1",
             ),
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
         )
 
         processing_level = IDModel(
             id=1,
-            last_updated=date(2026, 1, 1),
+            last_updated=datetime(2026, 1, 1),
             name="Raw",
             object_key="raw",
         )
@@ -325,8 +325,8 @@ class TestLayer:
             description="Add description here",
             project=project,
             date=None,
-            start_date=date(2025, 1, 1),
-            end_date=date(2026, 1, 1),
+            start_date=datetime(2025, 1, 1),
+            end_date=datetime(2026, 1, 1),
             source_type=source_type,
             colour_source_id=None,
             raw_source_id=(
@@ -349,8 +349,8 @@ class TestLayer:
                     },
                 ],
             },
-            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
-            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),
+            boundary=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
+            bbox=shapely.from_wkt("POLYGON((0 0,0 1,1 1,1 0,0 0))"),  # type: ignore
             processing_level=processing_level,
             location=location,
             field_metadata=None,

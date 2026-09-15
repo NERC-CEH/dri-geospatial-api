@@ -17,7 +17,7 @@ class CachedABC(ABC, aiocache.cached):
 
     async def get_from_cache(self, key: str) -> str | Response | None:
         try:
-            value = await self.cache.get(key)
+            value = await self.cache.get(key)  # type:ignore
             if isinstance(value, Response):
                 value.headers["X-Cache"] = "HIT"
             return value
@@ -85,7 +85,7 @@ class CachedABC(ABC, aiocache.cached):
 class CachedTiles(CachedABC):
     """Custom Cached Decorator for Titiler tile route(s)."""
 
-    async def read_cache(self, key: str) -> Response | None:
+    async def read_cache(self, key: str) -> Response | None:  # type:ignore
         """Read data from the cache.
 
         To construct the returned response object, the image bytes data needs to be extracted from the stored json,
@@ -104,7 +104,7 @@ class CachedTiles(CachedABC):
             return
 
         # Extract the tile image and headers from the stored data
-        result_data = json.loads(value)
+        result_data = json.loads(value)  # type: ignore
         image_bytes = base64.b64decode(result_data["body"].encode())
         response = Response(image_bytes, headers=result_data["headers"])
         return response
