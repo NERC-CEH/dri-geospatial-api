@@ -432,6 +432,22 @@ class TestAvailableData:
                         "data_type": "string",
                     },
                     {
+                        "display_label": None,
+                        "key": "nrfa_id",
+                        "field_keys": [
+                            {"key": "identifier", "type": "id_dict", "id_field": "nrfaStationID", "separator": "|"}
+                        ],
+                        "data_type": "string",
+                    },
+                    {
+                        "display_label": None,
+                        "key": "notation",
+                        "field_keys": [
+                            {"key": "identifier", "type": "id_dict", "id_field": "notation", "separator": "|"}
+                        ],
+                        "data_type": "string",
+                    },
+                    {
                         "display_label": "Description",
                         "key": "description",
                         "field_keys": [{"key": "comment", "type": "list", "index": 0}],
@@ -481,7 +497,26 @@ class TestAvailableData:
                         "expected_value": True,
                     }
                 ],
-                "resource_metadata": None,
+                "resource_metadata": [
+                    {
+                        "level": "feature",
+                        "url": "https://digital-platform.fdri.org.uk/timeseries?network=ea-flow&site={site_id}",
+                        "url_mapping": {"site_id": "id"},
+                        "label": "timeseries data",
+                    },
+                    {
+                        "level": "feature",
+                        "url": "https://environment.data.gov.uk/hydrology/station/{notation}",
+                        "url_mapping": {"notation": "notation"},
+                        "label": "Environment Agency data",
+                    },
+                    {
+                        "level": "feature",
+                        "url": "https://nrfa.ceh.ac.uk/data/station/info/{nrfa_id}",
+                        "url_mapping": {"nrfa_id": "nrfa_id"},
+                        "label": "NRFA Station details",
+                    },
+                ],
                 "map_center": [-3.1288614999999993, 53.4735315],
                 "colour_source_url": None,
                 "raw_source_url": (

@@ -208,17 +208,22 @@ class MetadataTransformer(TransformerABC):
                     if resource_config["level"] == "layer":
                         continue
 
-                    urls.append(
-                        {
-                            "label": resource_config["label"],
-                            "url": resource_config["url"].format(
-                                **{
-                                    key: decoded_item.get(value)
-                                    for (key, value) in resource_config["url_mapping"].items()
-                                }
-                            ),
-                        }
-                    )
+                    url_mappings = {}
+                    for url_key, field_key in resource_config["url_mapping"].items():
+                        field_value = decoded_item.get(field_key)
+                        # The url should not be added if any of the required field values is not there.
+                        # Reset the url mapping dictionary as this can then be used as a flag to skip this url
+                        if field_value is None:
+                            url_mappings = {}
+                            break
+
+                        url_mappings[url_key] = field_value
+
+                    if url_mappings:
+                        urls.append(
+                            {"label": resource_config["label"], "url": resource_config["url"].format(**url_mappings)}
+                        )
+
                 decoded_item["urls"] = urls
 
             # Convert to geojson feature
