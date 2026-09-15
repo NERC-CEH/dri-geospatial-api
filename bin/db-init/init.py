@@ -445,6 +445,20 @@ def intialise_db() -> None:
                     "data_type": "string",
                 },
                 {
+                    "display_label": None,
+                    "key": "nrfa_id",
+                    "field_keys": [
+                        {"key": "identifier", "type": "id_dict", "id_field": "nrfaStationID", "separator": "|"}
+                    ],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": None,
+                    "key": "notation",
+                    "field_keys": [{"key": "identifier", "type": "id_dict", "id_field": "notation", "separator": "|"}],
+                    "data_type": "string",
+                },
+                {
                     "display_label": "Description",
                     "key": "description",
                     "field_keys": [{"key": "comment", "type": "list", "index": 0}],
@@ -487,6 +501,26 @@ def intialise_db() -> None:
                     "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation-property/isChess",
                     "expected_value": True,
                 }
+            ],
+            "resource_metadata": [
+                {
+                    "level": "feature",
+                    "url": "https://digital-platform.fdri.org.uk/timeseries?network=ea-flow&site={site_id}",
+                    "url_mapping": {"site_id": "id"},
+                    "label": "timeseries data",
+                },
+                {
+                    "level": "feature",
+                    "url": "https://environment.data.gov.uk/hydrology/station/{notation}",
+                    "url_mapping": {"notation": "notation"},
+                    "label": "Environment Agency data",
+                },
+                {
+                    "level": "feature",
+                    "url": "https://nrfa.ceh.ac.uk/data/station/info/{nrfa_id}",
+                    "url_mapping": {"nrfa_id": "nrfa_id"},
+                    "label": "NRFA Station details",
+                },
             ],
         },
         {
