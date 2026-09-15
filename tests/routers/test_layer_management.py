@@ -1,8 +1,7 @@
-from datetime import date
+from datetime import datetime
 from unittest.mock import patch
 
 import dri_database_models.geospatial as db_models
-import pytest
 from fastapi.testclient import TestClient
 from httpx import Request, Response
 
@@ -29,7 +28,7 @@ class TestListModel:
             mock_response = Response(200, json={}, request=mock_request)
             mock_get.return_value = mock_response
             mock_db_interface.return_value = [
-                IDModel(id=1, name="FDRI", object_key="fdri", last_updated=date(2026, 1, 1))
+                IDModel(id=1, name="FDRI", object_key="fdri", last_updated=datetime(2026, 1, 1))
             ]
 
             response = client.get("private/api/list_model?model_name=project")
@@ -48,7 +47,7 @@ class TestListModel:
             mock_get.return_value = mock_response
             mock_db_interface.return_value = [
                 SourceType(
-                    id=1, name="S3", object_key="s3", last_updated=date(2026, 1, 1), base_url="http://base_url.com"
+                    id=1, name="S3", object_key="s3", last_updated=datetime(2026, 1, 1), base_url="http://base_url.com"
                 )
             ]
 
@@ -81,8 +80,9 @@ class TestListModel:
             mock_response = Response(status_code=504, request=mock_request)
             mock_get.return_value = mock_response
 
-            with pytest.raises(ValueError):
-                client.get("private/api/list_model?model_name=invalid_model")
+            response = client.get("private/api/list_model?model_name=invalid_model")
+
+        assert response.status_code == 500
 
 
 class TestAddModel:
@@ -96,7 +96,7 @@ class TestAddModel:
             mock_get.return_value = mock_response
             mock_add_model.return_value = db_models.DataFormat(
                 id=1,
-                last_updated=date(2026, 1, 1),
+                last_updated=datetime(2026, 1, 1),
                 name="GeoJSON",
                 object_key="geojson",
             )
@@ -116,10 +116,11 @@ class TestAddModel:
             mock_response = Response(status_code=504, request=mock_request)
             mock_get.return_value = mock_response
 
-            with pytest.raises(ValueError):
-                client.post(
-                    "private/api/add_model?model_name=invalid_model&name=GeoJSON&object_key=geojson",
-                )
+            response = client.post(
+                "private/api/add_model?model_name=invalid_model&name=GeoJSON&object_key=geojson",
+            )
+
+        assert response.status_code == 500
 
 
 class TestAddDataCategory:
@@ -132,7 +133,11 @@ class TestAddDataCategory:
             mock_response = Response(200, json={}, request=mock_request)
             mock_get.return_value = mock_response
             mock_db_interface.return_value = db_models.DataCategory(
-                id=1, last_updated=date(2026, 1, 1), name="Category 1", object_key="category_1", data_category_group=1
+                id=1,
+                last_updated=datetime(2026, 1, 1),
+                name="Category 1",
+                object_key="category_1",
+                data_category_group=1,
             )
 
             response = client.post(

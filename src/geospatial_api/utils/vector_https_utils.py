@@ -2,9 +2,9 @@ import logging
 from typing import Any
 
 import requests
-from dri_database_models import geospatial as db_models
 from httpx import HTTPError
 
+from geospatial_api.models import Layer
 from geospatial_api.utils.transformers import MetadataTransformer
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 TRANSFORMER_MAPPING = {"metadata_api": MetadataTransformer}
 
 
-def fetch_data(url: str) -> dict[str | Any]:
+def fetch_data(url: str) -> dict[str, Any]:
     session = requests.Session()
 
     try:
@@ -27,12 +27,15 @@ def fetch_data(url: str) -> dict[str | Any]:
         raise
 
 
-def fetch_vector_data_from_https(url: str, layer: db_models.Layer) -> dict[str | Any]:
+def fetch_vector_data_from_https(url: str, layer: Layer) -> dict[str, Any]:
     response_data = fetch_data(url)
 
     transformer_class = TRANSFORMER_MAPPING.get(layer.source_type.object_key)
     if transformer_class is None:
         raise ValueError("The source type of the layer is not supported")
+
+    if layer.field_metadata is None:
+        raise ValueError("Field metadata information is required to construct the geojson data.")
 
     transformer = transformer_class()
 

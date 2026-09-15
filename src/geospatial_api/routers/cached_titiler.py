@@ -8,7 +8,8 @@ import rasterio
 from fastapi import Depends, HTTPException, Path
 from pydantic import Field
 from rio_tiler.errors import TileOutsideBounds
-from rio_tiler.io import BaseReader, Reader
+from rio_tiler.io.base import BaseReader
+from rio_tiler.io.rasterio import Reader
 from rio_tiler.utils import CRS_to_uri
 from starlette.responses import Response
 from titiler.core.dependencies import BidxExprParams, DatasetParams, DefaultDependency, ImageRenderingParams, TileParams
@@ -47,7 +48,7 @@ class TilerFactory(TiTilerFactory):
         # Add default cache config dictionary into cached alias.
         # Note: if alias is used, other arguments in cached will be ignored. Add other arguments into default
         # dictionary in setup_cache function.
-        @CachedTiles(alias="default")
+        @CachedTiles(alias="default")  # type:ignore
         def tile(
             z: Annotated[
                 int,
@@ -77,7 +78,7 @@ class TilerFactory(TiTilerFactory):
                 ),
             ],
             tileMatrixSetId: Annotated[
-                Literal[tuple(self.supported_tms.list())],
+                Literal[tuple(self.supported_tms.list())],  # type:ignore
                 Path(description="Identifier selecting one of the TileMatrixSetId supported."),
             ],
             scale: Annotated[
@@ -91,7 +92,7 @@ class TilerFactory(TiTilerFactory):
                         "Default will be automatically defined if the output image needs a mask (png) or not (jpeg)."
                     )
                 ),
-            ] = None,
+            ] = None,  # type:ignore
             src_path: str = Depends(self.path_dependency),
             reader_params: DefaultDependency = Depends(self.reader_dependency),
             tile_params: TileParams = Depends(self.tile_dependency),
@@ -136,13 +137,13 @@ class TilerFactory(TiTilerFactory):
             tms = self.supported_tms.get(tileMatrixSetId)
             with rasterio.Env(**env):
                 logger.info(f"opening data with reader: {self.reader}")
-                with self.reader(src_path, tms=tms, **reader_params.as_dict()) as src_dst:
+                with self.reader(src_path, tms=tms, **reader_params.as_dict()) as src_dst:  # type: ignore
                     try:
                         image = src_dst.tile(
                             x,
                             y,
                             z,
-                            tilesize=scale * 256,
+                            tilesize=scale * 256,  # type: ignore
                             **tile_params.as_dict(),
                             **layer_params.as_dict(),
                             **dataset_params.as_dict(),

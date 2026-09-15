@@ -1,3 +1,4 @@
+# pyright: reportArgumentType=false
 import logging
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -12,7 +13,11 @@ logger = logging.getLogger(__name__)
 class TransformerABC(ABC):
     @abstractmethod
     def transform_response(
-        response_data: dict[str, Any], field_metadata: dict[str, Any], filter_metadata: dict[str, Any] | None = None
+        self,
+        response_data: dict[str, Any],
+        field_metadata: list[dict[str, Any]],
+        filter_metadata: list[dict[str, Any]] | None = None,
+        resource_metadata: list[dict[str, Any]] | None = None,
     ) -> geojson.FeatureCollection:
         pass
 
@@ -43,14 +48,16 @@ class MetadataTransformer(TransformerABC):
             if field_value is None:
                 return field_value
 
-            field_value = field_value.get(field_key_mapping["key"])
+            field_value = field_value.get(field_key_mapping["key"])  # type:ignore
+            # If the nested value is None then no further processing is required
+            if field_value is None:
+                return
+
             field_type = field_key_mapping["type"]
 
             if field_type == "list" and isinstance(field_value, list):
-                field_value = field_value[field_key_mapping["index"]]
+                field_value = field_value[field_key_mapping.get("index", 0)]  # type:ignore
             elif field_type == "wkt_list":
-                if field_value is None:
-                    return
                 field_value = self.get_geometry_from_wkt_list(field_value)
             elif field_type == "id_dict":
                 id_components = dict(site.split(field_key_mapping["separator"]) for site in field_value)
@@ -85,7 +92,7 @@ class MetadataTransformer(TransformerABC):
             else:
                 # WGS84 coordinates
                 try:
-                    geometry = shapely.wkt.loads(wkt_str)
+                    geometry = shapely.wkt.loads(wkt_str)  # type:ignore
                     return geometry
                 except shapely.errors.GEOSException:
                     continue
@@ -149,6 +156,7 @@ class MetadataTransformer(TransformerABC):
                     return True
 
                 return False
+            return False
         else:
             raise ValueError(f"The filter config type `{filter_config['type']}` is not supported.")
 
