@@ -38,6 +38,6 @@ class GeospatialDatabase:
     def get_db_item_by_key(self, db_table_class: object, object_key: str) -> object | None:
         session = self.session_factory()
         try:
-            return session.query(db_table_class).filter_by(object_key=object_key).first()
+            return session.query(db_table_class).filter_by(object_key=object_key).first()  # type: ignore
         finally:
             session.close()

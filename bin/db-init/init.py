@@ -445,6 +445,20 @@ def intialise_db() -> None:
                     "data_type": "string",
                 },
                 {
+                    "display_label": None,
+                    "key": "nrfa_id",
+                    "field_keys": [
+                        {"key": "identifier", "type": "id_dict", "id_field": "nrfaStationID", "separator": "|"}
+                    ],
+                    "data_type": "string",
+                },
+                {
+                    "display_label": None,
+                    "key": "notation",
+                    "field_keys": [{"key": "identifier", "type": "id_dict", "id_field": "notation", "separator": "|"}],
+                    "data_type": "string",
+                },
+                {
                     "display_label": "Description",
                     "key": "description",
                     "field_keys": [{"key": "comment", "type": "list", "index": 0}],
@@ -487,6 +501,26 @@ def intialise_db() -> None:
                     "expected_id": "http://fdri.ceh.ac.uk/ref/common/annotation-property/isChess",
                     "expected_value": True,
                 }
+            ],
+            "resource_metadata": [
+                {
+                    "level": "feature",
+                    "url": "https://digital-platform.fdri.org.uk/timeseries?network=ea-flow&site={site_id}",
+                    "url_mapping": {"site_id": "id"},
+                    "label": "timeseries data",
+                },
+                {
+                    "level": "feature",
+                    "url": "https://environment.data.gov.uk/hydrology/station/{notation}",
+                    "url_mapping": {"notation": "notation"},
+                    "label": "Environment Agency data",
+                },
+                {
+                    "level": "feature",
+                    "url": "https://nrfa.ceh.ac.uk/data/station/info/{nrfa_id}",
+                    "url_mapping": {"nrfa_id": "nrfa_id"},
+                    "label": "NRFA Station details",
+                },
             ],
         },
         {
@@ -607,7 +641,7 @@ def intialise_db() -> None:
         category_group = db.get_db_item_by_key(
             geospatial.DataCategoryGroup, object_key=data_category["data_category_group"]
         )
-        data_category["data_category_group"] = category_group.id
+        data_category["data_category_group"] = getattr(category_group, "id")
         db.add_db_items([geospatial.DataCategory(**data_category)])
 
     print("Filling Data Formats")
@@ -622,7 +656,7 @@ def intialise_db() -> None:
     print("Filling Area Names")
     for location in locations:
         location_type = db.get_db_item_by_key(geospatial.LocationType, object_key=location["location_type"])
-        location["location_type"] = location_type.id
+        location["location_type"] = getattr(location_type, "id")
         db.add_db_items([geospatial.Location(**location)])
 
     print("Filling source types")
@@ -631,13 +665,21 @@ def intialise_db() -> None:
     print("Filling Layer Registry")
     for layer in layers:
         layer["project"] = getattr(db.get_db_item_by_key(geospatial.Project, object_key=layer["project"]), "id", None)
-        layer["source_type"] = db.get_db_item_by_key(geospatial.SourceType, object_key=layer["source_type"]).id
-        layer["data_format"] = db.get_db_item_by_key(geospatial.DataFormat, object_key=layer["data_format"]).id
-        layer["data_category"] = db.get_db_item_by_key(geospatial.DataCategory, object_key=layer["data_category"]).id
-        layer["processing_level"] = db.get_db_item_by_key(
-            geospatial.ProcessingLevel, object_key=layer["processing_level"]
-        ).id
-        layer["location"] = db.get_db_item_by_key(geospatial.Location, object_key=layer["location"]).id
+        layer["source_type"] = getattr(
+            db.get_db_item_by_key(geospatial.SourceType, object_key=layer["source_type"]), "id", None
+        )
+        layer["data_format"] = getattr(
+            db.get_db_item_by_key(geospatial.DataFormat, object_key=layer["data_format"]), "id", None
+        )
+        layer["data_category"] = getattr(
+            db.get_db_item_by_key(geospatial.DataCategory, object_key=layer["data_category"]), "id", None
+        )
+        layer["processing_level"] = getattr(
+            db.get_db_item_by_key(geospatial.ProcessingLevel, object_key=layer["processing_level"]), "id", None
+        )
+        layer["location"] = getattr(
+            db.get_db_item_by_key(geospatial.Location, object_key=layer["location"]), "id", None
+        )
 
         db.add_db_items([geospatial.Layer(**layer)])
 

@@ -38,7 +38,7 @@ def serves_private_view(request: Request) -> bool:
 
 
 @router.get("/available_data")
-def get_available_data(db: Annotated[Session, Depends(get_db)]) -> dict[str, Any]:
+def get_available_data(db: Annotated[Session, Depends(get_db)]) -> JSONResponse:
     layers = LayerRegistryInterface.get_db_entries(session=db)
 
     return JSONResponse([item.to_json_response() for item in layers])
