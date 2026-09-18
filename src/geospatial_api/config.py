@@ -28,6 +28,9 @@ class BaseConfig(BaseSettings):
     metadata_url: str
     service_name: str
 
+    host_url: str
+    os_api_key: str
+
     db_user_name: str
     db_host: str
     db_port: int
