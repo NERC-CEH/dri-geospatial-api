@@ -7,6 +7,7 @@ import boto3.session
 from botocore.client import Config
 from fastapi import UploadFile
 from mypy_boto3_s3 import S3Client
+from mypy_boto3_ssn import SSMClient
 from sqlalchemy.orm import Session
 
 from geospatial_api.config import LocalConfig, setup_config
@@ -19,6 +20,21 @@ config = setup_config()
 
 # A database Session generator
 SessionGenerator = RDSLogin.get_session_generator(config)
+
+
+def get_ssm_client() -> SSMClient:
+    """Get a new instance of a boto3 Simple Systems Manager client."""
+    if isinstance(config, LocalConfig):
+        session = boto3.session.Session(
+            aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
+            region_name=config.AWS_DEFAULT_REGION,
+        )
+        ssm_client = session.client("ssm", config=boto3_config)
+    else:
+        ssm_client = boto3.client("ssm", config=boto3_config)
+
+    return ssm_client  # type:ignore
 
 
 def get_s3_client() -> S3Client:

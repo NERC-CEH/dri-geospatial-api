@@ -1,19 +1,23 @@
 from typing import Annotated, Any
 
+import botocore
 import geojson
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
+from loguru import logger
+from mypy_boto3_ssm import SSMClient
 from sqlalchemy.orm import Session
 
 from geospatial_api.config import setup_config
 from geospatial_api.services.rds.db import LayerRegistryInterface, LocationModelInterface
-from geospatial_api.utils.utils import get_db, get_s3_client
+from geospatial_api.utils.utils import get_db, get_s3_client, get_ssm_client
 
 router = APIRouter()
 
 config = setup_config()
 s3 = get_s3_client()
+ssm = get_ssm_client()
 
 EXT_MAPPING = {"tif": "raster", "geojson": "vector"}
 
@@ -53,7 +57,15 @@ def get_location_boundary(db: Annotated[Session, Depends(get_db)], location_id: 
 
 
 @router.get("/basemap/{map_name}/{z}/{x}/{y}")
-async def get_basemap(map_name: str, x: int, y: int, z: int, request: Request, response: Response) -> Response:
+async def get_basemap(
+    map_name: str,
+    x: int,
+    y: int,
+    z: int,
+    request: Request,
+    response: Response,
+    ssm_client: SSMClient = Depends(lambda: ssm),
+) -> Response:
     """
     Get the corresponding OS basemap tile based on the map name and tile coordinates.
 
@@ -76,10 +88,19 @@ async def get_basemap(map_name: str, x: int, y: int, z: int, request: Request, r
     if not request.headers["origin"].startswith(config.host_url):
         raise HTTPException(status_code=403)
 
-    if not config.os_api_key:
+    # Extract the os api key from the AWS Parameter Store
+    try:
+        response = ssm_client.get_parameter(Name="os_api_key", WithDecryption=True)
+    except botocore.exceptions.ClientError as err:
+        logger.error(f"Unable to fetch os_api_key parameter due to the following error: {str(err)}")
+        raise HTTPException(status_code=500, detail="Error fetching api key")
+
+    os_api_key = response["Parameter"]["Value"]
+
+    if not os_api_key:
         raise HTTPException(status_code=500, detail="Invalid api key")
 
-    url = f"https://api.os.uk/maps/raster/v1/zxy/{map_name}/{z}/{x}/{y}.png?key={config.os_api_key}"
+    url = f"https://api.os.uk/maps/raster/v1/zxy/{map_name}/{z}/{x}/{y}.png?key={os_api_key}"
 
     async with httpx.AsyncClient() as client:
         proxy = await client.get(url)
