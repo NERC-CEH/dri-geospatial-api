@@ -152,7 +152,7 @@ def get_os_api_key() -> str:
     ssm_client = get_ssm_client()
     # Extract the os api key from the AWS Parameter Store
     try:
-        response = ssm_client.get_parameter(Name="os_api_key", WithDecryption=True)
+        response = ssm_client.get_parameter(Name="dri-geospatial-api/os_api_key/", WithDecryption=True)
     except botocore.exceptions.ClientError as err:
         logger.error(f"Unable to fetch os_api_key parameter due to the following error: {str(err)}")
         raise ValueError("Error fetching api key")
