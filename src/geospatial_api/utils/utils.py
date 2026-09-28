@@ -4,9 +4,12 @@ from urllib.parse import urlparse
 
 import boto3
 import boto3.session
+import botocore
 from botocore.client import Config
 from fastapi import UploadFile
+from loguru import logger
 from mypy_boto3_s3 import S3Client
+from mypy_boto3_ssm import SSMClient
 from sqlalchemy.orm import Session
 
 from geospatial_api.config import LocalConfig, setup_config
@@ -19,6 +22,21 @@ config = setup_config()
 
 # A database Session generator
 SessionGenerator = RDSLogin.get_session_generator(config)
+
+
+def get_ssm_client() -> SSMClient:
+    """Get a new instance of a boto3 Simple Systems Manager client."""
+    if isinstance(config, LocalConfig):
+        session = boto3.session.Session(
+            aws_access_key_id=config.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
+            region_name=config.AWS_DEFAULT_REGION,
+        )
+        ssm_client = session.client("ssm", config=boto3_config)
+    else:
+        ssm_client = boto3.client("ssm", config=boto3_config)
+
+    return ssm_client  # type:ignore
 
 
 def get_s3_client() -> S3Client:
@@ -115,3 +133,30 @@ async def upload_file_to_s3_for_layer(s3_client: S3Client, upload_file: UploadFi
     destination_key = layer.get_s3_key(source_id=upload_file.filename)  # type:ignore
     content = await upload_file.read()
     s3_client.put_object(Bucket=config.geospatial_data_bucket, Key=destination_key, Body=content)
+
+
+def get_os_api_key() -> str:
+    """
+    Get the OS API key from the AWS parameter store.
+
+    Raises:
+        ValueError: No OS API key could be found.
+
+    Returns:
+        OS API key string.
+
+    """
+    if config.api_environment == "local":
+        return "placeholder"
+
+    ssm_client = get_ssm_client()
+    # Extract the os api key from the AWS Parameter Store
+    try:
+        response = ssm_client.get_parameter(Name="/dri-geospatial-api/os_api_key", WithDecryption=True)
+    except botocore.exceptions.ClientError as err:
+        logger.error(f"Unable to fetch os_api_key parameter due to the following error: {str(err)}")
+        raise ValueError("Error fetching api key")
+
+    os_api_key = response["Parameter"]["Value"]
+
+    return os_api_key

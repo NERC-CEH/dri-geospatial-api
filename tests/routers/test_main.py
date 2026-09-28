@@ -1,3 +1,6 @@
+from unittest import mock
+
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -666,3 +669,24 @@ class TestAvailableData:
 
         assert response.status_code == 200
         assert response.json() == expected_json
+
+
+class TestBasemap:
+    def test_basemap_invalid_host_url(self) -> None:
+        response = client.get("public/api/basemap/Road_3857/1/2/3", headers={"origin": "Test"})
+
+        assert response.status_code == 403
+
+    def test_basemap(self) -> None:
+        with (
+            mock.patch.object(httpx.AsyncClient, "get") as mock_client,
+        ):
+            mock_response = mock.AsyncMock()
+            mock_response.content = ""
+            mock_response.status_code = 200
+            mock_client.return_value = mock_response
+
+            response = client.get("public/api/basemap/Road_3857/1/2/3", headers={"origin": "http://localhost"})
+            assert response.status_code == 200
+            assert response.content == b""
+            mock_client.assert_called_once()
