@@ -82,9 +82,8 @@ async def get_basemap(
         OS map tile as a Response object
 
     """
-    for host_url in config.host_urls.split(","):
-        if not request.headers["origin"].startswith(host_url):
-            raise HTTPException(status_code=403)
+    if not any(request.headers["origin"].startswith(host_url) for host_url in config.host_urls.split(",")):
+        raise HTTPException(status_code=403)
 
     if not OS_API_KEY:
         raise HTTPException(status_code=500, detail="Invalid api key")
